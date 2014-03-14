@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Sony IR Remoute</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="brand_prompt">Choose your TV`s brand</string>
+
+    <string-array name="brand_arrays">
+        <item>Sony</item>
+    </string-array>
+
+    <string-array name="item_arrays">
+        <item>TV</item>
+    </string-array>
+
+    <string name="log">Log:</string>
+
+</resources>

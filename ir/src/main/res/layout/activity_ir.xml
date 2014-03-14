@@ -1,0 +1,240 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.sssemil.sonyirremoute.ir.ir">
+
+
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Power ON/OFF"
+        android:id="@+id/button"
+        android:longClickable="false"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/button5"
+        android:layout_alignEnd="@+id/button5"
+        android:onClick="onPowerClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Write signal"
+        android:id="@+id/button2"
+        android:onClick="onButtonClick2"
+        android:clickable="false"
+        android:enabled="false"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chanel +"
+        android:id="@+id/button3"
+        android:layout_below="@+id/button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onChanelPlClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chanel -"
+        android:id="@+id/button4"
+        android:layout_below="@+id/button3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/button3"
+        android:layout_alignEnd="@+id/button3"
+        android:onClick="onChanelMnSonClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vol +"
+        android:id="@+id/button5"
+        android:layout_above="@+id/button6"
+        android:onClick="onVolumePlClick"
+        android:layout_toRightOf="@+id/button3" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vol -"
+        android:id="@+id/button6"
+        android:layout_alignTop="@+id/button4"
+        android:layout_alignRight="@+id/button5"
+        android:layout_alignEnd="@+id/button5"
+        android:onClick="onVolumeMnClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1"
+        android:id="@+id/button7"
+        android:onClick="on1Click"
+        android:layout_alignTop="@+id/button"
+        android:layout_toRightOf="@+id/button6" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2"
+        android:id="@+id/button8"
+        android:onClick="on2Click"
+        android:layout_alignTop="@+id/button7"
+        android:layout_toRightOf="@+id/button7" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3"
+        android:id="@+id/button9"
+        android:onClick="on3Click"
+        android:layout_above="@+id/button12"
+        android:layout_alignLeft="@+id/button12"
+        android:layout_alignStart="@+id/button12" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4"
+        android:id="@+id/button10"
+        android:onClick="on4Click"
+        android:layout_below="@+id/button7"
+        android:layout_alignLeft="@+id/button7"
+        android:layout_alignStart="@+id/button7" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:id="@+id/button11"
+        android:onClick="on5Click"
+        android:layout_above="@+id/button6"
+        android:layout_toRightOf="@+id/button10" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="6"
+        android:id="@+id/button12"
+        android:onClick="on6Click"
+        android:layout_above="@+id/button6"
+        android:layout_toRightOf="@+id/button11" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="7"
+        android:id="@+id/button13"
+        android:onClick="on7Click"
+        android:layout_alignTop="@+id/button6"
+        android:layout_toRightOf="@+id/button6" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="8"
+        android:id="@+id/button14"
+        android:onClick="on8Click"
+        android:layout_alignTop="@+id/button13"
+        android:layout_toRightOf="@+id/button13" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="9"
+        android:id="@+id/button15"
+        android:onClick="on9Click"
+        android:layout_alignTop="@+id/button14"
+        android:layout_toRightOf="@+id/button14" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:id="@+id/button16"
+        android:onClick="on0Click"
+        android:layout_below="@+id/button14"
+        android:layout_toLeftOf="@+id/button15" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Up"
+        android:id="@+id/button17"
+        android:layout_above="@+id/button12"
+        android:layout_toLeftOf="@+id/button20"
+        android:onClick="onUpClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button18"
+        android:text="Down"
+        android:layout_alignTop="@+id/button15"
+        android:layout_alignLeft="@+id/button19"
+        android:layout_alignStart="@+id/button19"
+        android:onClick="onDownClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter"
+        android:id="@+id/button19"
+        android:layout_above="@+id/button15"
+        android:layout_toLeftOf="@+id/button20"
+        android:onClick="onEnterClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Right"
+        android:id="@+id/button20"
+        android:layout_above="@+id/button18"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="onRightClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Left"
+        android:id="@+id/button21"
+        android:layout_above="@+id/button18"
+        android:layout_toLeftOf="@+id/button18"
+        android:onClick="onLeftClick" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner"
+        android:entries="@array/brand_arrays"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/spinner2"
+        android:layout_toLeftOf="@+id/button20" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner2"
+        android:layout_alignTop="@+id/spinner"
+        android:layout_toRightOf="@+id/button2"
+        android:entries="@array/item_arrays"
+        android:layout_alignRight="@+id/button16"
+        android:layout_alignEnd="@+id/button16" />
+
+</RelativeLayout>
