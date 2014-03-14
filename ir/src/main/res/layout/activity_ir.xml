@@ -14,7 +14,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Power ON/OFF"
+        android:text="@string/pwr_btn"
         android:id="@+id/button"
         android:longClickable="false"
         android:layout_alignParentTop="true"
@@ -27,7 +27,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Write signal"
+        android:text="@string/Write_signal"
         android:id="@+id/button2"
         android:onClick="onButtonClick2"
         android:clickable="false"
@@ -41,7 +41,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chanel +"
+        android:text="@string/ChanelPl"
         android:id="@+id/button3"
         android:layout_below="@+id/button"
         android:layout_alignParentLeft="true"
@@ -51,7 +51,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chanel -"
+        android:text="@string/ChanelMn"
         android:id="@+id/button4"
         android:layout_below="@+id/button3"
         android:layout_alignParentLeft="true"
@@ -63,7 +63,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vol +"
+        android:text="@string/VolPl"
         android:id="@+id/button5"
         android:layout_above="@+id/button6"
         android:onClick="onVolumePlClick"
@@ -72,7 +72,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vol -"
+        android:text="@string/VolMn"
         android:id="@+id/button6"
         android:layout_alignTop="@+id/button4"
         android:layout_alignRight="@+id/button5"
@@ -174,26 +174,26 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Up"
+        android:text="@string/Up"
         android:id="@+id/button17"
-        android:layout_above="@+id/button12"
-        android:layout_toLeftOf="@+id/button20"
-        android:onClick="onUpClick" />
+        android:onClick="onUpClick"
+        android:layout_alignTop="@+id/button9"
+        android:layout_toLeftOf="@+id/button20" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button18"
-        android:text="Down"
-        android:layout_alignTop="@+id/button15"
+        android:text="@string/Down"
+        android:onClick="onDownClick"
+        android:layout_above="@+id/button16"
         android:layout_alignLeft="@+id/button19"
-        android:layout_alignStart="@+id/button19"
-        android:onClick="onDownClick" />
+        android:layout_alignStart="@+id/button19" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter"
+        android:text="@string/Enter"
         android:id="@+id/button19"
         android:layout_above="@+id/button15"
         android:layout_toLeftOf="@+id/button20"
@@ -202,7 +202,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Right"
+        android:text="@string/Right"
         android:id="@+id/button20"
         android:layout_above="@+id/button18"
         android:layout_alignParentRight="true"
@@ -212,7 +212,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Left"
+        android:text="@string/Left"
         android:id="@+id/button21"
         android:layout_above="@+id/button18"
         android:layout_toLeftOf="@+id/button18"
@@ -236,5 +236,15 @@
         android:entries="@array/item_arrays"
         android:layout_alignRight="@+id/button16"
         android:layout_alignEnd="@+id/button16" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button22"
+        android:layout_above="@+id/spinner"
+        android:layout_alignRight="@+id/button20"
+        android:layout_alignEnd="@+id/button20"
+        android:onClick="onDClick" />
 
 </RelativeLayout>

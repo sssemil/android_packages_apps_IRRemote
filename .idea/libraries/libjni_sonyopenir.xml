@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="libjni_sonyopenir">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ir/libs/libjni_sonyopenir.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
