@@ -24,19 +24,6 @@
         android:layout_alignEnd="@+id/button5"
         android:onClick="onPowerClick" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Write_signal"
-        android:id="@+id/button2"
-        android:onClick="onButtonClick2"
-        android:clickable="false"
-        android:enabled="false"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-
 
     <Button
         android:layout_width="wrap_content"
@@ -224,27 +211,31 @@
         android:id="@+id/spinner"
         android:entries="@array/brand_arrays"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/spinner2"
-        android:layout_toLeftOf="@+id/button20" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/spinner2" />
 
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/spinner2"
-        android:layout_alignTop="@+id/spinner"
-        android:layout_toRightOf="@+id/button2"
         android:entries="@array/item_arrays"
-        android:layout_alignRight="@+id/button16"
-        android:layout_alignEnd="@+id/button16" />
+        android:layout_alignTop="@+id/spinner"
+        android:layout_toRightOf="@+id/button6"
+        android:layout_alignRight="@+id/button15"
+        android:layout_alignEnd="@+id/button15" />
 
     <Button
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button22"
-        android:layout_above="@+id/spinner"
-        android:layout_alignRight="@+id/button20"
-        android:layout_alignEnd="@+id/button20"
-        android:onClick="onDClick" />
+        android:text="@string/Write_signal"
+        android:id="@+id/button2"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onWrtClick"
+        android:layout_alignRight="@+id/button5"
+        android:layout_alignEnd="@+id/button5"
+        android:layout_below="@+id/button16" />
 
 </RelativeLayout>

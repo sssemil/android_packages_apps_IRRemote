@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,6 +13,8 @@ import android.os.PowerManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -27,13 +30,6 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.zip.*;
 
-/**
- *
- * Copyright (c) 2014 Emil Suleymanov
- * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
- *
- */
-
 public class ir extends Activity {
 
     @Override
@@ -42,8 +38,12 @@ public class ir extends Activity {
         setContentView(R.layout.activity_ir);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         fixPermissionsForIr();
+        new Thread(new Runnable() {
+            public void run() {
+                startIR();
+            }
+        }).start();
         prepIRKeys();
-        startIR();
         //SharedPreferences irPrefs = getSharedPreferences("irPrefs", MODE_PRIVATE);
         //irpath = irPrefs.getString("irpath", "");
         /*new Thread(new Runnable() {
@@ -130,231 +130,476 @@ public class ir extends Activity {
 
     public String brand;
     public String item;
+    public boolean wrt = false;
+
+    public void onWrtClick(View view)
+    {
+        if(wrt) {
+            wrt = false;
+            final Button btntxt = (Button) findViewById(R.id.button2);
+            btntxt.setText(getResources().getString(R.string.Write_signal));
+            btntxt.setTextColor(Color.BLACK);
+        }
+        else if(!wrt) {
+            wrt = true;
+            final Button btntxt = (Button) findViewById(R.id.button2);
+            btntxt.setText(getResources().getString(R.string.Send_signal));
+            btntxt.setTextColor(Color.RED);
+
+            File f = new File(irpath + brand + "/" + item);
+            if (!f.isDirectory()) {
+                f.mkdirs();
+            }
+
+            File f2 = new File(irpath + brand);
+            if (!f2.isDirectory()) {
+                f2.mkdirs();
+            }
+        }
+    }
 
     public void onPowerClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "Power" + brand, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Power" + brand, Toast.LENGTH_SHORT).show();
 
-        sendKey(irpath + brand + "/" + item + "/power.bin");
+            sendKey(irpath + brand + "/" + item + "/power.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "Power" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+
+            learnKey(irpath + brand + "/" + item + "/power.bin");
+        }
     }
 
     public void onChanelPlClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        sendKey(irpath + brand + "/" + item + "/chanelPl.bin");
+            Toast.makeText(this, "ChanelPl" + brand, Toast.LENGTH_SHORT).show();
+
+            sendKey(irpath + brand + "/" + item + "/chanelPl.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "ChanelPl" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+
+            learnKey(irpath + brand + "/" + item + "/chanelPl.bin");
+        }
     }
 
     public void onChanelMnSonClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "ChanelMn" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/chanelMn.bin");
+            Toast.makeText(this, "ChanelMn" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/chanelMn.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "ChanelMn" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/chanelMn.bin");
+        }
     }
 
     public void onVolumePlClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if (!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "VolumePl" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/volPl.bin");
+            Toast.makeText(this, "VolumePl" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/volPl.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "VolumePl" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/volPl.bin");
+        }
     }
 
     public void onVolumeMnClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "VolumeMn" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/volMn.bin");
+            Toast.makeText(this, "VolumeMn" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/volMn.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "VolumeMn" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/volMn.bin");
+        }
     }
 
     public void on1Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "1" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/1.bin");
+            Toast.makeText(this, "1" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/1.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "1" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/1.bin");
+        }
     }
 
     public void on2Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "2" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/2.bin");
+            Toast.makeText(this, "2" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/2.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "2" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/2.bin");
+        }
     }
 
     public void on3Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "3" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/3.bin");
+            Toast.makeText(this, "3" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/3.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "3" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/3.bin");
+        }
     }
 
     public void on4Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "4" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/4.bin");
+            Toast.makeText(this, "4" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/4.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "4" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/4.bin");
+        }
     }
 
     public void on5Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "5" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/5.bin");
+            Toast.makeText(this, "5" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/5.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "5" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/5.bin");
+        }
     }
 
     public void on6Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "6" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/6.bin");
+            Toast.makeText(this, "6" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/6.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "6" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/6.bin");
+        }
     }
 
     public void on7Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "7" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/7.bin");
+            Toast.makeText(this, "7" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/7.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "7" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/7.bin");
+        }
     }
 
     public void on8Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "8" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/8.bin");
+            Toast.makeText(this, "8" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/8.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "8" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/8.bin");
+        }
     }
 
     public void on9Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "9" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/9.bin");
+            Toast.makeText(this, "9" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/9.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "9" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/9.bin");
+        }
     }
 
     public void on0Click(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "0" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/0.bin");
+            Toast.makeText(this, "0" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/0.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "0" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/0.bin");
+        }
     }
 
     public void onUpClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "up" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/up.bin");
+            Toast.makeText(this, "up" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/up.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "up" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/up.bin");
+        }
     }
 
     public void onDownClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "down" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/down.bin");
+            Toast.makeText(this, "down" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/down.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "down" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/down.bin");
+        }
     }
 
     public void onLeftClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "left" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/left.bin");
+            Toast.makeText(this, "left" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/left.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "left" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/left.bin");
+        }
     }
 
     public void onRightClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "right" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/right.bin");
+            Toast.makeText(this, "right" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/right.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
+
+            Toast.makeText(this, "right" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/right.bin");
+        }
     }
 
     public void onEnterClick(View view)
     {
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
+        if(!wrt) {
+            Spinner spinner = (Spinner)findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-        Toast.makeText(this, "enter" + brand, Toast.LENGTH_SHORT).show();
-        sendKey(irpath + brand + "/" + item + "/enter.bin");
-    }
+            Toast.makeText(this, "enter" + brand, Toast.LENGTH_SHORT).show();
+            sendKey(irpath + brand + "/" + item + "/enter.bin");
+        }
+        else if(wrt) {
+            Spinner spinner = (Spinner) findViewById(R.id.spinner);
+            brand = spinner.getSelectedItem().toString();
+            Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+            item = spinner2.getSelectedItem().toString();
 
-    public void onDClick(View view)
-    {
-        DownloadALL();
-        UnzipALL();
+            Toast.makeText(this, "enter" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+            learnKey(irpath + brand + "/" + item + "/enter.bin");
+        }
     }
 
     public void UnzipALL()

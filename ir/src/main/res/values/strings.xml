@@ -5,7 +5,8 @@
     <string name="action_settings">Settings</string>
 
     <string name="pwr_btn">Power ON/OFF</string>
-    <string name="Write_signal">Write signal</string>
+    <string name="Write_signal">Switch to Write mode</string>
+    <string name="Send_signal">Switch to Send mode</string>
     <string name="ChanelPl">Chanel +</string>
     <string name="ChanelMn">Chanel -</string>
     <string name="VolPl">Vol +</string>
@@ -28,6 +29,10 @@
     </string-array>
 
     <string-array name="item_arrays">
+        <item>tv</item>
+    </string-array>
+
+    <string-array name="button_arrays">
         <item>tv</item>
     </string-array>
 
