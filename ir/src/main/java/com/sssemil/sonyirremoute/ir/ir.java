@@ -722,7 +722,7 @@ public class ir extends Activity {
 
 // execute this when the downloader must be fired
         final DownloadTask downloadTask = new DownloadTask(ir.this);
-        downloadTask.execute("http://sssemil.or.gs/sonyirremoute/sony.zip");
+        downloadTask.execute("http://sssemil.or.gs/sonyirremote/sony.zip");
 
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override

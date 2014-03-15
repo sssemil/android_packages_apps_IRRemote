@@ -1,4 +1,4 @@
-SonyIRRemoute
+SonyIRRemote
 =============
 
 Infrared Remote Control for Sony Xperia ZL
