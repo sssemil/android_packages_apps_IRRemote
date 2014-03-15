@@ -30,6 +30,13 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.zip.*;
 
+/**
+  *
+  * Copyright (c) 2014 Emil Suleymanov
+  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
+  *
+  */
+
 public class ir extends Activity {
 
     @Override
