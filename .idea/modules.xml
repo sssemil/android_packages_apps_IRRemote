@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SonyIRRemoute.iml" filepath="$PROJECT_DIR$/SonyIRRemoute.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SonyIRRemote.iml" filepath="$PROJECT_DIR$/SonyIRRemote.iml" />
       <module fileurl="file://$PROJECT_DIR$/ir/ir.iml" filepath="$PROJECT_DIR$/ir/ir.iml" />
     </modules>
   </component>

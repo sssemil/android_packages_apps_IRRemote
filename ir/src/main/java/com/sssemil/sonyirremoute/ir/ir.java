@@ -131,13 +131,13 @@ public class ir extends Activity {
     {
         this.itemN = ((EditText)findViewById(R.id.editText));
         this.brandN = ((EditText)findViewById(R.id.editText2));
-        File localFile1 = new File(this.irpath + this.brandN.toString());
+        File localFile1 = new File(this.irpath + this.brandN.getText().toString());
         if (!localFile1.isDirectory())
             localFile1.mkdirs();
-        File localFile2 = new File(this.irpath + this.brandN.toString() + "/" + this.itemN.toString());
+        File localFile2 = new File(this.irpath + this.brandN.getText().toString() + "/" + this.itemN.getText().toString());
         if (!localFile2.isDirectory())
             localFile2.mkdirs();
-        Toast.makeText(this, this.irpath + this.brandN.toString() + "/" + this.itemN.toString(), 0).show();
+        //Toast.makeText(this, this.irpath + this.brandN.getText().toString() + "/" + this.itemN.getText().toString(), 0).show();
     }
 
 
