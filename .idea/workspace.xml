@@ -100,11 +100,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ir.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ir.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ir/src/main/java/com/sssemil/sonyirremoute/ir/ir.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2568" max-vertical-offset="11970">
-              <caret line="193" column="128" selection-start="6621" selection-end="6621" />
+            <state vertical-scroll-proportion="0.47007042" vertical-offset="2568" max-vertical-offset="11970">
+              <caret line="193" column="227" selection-start="6720" selection-end="6720" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#3324#3332#0" expanded="true" />
@@ -114,8 +114,8 @@
                 <element signature="e#6520#6563#0" expanded="true" />
                 <element signature="e#6573#6616#0" expanded="true" />
                 <element signature="e#6626#6669#0" expanded="true" />
-                <element signature="e#7138#7185#0" expanded="true" />
-                <element signature="e#7390#7436#0" expanded="true" />
+                <element signature="e#7190#7237#0" expanded="true" />
+                <element signature="e#7442#7488#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -144,11 +144,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="strings.xml" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="strings.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ir/src/main/res/values/strings.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8192771" vertical-offset="139" max-vertical-offset="720">
-              <caret line="41" column="32" selection-start="1716" selection-end="1716" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="139" max-vertical-offset="735">
+              <caret line="39" column="57" selection-start="1555" selection-end="1555" />
               <folding />
             </state>
           </provider>
@@ -831,8 +831,8 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/ir/src/main/res/layout/settings_ir.xml" />
-        <option value="$PROJECT_DIR$/ir/src/main/java/com/sssemil/sonyirremoute/ir/ir.java" />
         <option value="$PROJECT_DIR$/ir/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/ir/src/main/java/com/sssemil/sonyirremoute/ir/ir.java" />
       </list>
     </option>
   </component>
@@ -1055,6 +1055,10 @@
     <property name="LayoutCode.rearrangeEntriesJava" value="false" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="EP732021G6" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="mc" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="FullScreen" value="false" />
   </component>
   <component name="RunManager" selected="Android Application.ir">
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
@@ -1232,7 +1236,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-4" width="1217" height="1029" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -1281,6 +1285,25 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/ir/src/main/res/layout/activity_ir.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3705">
+          <caret line="0" column="0" selection-start="0" selection-end="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ir/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="139" max-vertical-offset="735">
+          <caret line="39" column="57" selection-start="1555" selection-end="1555" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ir/src/main/res/layout/settings_ir.xml">
       <provider selected="true" editor-type-id="android-designer">
         <state />
@@ -1304,8 +1327,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ir/src/main/java/com/sssemil/sonyirremoute/ir/ir.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2568" max-vertical-offset="11970">
-          <caret line="193" column="128" selection-start="6621" selection-end="6621" />
+        <state vertical-scroll-proportion="0.47007042" vertical-offset="2568" max-vertical-offset="11970">
+          <caret line="193" column="227" selection-start="6720" selection-end="6720" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#3324#3332#0" expanded="true" />
@@ -1315,31 +1338,87 @@
             <element signature="e#6520#6563#0" expanded="true" />
             <element signature="e#6573#6616#0" expanded="true" />
             <element signature="e#6626#6669#0" expanded="true" />
-            <element signature="e#7138#7185#0" expanded="true" />
-            <element signature="e#7390#7436#0" expanded="true" />
+            <element signature="e#7190#7237#0" expanded="true" />
+            <element signature="e#7442#7488#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ir/src/main/res/layout/activity_ir.xml">
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3705">
-          <caret line="0" column="0" selection-start="0" selection-end="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ir/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8192771" vertical-offset="139" max-vertical-offset="720">
-          <caret line="41" column="32" selection-start="1716" selection-end="1716" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>Android</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>Android API 16 Platform</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>ir</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>libjni_sonyopenir</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
 

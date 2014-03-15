@@ -40,4 +40,5 @@
         <string name="license1">Copyright © 2014 Emil Suleymanov</string>
         <string name="license2">Distributed under the GNU GPL v2. For full terms see the file LICENSE.</string>
         <string name="license3">Source code is available at https://github.com/sssemil/SonyIRRemoute .</string>
+        <string name="license4">Using lib_sony_ir from BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
     </resources>

@@ -191,7 +191,7 @@ public class ir extends Activity {
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("About");
-        builder.setMessage(getResources().getString(R.string.license1) + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3));
+        builder.setMessage(getResources().getString(R.string.license1) + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3)+ "\n" + getResources().getString(R.string.license4));
         builder.setPositiveButton("OK", null);
         AlertDialog dialog = builder.show();
 
