@@ -1,29 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Sony IR Remoute</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="pwr_btn">Power ON/OFF</string>
-    <string name="Write_signal">Switch to Write mode</string>
-    <string name="Send_signal">Switch to Send mode</string>
-    <string name="ChanelPl">Chanel +</string>
-    <string name="ChanelMn">Chanel -</string>
-    <string name="VolPl">Vol +</string>
-    <string name="VolMn">Vol -</string>
-    <string name="Up">Up</string>
-    <string name="Down">Down</string>
-    <string name="Left">Left</string>
-    <string name="Right">Right</string>
-    <string name="Enter">Enter</string>
-
-    <string name="path">Path to keys</string>
-    <string name="save">Save</string>
-
-    <string name="irpath">/sdcard/ir/</string>
-
-    <string name="brand_prompt">Choose your TV`s brand</string>
-
     <string-array name="brand_arrays">
         <item>sony</item>
     </string-array>
@@ -36,4 +13,31 @@
         <item>tv</item>
     </string-array>
 
-</resources>
+        <string name="ChanelMn">Chanel -</string>
+        <string name="ChanelPl">Chanel +</string>
+        <string name="Down">Down</string>
+        <string name="Enter">Enter</string>
+        <string name="Left">Left</string>
+        <string name="Right">Right</string>
+        <string name="Send_signal">Switch to Send mode</string>
+        <string name="Up">Up</string>
+        <string name="VolMn">Vol -</string>
+        <string name="VolPl">Vol +</string>
+        <string name="Write_signal">Switch to Write mode</string>
+        <string name="action_settings">Settings</string>
+        <string name="add">Add</string>
+        <string name="add_brnd">Add new device</string>
+        <string name="app_name">Sony IR Remoute</string>
+        <string name="brand">Brand:</string>
+        <string name="brand_prompt">Choose your TV`s brand</string>
+        <string name="go_back">Back to main menu</string>
+        <string name="irpath">/sdcard/ir/</string>
+        <string name="item">Type:</string>
+        <string name="path">Path to keys</string>
+        <string name="pwr_btn">Power ON/OFF</string>
+        <string name="save">Save</string>
+        <string name="about">About</string>
+        <string name="license1">Copyright © 2014 Emil Suleymanov</string>
+        <string name="license2">Distributed under the GNU GPL v2. For full terms see the file LICENSE.</string>
+        <string name="license3">Source code is available at https://github.com/sssemil/SonyIRRemoute .</string>
+    </resources>

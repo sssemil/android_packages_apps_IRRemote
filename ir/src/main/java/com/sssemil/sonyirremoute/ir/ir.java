@@ -1,22 +1,26 @@
 package com.sssemil.sonyirremoute.ir;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -26,9 +30,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
-import java.util.zip.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
   *
@@ -51,6 +57,7 @@ public class ir extends Activity {
             }
         }).start();
         prepIRKeys();
+        prepItemBrandArray();
         //SharedPreferences irPrefs = getSharedPreferences("irPrefs", MODE_PRIVATE);
         //irpath = irPrefs.getString("irpath", "");
         /*new Thread(new Runnable() {
@@ -81,6 +88,58 @@ public class ir extends Activity {
             UnzipALL();
         }
     }
+
+    private Spinner spinner;
+    private Spinner spinner2;
+
+    public void prepItemBrandArray()
+    {
+        spinner = ((Spinner)findViewById(R.id.spinner2));
+        ArrayList localArrayList1 = new ArrayList();
+        spinner2 = ((Spinner)findViewById(R.id.spinner));
+        ArrayList localArrayList2 = new ArrayList();
+        for (File localFile1 : new File(this.irpath).listFiles())
+            if (localFile1.isDirectory())
+            {
+                localArrayList1.add(localFile1.getName());
+                for (File localFile2 : new File(localFile1.getPath() + "/").listFiles())
+                    if ((localFile2.isDirectory()) && (localFile2.getName() != null))
+                        localArrayList2.add(localFile2.getName());
+            }
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, localArrayList1);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(dataAdapter);
+
+        ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, localArrayList2);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter2);
+    }
+
+    public void onMainClick(View paramView)
+    {
+        setContentView(R.layout.activity_ir);
+    }
+
+
+    EditText brandN;
+    EditText itemN;
+
+    public void onAddDeviceClick(View paramView)
+    {
+        this.itemN = ((EditText)findViewById(R.id.editText));
+        this.brandN = ((EditText)findViewById(R.id.editText2));
+        File localFile1 = new File(this.irpath + this.brandN.toString());
+        if (!localFile1.isDirectory())
+            localFile1.mkdirs();
+        File localFile2 = new File(this.irpath + this.brandN.toString() + "/" + this.itemN.toString());
+        if (!localFile2.isDirectory())
+            localFile2.mkdirs();
+        Toast.makeText(this, this.irpath + this.brandN.toString() + "/" + this.itemN.toString(), 0).show();
+    }
+
 
     public static boolean fixPermissionsForIr()
     {
@@ -118,26 +177,29 @@ public class ir extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            //setContentView(R.layout.settings);
+            setContentView(R.layout.settings_ir);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    EditText mEdit;
-
-    /*public void onSaveClick(View view)
-    {
-        SharedPreferences irPrefs = getSharedPreferences("irPrefs", MODE_PRIVATE);
-        mEdit   = (EditText)findViewById(R.id.editText);
-        SharedPreferences.Editor e = irPrefs.edit();
-        e.putString("irpath", mEdit.toString()); // add or overwrite someValue
-        e.commit(); // this saves to disk and notifies observers
-    }*/
-
     public String brand;
     public String item;
     public boolean wrt = false;
+
+    public void onAboutClick(View view)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("About");
+        builder.setMessage(getResources().getString(R.string.license1) + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3));
+        builder.setPositiveButton("OK", null);
+        AlertDialog dialog = builder.show();
+
+// Must call show() prior to fetching text view
+        TextView messageView = (TextView)dialog.findViewById(android.R.id.message);
+        messageView.setGravity(Gravity.CENTER);
+    }
+
 
     public void onWrtClick(View view)
     {
