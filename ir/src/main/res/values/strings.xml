@@ -19,7 +19,7 @@
         <string name="Enter">Enter</string>
         <string name="Left">Left</string>
         <string name="Right">Right</string>
-        <string name="Send_signal">Switch to Send mode</string>
+        <string name="Send_signal">Leave Write mode</string>
         <string name="Up">Up</string>
         <string name="VolMn">Vol -</string>
         <string name="VolPl">Vol +</string>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="brand_arrays">
+        <item>sony</item>
+    </string-array>
+
+    <string-array name="item_arrays">
+        <item>tv</item>
+    </string-array>
+
+    <string-array name="button_arrays">
+        <item>tv</item>
+    </string-array>
+
+        <string name="ChanelMn">Канал -</string>
+        <string name="ChanelPl">Канал +</string>
+        <string name="Down">Вниз</string>
+        <string name="Enter">Ввод</string>
+        <string name="Left">Лево</string>
+        <string name="Right">Право</string>
+        <string name="Send_signal">Покинуть режим записи</string>
+        <string name="Up">Вверх</string>
+        <string name="VolMn">Зв. -</string>
+        <string name="VolPl">Зв. +</string>
+        <string name="Write_signal">Перейти в режим записи</string>
+        <string name="action_settings">Настройки</string>
+        <string name="add">Добавить</string>
+        <string name="add_brnd">Добавить новое устройство</string>
+        <string name="app_name">Sony IR Remote</string>
+        <string name="brand">Бренд:</string>
+        <string name="brand_prompt">Выберите бренд устройства</string>
+        <string name="go_back">Назад в главное меню</string>
+        <string name="irpath">/sdcard/ir/</string>
+        <string name="item">Тип:</string>
+        <string name="path">Путь до команд</string>
+        <string name="pwr_btn">Выкл./Вкл.</string>
+        <string name="save">Сохранить</string>
+        <string name="about">О программе</string>
+        <string name="license1">Copyright © 2014 Emil Suleymanov</string>
+        <string name="license2">Распростроняется под GNU GPL v2. Полные условия см. фаил LICENSE.</string>
+        <string name="license3">Исходный код доступен на https://github.com/sssemil/SonyIRRemote .</string>
+        <string name="license4">Используется lib_sony_ir от BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
+    </resources>

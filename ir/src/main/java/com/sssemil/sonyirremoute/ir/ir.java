@@ -101,10 +101,15 @@ public class ir extends Activity {
         for (File localFile1 : new File(this.irpath).listFiles())
             if (localFile1.isDirectory())
             {
-                localArrayList1.add(localFile1.getName());
+                if(!localArrayList1.contains(localFile1.getName())) {
+                    localArrayList1.add(localFile1.getName());
+                }
                 for (File localFile2 : new File(localFile1.getPath() + "/").listFiles())
-                    if ((localFile2.isDirectory()) && (localFile2.getName() != null))
-                        localArrayList2.add(localFile2.getName());
+                    if (localFile2.isDirectory()) {
+                        if (!localArrayList2.contains(localFile2.getName())) {
+                            localArrayList2.add(localFile2.getName());
+                        }
+                    }
             }
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
@@ -138,6 +143,7 @@ public class ir extends Activity {
         if (!localFile2.isDirectory())
             localFile2.mkdirs();
         //Toast.makeText(this, this.irpath + this.brandN.getText().toString() + "/" + this.itemN.getText().toString(), 0).show();
+        prepItemBrandArray();
     }
 
 
@@ -180,26 +186,24 @@ public class ir extends Activity {
             setContentView(R.layout.settings_ir);
             return true;
         }
+        else if (id == R.id.action_about) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("About");
+            builder.setMessage(getResources().getString(R.string.license1) + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3)+ "\n" + getResources().getString(R.string.license4));
+            builder.setPositiveButton("OK", null);
+            AlertDialog dialog = builder.show();
+
+// Must call show() prior to fetching text view
+            TextView messageView = (TextView)dialog.findViewById(android.R.id.message);
+            messageView.setGravity(Gravity.CENTER);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     public String brand;
     public String item;
     public boolean wrt = false;
-
-    public void onAboutClick(View view)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("About");
-        builder.setMessage(getResources().getString(R.string.license1) + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3)+ "\n" + getResources().getString(R.string.license4));
-        builder.setPositiveButton("OK", null);
-        AlertDialog dialog = builder.show();
-
-// Must call show() prior to fetching text view
-        TextView messageView = (TextView)dialog.findViewById(android.R.id.message);
-        messageView.setGravity(Gravity.CENTER);
-    }
-
 
     public void onWrtClick(View view)
     {
