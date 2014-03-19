@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -47,6 +48,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 /**
  * Copyright (c) 2014 Emil Suleymanov
@@ -71,7 +74,7 @@ public class ir extends Activity {
         }).start();
         prepIRKeys();
         prepItemBrandArray();
-
+        cur_ver = "1.5.2";
         /*Timer t = new Timer();
         t.schedule(new TimerTask() {
             @Override
@@ -283,6 +286,9 @@ public class ir extends Activity {
             stopIR();
             System.exit(0);
             return true;
+        } else if (id == R.id.action_update) {
+            update();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -292,8 +298,7 @@ public class ir extends Activity {
     public boolean wrt = false;
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         setContentView(R.layout.activity_ir);
         prepItemBrandArray();
         //super.onBackPressed();
@@ -335,11 +340,11 @@ public class ir extends Activity {
         String[] remove = {"rm", "-rf", irpath + brand + "/" + item};
         try {
             Process p = Runtime.getRuntime().exec(remove);
-            Log.i("rm","Waiting... " + irpath + brand + "/" + item);
+            Log.i("rm", "Waiting... " + irpath + brand + "/" + item);
             p.waitFor();
-            Log.i("rm","Done! " + irpath + brand + "/" + item);
+            Log.i("rm", "Done! " + irpath + brand + "/" + item);
         } catch (Exception e) {
-            Log.e("rm","Failed! " + irpath + brand + "/" + item);
+            Log.e("rm", "Failed! " + irpath + brand + "/" + item);
             e.printStackTrace();
         }
 
@@ -349,11 +354,11 @@ public class ir extends Activity {
             String[] remove2 = {"rm", "-rf", irpath + brand};
             try {
                 Process p2 = Runtime.getRuntime().exec(remove2);
-                Log.i("rm","Waiting... " + irpath + brand);
+                Log.i("rm", "Waiting... " + irpath + brand);
                 p2.waitFor();
-                Log.i("rm","Done! " + irpath + brand);
+                Log.i("rm", "Done! " + irpath + brand);
             } catch (Exception e) {
-                Log.e("rm","Failed! " + irpath + brand);
+                Log.e("rm", "Failed! " + irpath + brand);
                 e.printStackTrace();
             }
         }
@@ -897,6 +902,209 @@ public class ir extends Activity {
     }
 
     public ArrayList<String> ar = new ArrayList<String>();
+    public String last_ver = "zirt";
+    public String cur_ver;
+
+    public String compare(String v1, String v2) {
+        String s1 = normalisedVersion(v1);
+        String s2 = normalisedVersion(v2);
+        int cmp = s1.compareTo(s2);
+        String cmpStr = cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
+        //System.out.printf("'%s' %s '%s'%n", v1, cmpStr, v2);
+        return cmpStr;
+    }
+
+    public static String normalisedVersion(String version) {
+        return normalisedVersion(version, ".", 4);
+    }
+
+    public static String normalisedVersion(String version, String sep, int maxWidth) {
+        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
+        StringBuilder sb = new StringBuilder();
+        for (String s : split) {
+            sb.append(String.format("%" + maxWidth + 's', s));
+        }
+        return sb.toString();
+    }
+
+
+
+    class DownloadApp extends AsyncTask<String, Integer, String> {
+
+        private Context context;
+        private PowerManager.WakeLock mWakeLock;
+
+        public DownloadApp(Context context) {
+            this.context = context;
+        }
+
+        protected String doInBackground(String... sUrl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+            try {
+                Log.v("DownloadApp", "Starting... ");
+                URL url = new URL(sUrl[0]);
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection.getResponseCode()
+                            + " " + connection.getResponseMessage();
+                }
+
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                int fileLength = connection.getContentLength();
+
+                // download the file
+                input = connection.getInputStream();
+                output = new FileOutputStream("/sdcard/upd.apk");
+                Log.v("DownloadApp", "output " + "/sdcard/upd.apk");
+
+                byte data[] = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                        return null;
+                    }
+                    total += count;
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                        publishProgress((int) (total * 100 / fileLength));
+                    output.write(data, 0, count);
+                }
+                Log.v("DownloadApp", "Done!");
+                Log.v("pm", "pm install /sdcard/upd.apk");
+                String[] pm = {"pm", "install -r", "/sdcard/upd.apk"};
+                try {
+                    Runtime.getRuntime().exec(pm);
+                    Log.v("pm", "Done! pm install -r /sdcard/upd.apk");
+                } catch (IOException e) {
+                    Log.e("pm", e.getMessage());
+                }
+            } catch (Exception e) {
+                Log.e("DownloadApp", e.getMessage());
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (IOException ignored) {
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+            }
+            return null;
+        }
+    }
+
+    public void update() {
+        final GetLastVer getLastVer1 = new GetLastVer(ir.this);
+        try {
+            Toast.makeText(this, "last_ver : " + getLastVer1.execute().get() + " cur_ver : " + cur_ver, Toast.LENGTH_SHORT).show();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        String result = compare(cur_ver, last_ver);
+        boolean doUpdate = false;
+        Log.i("Compare", result);
+        if (result == ">") {
+            doUpdate = false;
+        } else if (result == "<") {
+            doUpdate = true;
+        } else if (result == "==") {
+            doUpdate = false;
+        }
+
+        if (doUpdate == true) {
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setTitle("Update");
+            adb.setMessage("New version available!\n\nDo you want to update to a newer version?");
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    mProgressDialog = new ProgressDialog(ir.this);
+                    mProgressDialog.setMessage("Downloading new version...");
+                    mProgressDialog.setIndeterminate(true);
+                    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    mProgressDialog.setCancelable(true);
+
+                    final DownloadApp downloadApp1 = new DownloadApp(ir.this);
+                    downloadApp1.execute("http://sssemil.or.gs/sonyirremote/download.php?v=last");
+
+                    mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            downloadApp1.cancel(true);
+                        }
+                    });
+                } });
+
+            adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+
+                    finish();
+                } });
+            adb.show();
+        } else if (doUpdate == false) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Update");
+            builder.setMessage("You already have the latest version installed!");
+            builder.setPositiveButton("OK", null);
+            AlertDialog dialog = builder.show();
+        }
+    }
+
+    class GetLastVer extends AsyncTask<String, Integer, String> {
+
+        private Context context;
+        private PowerManager.WakeLock mWakeLock;
+
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+
+        public GetLastVer(Context context) {
+            this.context = context;
+        }
+
+        protected String doInBackground(String... sUrl) {
+            try {
+                Log.i("GetLastVer", "Starting with http://sssemil.or.gs/sonyirremote/last.php");
+                HttpGet httppost = new HttpGet("http://sssemil.or.gs/sonyirremote/last.php");
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity ht = response.getEntity();
+
+                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
+
+                InputStream is = buf.getContent();
+
+                BufferedReader r = new BufferedReader(new InputStreamReader(is));
+
+                String line;
+                last_ver = "";
+                while ((line = r.readLine()) != null) {
+                    last_ver += line;
+                }
+                Log.i("GetLastVer", last_ver);
+                return last_ver;
+            } catch (IOException ex) {
+                Log.e("GetLastVer", ex.getMessage());
+                return null;
+            }
+        }
+    }
 
     class GetAwItems extends AsyncTask<String, Integer, String> {
 

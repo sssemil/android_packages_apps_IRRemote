@@ -42,7 +42,7 @@
     <string name="license3">Исходный код доступен на https://github.com/sssemil/SonyIRRemote .</string>
     <string name="license4">Используется lib_sony_ir от BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
 
-    <string name="mute">Без.зв.</string>
+    <string name="mute">Зв.0</string>
     <string name="input">ТВ</string>
     <string name="home">Дом</string>
 
@@ -53,4 +53,5 @@
     <string name="remove">Удалить</string>
 
     <string name="exit">Выход</string>
+    <string name="update">Обновить</string>
 </resources>

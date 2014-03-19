@@ -246,10 +246,9 @@
         android:text="@string/mute"
         android:id="@+id/button22"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/button21"
-        android:layout_alignEnd="@+id/button21"
         android:layout_toRightOf="@+id/button9"
-        android:onClick="onMuteClick" />
+        android:onClick="onMuteClick"
+        android:layout_toLeftOf="@+id/button17" />
 
     <Button
         android:layout_width="wrap_content"
