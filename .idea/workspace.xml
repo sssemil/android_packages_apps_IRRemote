@@ -108,10 +108,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ir.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ir.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ir/src/main/java/com/sssemil/sonyirremoute/ir/ir.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6793169" vertical-offset="4847" max-vertical-offset="16590">
+            <state vertical-scroll-proportion="0.0" vertical-offset="4847" max-vertical-offset="16590">
               <caret line="351" column="57" selection-start="13141" selection-end="13141" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -141,6 +141,16 @@
                 <element signature="e#42028#42029#0" expanded="true" />
                 <element signature="e#42074#42075#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AndroidManifest.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ir/src/main/AndroidManifest.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.3611111" vertical-offset="0" max-vertical-offset="540">
+              <caret line="13" column="34" selection-start="629" selection-end="629" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -878,6 +888,7 @@
         <option value="$PROJECT_DIR$/ir/src/main/res/layout/settings_ir.xml" />
         <option value="$PROJECT_DIR$/ir/src/main/res/layout/activity_ir.xml" />
         <option value="$PROJECT_DIR$/ir/src/main/java/com/sssemil/sonyirremoute/ir/ir.java" />
+        <option value="$PROJECT_DIR$/ir/src/main/AndroidManifest.xml" />
       </list>
     </option>
   </component>
@@ -1368,41 +1379,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ir/src/main/java/com/sssemil/sonyirremoute/ir/ir.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1110" max-vertical-offset="12240">
-          <caret line="74" column="35" selection-start="2072" selection-end="2072" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3782#3890#0" expanded="true" />
-            <element signature="e#3879#3880#0" expanded="true" />
-            <element signature="e#5652#5660#0" expanded="true" />
-            <element signature="e#5930#5938#0" expanded="true" />
-            <element signature="e#7361#7369#0" expanded="true" />
-            <element signature="e#7639#7647#0" expanded="true" />
-            <element signature="e#9690#9698#0" expanded="true" />
-            <element signature="e#10217#10260#0" expanded="true" />
-            <element signature="e#10270#10313#0" expanded="true" />
-            <element signature="e#10323#10366#0" expanded="true" />
-            <element signature="e#10376#10419#0" expanded="true" />
-            <element signature="e#11356#11403#0" expanded="true" />
-            <element signature="e#11601#11647#0" expanded="true" />
-            <element signature="e#35540#35871#0" expanded="true" />
-            <element signature="e#35860#35861#0" expanded="true" />
-            <element signature="e#36701#36889#0" expanded="true" />
-            <element signature="e#36878#36879#0" expanded="true" />
-            <element signature="e#36946#36954#0" expanded="true" />
-            <element signature="e#40503#40711#0" expanded="true" />
-            <element signature="e#40696#40697#0" expanded="true" />
-            <element signature="e#41324#41332#0" expanded="true" />
-            <element signature="e#41634#41821#0" expanded="true" />
-            <element signature="e#41810#41811#0" expanded="true" />
-            <element signature="e#42028#42029#0" expanded="true" />
-            <element signature="e#42074#42075#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ir/src/main/res/layout/settings_ir.xml">
       <provider editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="42" max-vertical-offset="1185">
@@ -2242,7 +2218,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ir/src/main/java/com/sssemil/sonyirremoute/ir/ir.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6793169" vertical-offset="4847" max-vertical-offset="16590">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4847" max-vertical-offset="16590">
           <caret line="351" column="57" selection-start="13141" selection-end="13141" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -2272,6 +2248,14 @@
             <element signature="e#42028#42029#0" expanded="true" />
             <element signature="e#42074#42075#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ir/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3611111" vertical-offset="0" max-vertical-offset="540">
+          <caret line="13" column="34" selection-start="629" selection-end="629" />
+          <folding />
         </state>
       </provider>
     </entry>
