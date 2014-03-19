@@ -45,4 +45,12 @@
     <string name="mute">Mute</string>
     <string name="input">TV</string>
     <string name="home">Home</string>
+
+    <string name="download_brnd">Download or remove device files</string>
+    <string name="download">Download</string>
+    <string name="refresh">Refresh</string>
+
+    <string name="remove">Remove</string>
+
+    <string name="exit">Exit</string>
 </resources>

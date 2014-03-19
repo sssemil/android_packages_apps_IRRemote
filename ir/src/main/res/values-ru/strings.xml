@@ -45,4 +45,12 @@
     <string name="mute">Без.зв.</string>
     <string name="input">ТВ</string>
     <string name="home">Дом</string>
+
+    <string name="download_brnd">Скачать или удалить файлы устройства</string>
+    <string name="download">Скачать</string>
+    <string name="refresh">Обновить</string>
+
+    <string name="remove">Удалить</string>
+
+    <string name="exit">Выход</string>
 </resources>

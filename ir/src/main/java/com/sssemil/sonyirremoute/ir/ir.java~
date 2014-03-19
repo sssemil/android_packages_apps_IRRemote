@@ -11,13 +11,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
-import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,28 +23,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Copyright (c) 2014 Emil Suleymanov
@@ -63,7 +47,6 @@ public class ir extends Activity {
         fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner2));
         spinner2 = ((Spinner) findViewById(R.id.spinner));
-        spinner6 = ((Spinner) findViewById(R.id.spinner6));
         new Thread(new Runnable() {
             public void run() {
                 startIR();
@@ -71,33 +54,13 @@ public class ir extends Activity {
         }).start();
         prepIRKeys();
         prepItemBrandArray();
-
-        /*Timer t = new Timer();
-        t.schedule(new TimerTask() {
-            @Override
+        //SharedPreferences irPrefs = getSharedPreferences("irPrefs", MODE_PRIVATE);
+        //irpath = irPrefs.getString("irpath", "");
+        /*new Thread(new Runnable() {
             public void run() {
-                File f = new File(irpath + brand + "/" + item + "/disable.ini");
-                prepItemBrandArray();
-                if (f.exists()) {
-                    try {
-                        FileInputStream is = new FileInputStream(f);
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                        String line = null;
-                        while ((line = reader.readLine()) != null) {
-                            int id = getResources().getIdentifier(line, "id", null);
-                            button = ((Button) findViewById(id));
-                            button.setEnabled(false);
-                        }
-                        reader.close();
-                        //String ret = convertStreamToString(is);
-                        is.close();
-                        //Toast.makeText(this, ret, Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                IrHelper.getInstance().startIrNative();
             }
-        }, 500);*/
+        }).start();*/
     }
 
     static {
@@ -112,40 +75,20 @@ public class ir extends Activity {
 
     public native int sendKey(String filename);
 
-    private void learnKeyBool(final String filename) {
-        new Thread(new Runnable() {
-            public void run() {
-                learnKey(filename);
-            }
-        }).start();
-    }
 
     public String irpath = "/data/data/com.sssemil.sonyirremoute.ir/ir/";
-
-    public static String convertStreamToString(InputStream is) throws Exception {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line).append("\n");
-        }
-        reader.close();
-        return sb.toString();
-    }
-
-    ProgressDialog progress;
 
     public void prepIRKeys() {
         File f = new File(irpath);
         if (!f.isDirectory()) {
             f.mkdirs();
-            //DownloadALL();
-            //UnzipALL();
+            DownloadALL();
+            UnzipALL();
         }
     }
 
-    Button button;
-    Spinner spinner, spinner2, spinner6;
+    Spinner spinner;
+    Spinner spinner2;
 
     private ArrayList localArrayList1, localArrayList2;
 
@@ -176,6 +119,11 @@ public class ir extends Activity {
             spinner.setAdapter(dataAdapter2);
         }
     }
+
+    public void onMainClick(View paramView) {
+        setContentView(R.layout.activity_ir);
+    }
+
 
     EditText brandN;
     EditText itemN;
@@ -213,8 +161,8 @@ public class ir extends Activity {
             ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList2);
             dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(dataAdapter2);
-        } catch (Exception ex) {
         }
+        catch (Exception ex){}
     }
 
     public static boolean fixPermissionsForIr() {
@@ -253,20 +201,6 @@ public class ir extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             setContentView(R.layout.settings_ir);
-
-            final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-            getAwItems1.execute();
-
-            spinner6 = ((Spinner) findViewById(R.id.spinner6));
-
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner6.setAdapter(dataAdapter);
-
-            Toast.makeText(this, ar.toString(), Toast.LENGTH_SHORT).show();
-
-            prepItemBrandArray();
-
             return true;
         } else if (id == R.id.action_about) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -279,10 +213,6 @@ public class ir extends Activity {
             TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
             messageView.setGravity(Gravity.CENTER);
             return true;
-        } else if (id == R.id.action_exit) {
-            stopIR();
-            System.exit(0);
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -290,14 +220,6 @@ public class ir extends Activity {
     public String brand;
     public String item;
     public boolean wrt = false;
-
-    @Override
-    public void onBackPressed()
-    {
-        setContentView(R.layout.activity_ir);
-        prepItemBrandArray();
-        //super.onBackPressed();
-    }
 
     public void onWrtClick(View view) {
         if (wrt) {
@@ -323,70 +245,6 @@ public class ir extends Activity {
         }
     }
 
-
-    public void onRemoveClick(View view) {
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        brand = spinner.getSelectedItem().toString();
-        Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
-        item = spinner2.getSelectedItem().toString();
-
-        Toast.makeText(this, brand + "/" + item, Toast.LENGTH_SHORT).show();
-
-        String[] remove = {"rm", "-rf", irpath + brand + "/" + item};
-        try {
-            Process p = Runtime.getRuntime().exec(remove);
-            Log.i("rm","Waiting... " + irpath + brand + "/" + item);
-            p.waitFor();
-            Log.i("rm","Done! " + irpath + brand + "/" + item);
-        } catch (Exception e) {
-            Log.e("rm","Failed! " + irpath + brand + "/" + item);
-            e.printStackTrace();
-        }
-
-        File directory = new File(irpath + brand);
-        File[] contents = directory.listFiles();
-        if (contents.length == 0 && contents != null) {
-            String[] remove2 = {"rm", "-rf", irpath + brand};
-            try {
-                Process p2 = Runtime.getRuntime().exec(remove2);
-                Log.i("rm","Waiting... " + irpath + brand);
-                p2.waitFor();
-                Log.i("rm","Done! " + irpath + brand);
-            } catch (Exception e) {
-                Log.e("rm","Failed! " + irpath + brand);
-                e.printStackTrace();
-            }
-        }
-
-
-        /*File dir = new File(irpath + brand + "/" + item);
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                new File(dir, children[i]).delete();
-            }
-        }
-
-        File dir2 = new File(irpath + brand );
-        if (dir2.isDirectory()) {
-            String[] children = dir2.list();
-            if(children.length < 1)
-            {
-                new File(dir2, children[0]).delete();
-            }
-        }*/
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Done!");
-        builder.setMessage("Done removing " + brand + "/" + item + " files!");
-        builder.setPositiveButton("OK", null);
-        AlertDialog dialog = builder.show();
-
-// Must call show() prior to fetching text view
-        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-        messageView.setGravity(Gravity.CENTER);
-    }
-
     public void onPowerClick(View view) {
         if (!wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
@@ -405,7 +263,7 @@ public class ir extends Activity {
 
             Toast.makeText(this, "Power" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
 
-            learnKeyBool(irpath + brand + "/" + item + "/power.bin");
+            learnKey(irpath + brand + "/" + item + "/power.bin");
         }
     }
 
@@ -427,7 +285,7 @@ public class ir extends Activity {
 
             Toast.makeText(this, "ChanelPl" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
 
-            learnKeyBool(irpath + brand + "/" + item + "/chanelPl.bin");
+            learnKey(irpath + brand + "/" + item + "/chanelPl.bin");
         }
     }
 
@@ -447,7 +305,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "ChanelMn" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/chanelMn.bin");
+            learnKey(irpath + brand + "/" + item + "/chanelMn.bin");
         }
     }
 
@@ -467,7 +325,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "VolumePl" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/volPl.bin");
+            learnKey(irpath + brand + "/" + item + "/volPl.bin");
         }
     }
 
@@ -487,7 +345,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "VolumeMn" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/volMn.bin");
+            learnKey(irpath + brand + "/" + item + "/volMn.bin");
         }
     }
 
@@ -507,7 +365,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "1" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/1.bin");
+            learnKey(irpath + brand + "/" + item + "/1.bin");
         }
     }
 
@@ -527,7 +385,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "2" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/2.bin");
+            learnKey(irpath + brand + "/" + item + "/2.bin");
         }
     }
 
@@ -547,7 +405,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "3" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/3.bin");
+            learnKey(irpath + brand + "/" + item + "/3.bin");
         }
     }
 
@@ -567,7 +425,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "4" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/4.bin");
+            learnKey(irpath + brand + "/" + item + "/4.bin");
         }
     }
 
@@ -587,7 +445,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "5" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/5.bin");
+            learnKey(irpath + brand + "/" + item + "/5.bin");
         }
     }
 
@@ -607,7 +465,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "6" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/6.bin");
+            learnKey(irpath + brand + "/" + item + "/6.bin");
         }
     }
 
@@ -627,7 +485,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "7" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/7.bin");
+            learnKey(irpath + brand + "/" + item + "/7.bin");
         }
     }
 
@@ -647,7 +505,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "8" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/8.bin");
+            learnKey(irpath + brand + "/" + item + "/8.bin");
         }
     }
 
@@ -667,7 +525,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "9" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/9.bin");
+            learnKey(irpath + brand + "/" + item + "/9.bin");
         }
     }
 
@@ -687,7 +545,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "0" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/0.bin");
+            learnKey(irpath + brand + "/" + item + "/0.bin");
         }
     }
 
@@ -707,7 +565,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "up" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/up.bin");
+            learnKey(irpath + brand + "/" + item + "/up.bin");
         }
     }
 
@@ -727,7 +585,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "down" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/down.bin");
+            learnKey(irpath + brand + "/" + item + "/down.bin");
         }
     }
 
@@ -747,7 +605,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "left" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/left.bin");
+            learnKey(irpath + brand + "/" + item + "/left.bin");
         }
     }
 
@@ -767,7 +625,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "right" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/right.bin");
+            learnKey(irpath + brand + "/" + item + "/right.bin");
         }
     }
 
@@ -787,7 +645,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "enter" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/enter.bin");
+            learnKey(irpath + brand + "/" + item + "/enter.bin");
         }
     }
 
@@ -808,7 +666,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "mute" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/mute.bin");
+            learnKey(irpath + brand + "/" + item + "/mute.bin");
         }
     }
 
@@ -829,7 +687,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "home" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/home.bin");
+            learnKey(irpath + brand + "/" + item + "/home.bin");
         }
     }
 
@@ -850,43 +708,35 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "input" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-            learnKeyBool(irpath + brand + "/" + item + "/input.bin");
+            learnKey(irpath + brand + "/" + item + "/input.bin");
         }
     }
 
     public void UnzipALL() {
-        progress = ProgressDialog.show(this, "Please wait..",
-                "Extracting files...", true);
+        String zipFile = Environment.getExternalStorageDirectory() + "/ir.zip";
+        String unzipLocation = irpath + "/";
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String zipFile = "/sdcard/sony-tv.zip";
-                String unzipLocation = irpath;
-
-                Decompress d = new Decompress(zipFile, unzipLocation);
-                d.unzip();
-                progress.cancel();
-            }
-        }).start();
+        Decompress d = new Decompress(zipFile, unzipLocation);
+        d.unzip();
     }
-
-    ProgressDialog mProgressDialog;
 
     public void DownloadALL() {
         /*final ProgressDialog mProgressDialog = ProgressDialog.show(ir.this, "Please wait ...", "Downloading keys ...", true);
 
         final DownloadTask downloadTask = new DownloadTask(ir.this);
-        downloadTask.execute("http://sssemil.or.gs/sony-tv.zip");*/
+        downloadTask.execute("http://sssemil.or.gs/sony.zip");*/
+        ProgressDialog mProgressDialog;
 
+// instantiate it within the onCreate method
         mProgressDialog = new ProgressDialog(ir.this);
         mProgressDialog.setMessage("Downloading keys...");
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setCancelable(true);
 
+// execute this when the downloader must be fired
         final DownloadTask downloadTask = new DownloadTask(ir.this);
-        downloadTask.execute("http://sssemil.or.gs/sonyirremote/sony-tv.zip");
+        downloadTask.execute("http://sssemil.or.gs/sonyirremote/sony.zip");
 
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
@@ -896,134 +746,7 @@ public class ir extends Activity {
         });
     }
 
-    public ArrayList<String> ar = new ArrayList<String>();
-
-    class GetAwItems extends AsyncTask<String, Integer, String> {
-
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        public GetAwItems(Context context) {
-            this.context = context;
-        }
-
-        protected String doInBackground(String... sUrl) {
-            try {
-                HttpGet httppost = new HttpGet("http://sssemil.or.gs/sonyirremote/files.txt");
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity ht = response.getEntity();
-
-                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-
-                InputStream is = buf.getContent();
-
-                BufferedReader r = new BufferedReader(new InputStreamReader(is));
-
-                StringBuilder total = new StringBuilder();
-                String line;
-                ar.clear();
-                while ((line = r.readLine()) != null) {
-                    total.append(line + "\n");
-                    ar.add(line);
-                }
-
-                return total.toString();
-            } catch (IOException ex) {
-                return null;
-            }
-        }
-    }
-
-    /*public void prepItemBrandArray() {
-        spinner = ((Spinner) findViewById(R.id.spinner6));
-        ArrayList localArrayList3 = new ArrayList();
-
-        localArrayList1.add(localFile1.getName());
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList3);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner2.setAdapter(dataAdapter);
-    }*/
-
-    public void onDownItemsClick(View view) {
-        spinner6 = ((Spinner) findViewById(R.id.spinner6));
-        String test = spinner6.getSelectedItem().toString();
-        String lastWord = test.substring(test.lastIndexOf(" ") + 1);
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Test");
-        builder.setMessage(lastWord);
-        builder.setPositiveButton("OK", null);
-        AlertDialog dialog = builder.show();
-
-// Must call show() prior to fetching text view
-        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-        messageView.setGravity(Gravity.CENTER);*/
-        if (!lastWord.isEmpty()) {
-            mProgressDialog = new ProgressDialog(ir.this);
-            mProgressDialog.setMessage("Downloading keys...");
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.setCancelable(true);
-
-// execute this when the downloader must be fired
-            final DownloadTask downloadTask = new DownloadTask(ir.this);
-            downloadTask.execute(lastWord);
-            /*mProgressDialog = ProgressDialog.show(this, "Please wait..",
-                    "Extracting files...", true);
-
-            final String fileName = lastWord.substring(lastWord.lastIndexOf("/")+1);
-
-            new Thread(new Runnable() {
-                @Override
-                public void run()
-                {
-                    String zipFile = "/sdcard/"+ fileName;
-                    String unzipLocation = irpath;
-
-                    Decompress d = new Decompress(zipFile, unzipLocation);
-                    d.unzip();
-                    mProgressDialog.cancel();
-                }
-            }).start();*/
-
-            mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    downloadTask.cancel(true);
-                }
-            });
-        }
-    }
-
-    public void onGetAwItemsClick(View view) {
-        mProgressDialog = new ProgressDialog(ir.this);
-        mProgressDialog.setMessage("Getting  list...");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
-
-// execute this when the downloader must be fired
-        final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-        getAwItems1.execute();
-
-        spinner6 = ((Spinner) findViewById(R.id.spinner6));
-
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner6.setAdapter(dataAdapter);
-
-        Toast.makeText(this, ar.toString(), Toast.LENGTH_SHORT).show();
-
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                getAwItems1.cancel(true);
-            }
-        });
-    }
-
-    class DownloadTask extends AsyncTask<String, Integer, String> {
+    private class DownloadTask extends AsyncTask<String, Integer, String> {
 
         private Context context;
         private PowerManager.WakeLock mWakeLock;
@@ -1037,11 +760,7 @@ public class ir extends Activity {
             OutputStream output = null;
             HttpURLConnection connection = null;
             try {
-                Log.v("DownloadTask", "Starting... ");
                 URL url = new URL(sUrl[0]);
-                String filePath = url.getFile();
-                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 
@@ -1058,8 +777,7 @@ public class ir extends Activity {
 
                 // download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/" + fileName);
-                Log.v("DownloadTask", "output " + "/sdcard/" + fileName);
+                output = new FileOutputStream(irpath + "/sony.zip");
 
                 byte data[] = new byte[4096];
                 long total = 0;
@@ -1076,16 +794,7 @@ public class ir extends Activity {
                         publishProgress((int) (total * 100 / fileLength));
                     output.write(data, 0, count);
                 }
-                Log.v("DownloadTask", "Done!");
-                //---------Unzip--------
-                String zipFile = "/sdcard/" + fileName;
-                String unzipLocation = irpath;
-
-                Decompress d = new Decompress(zipFile, unzipLocation);
-                d.unzip();
-                //----------------------
             } catch (Exception e) {
-                Log.e("DownloadTask", e.getMessage());
                 return e.toString();
             } finally {
                 try {
