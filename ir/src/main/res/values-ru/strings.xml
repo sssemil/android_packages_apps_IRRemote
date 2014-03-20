@@ -54,4 +54,15 @@
 
     <string name="exit">Выход</string>
     <string name="update">Обновить</string>
+    <string name="ser3">Сервер недоступен, повторите попытку позже!
+Попробывать с большим тайм-аутом сейчас?</string>
+    <string name="new_version_available">Есть новая версия!
+
+Хотите обновиться до последней версии?</string>
+    <string name="downloading_new">Обновление скачивается...</string>
+    <string name="already_new">Вы уже установили самую последнюю версию!</string>
+    <string name="cancel">Отменить</string>
+    <string name="down_keys">Загрузка ключей...</string>
+    <string name="failed_lk">Не удалось выучить команду! </string>
+    <string name="failed_sk">Не удалось отправить команду! </string>
 </resources>

@@ -7,20 +7,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PowerManager;
-import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,19 +35,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -116,8 +109,7 @@ public class ir extends Activity {
                             e.printStackTrace();
                         }
                     } else {
-                        for(int i = 0; i<25; i++)
-                        {
+                        for (int i = 0; i < 25; i++) {
                             final String btn = "button" + i;
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -156,8 +148,7 @@ public class ir extends Activity {
 
     public native int sendKey(String filename);
 
-    public void errorT(String msg)
-    {
+    public void errorT(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
@@ -166,11 +157,11 @@ public class ir extends Activity {
             public void run() {
                 state = learnKey(filename);
                 Log.i("stateLearn", String.valueOf(state));
-                if(state < 0) {
+                if (state < 0) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            errorT("Failed! - learnKey " + filename);
+                            errorT(getString(R.string.failed_lk) + filename);
                         }
                     });
                 }
@@ -185,11 +176,11 @@ public class ir extends Activity {
             public void run() {
                 state = sendKey(filename);
                 Log.i("stateSend", String.valueOf(state));
-                if(state < 0) {
+                if (state < 0) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            errorT("Failed! - sendKey " + filename);
+                            errorT(getString(R.string.failed_sk) + filename);
                         }
                     });
                 }
@@ -331,6 +322,26 @@ public class ir extends Activity {
         return true;
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public boolean resultat = false;
+    public int numF;
+    public boolean done = false;
+
+    public static String readStream(InputStream in) throws IOException {
+        StringBuffer out = new StringBuffer();
+        byte[] b = new byte[4096];
+        for (int n; (n = in.read(b)) != -1; ) {
+            out.append(new String(b, 0, n));
+        }
+        return out.toString();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -354,7 +365,7 @@ public class ir extends Activity {
             return true;
         } else if (id == R.id.action_about) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("About");
+            builder.setTitle(getString(R.string.about));
             builder.setMessage(getResources().getString(R.string.license1) + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
@@ -1097,62 +1108,79 @@ public class ir extends Activity {
     public void update() {
         final GetLastVer getLastVer1 = new GetLastVer(ir.this);
         try {
-            Toast.makeText(this, "last_ver : " + getLastVer1.execute().get() + " cur_ver : " + cur_ver, Toast.LENGTH_SHORT).show();
+            Log.i("Update","last_ver : " + getLastVer1.execute().get() + " cur_ver : " + cur_ver);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
-        String result = compare(cur_ver, last_ver);
-        boolean doUpdate = false;
-        Log.i("Compare", result);
-        if (result == ">") {
-            doUpdate = false;
-        } else if (result == "<") {
-            doUpdate = true;
-        } else if (result == "==") {
-            doUpdate = false;
-        }
-
-        if (doUpdate == true) {
+        if (last_ver == "zirt") {
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle("Update");
-            adb.setMessage("New version available!\n\nDo you want to update to a newer version?");
+            adb.setTitle(getString(R.string.update));
+            adb.setMessage(getString(R.string.ser3));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    mProgressDialog = new ProgressDialog(ir.this);
-                    mProgressDialog.setMessage("Downloading new version...");
-                    mProgressDialog.setIndeterminate(true);
-                    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    mProgressDialog.setCancelable(true);
-
-                    final DownloadApp downloadApp1 = new DownloadApp(ir.this);
-                    downloadApp1.execute("http://sssemil.or.gs/sonyirremote/download.php?v=last");
-
-                    mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            downloadApp1.cancel(true);
-                        }
-                    });
+                    update();
                 }
             });
 
-            adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-
-                    finish();
+                    //finish();
                 }
             });
             adb.show();
-        } else if (doUpdate == false) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Update");
-            builder.setMessage("You already have the latest version installed!");
-            builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.show();
+        } else {
+            String result = compare(cur_ver, last_ver);
+            boolean doUpdate = false;
+            Log.i("Compare", result);
+            if (result == ">") {
+                doUpdate = false;
+            } else if (result == "<") {
+                doUpdate = true;
+            } else if (result == "==") {
+                doUpdate = false;
+            }
+
+
+            if (doUpdate == true) {
+                AlertDialog.Builder adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.update));
+                adb.setMessage(getString(R.string.new_version_available));
+                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mProgressDialog = new ProgressDialog(ir.this);
+                        mProgressDialog.setMessage(getString(R.string.downloading_new));
+                        mProgressDialog.setIndeterminate(true);
+                        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                        mProgressDialog.setCancelable(true);
+
+                        final DownloadApp downloadApp1 = new DownloadApp(ir.this);
+                        downloadApp1.execute("http://sssemil.or.gs/sonyirremote/download.php?v=last");
+
+                        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                downloadApp1.cancel(true);
+                            }
+                        });
+                    }
+                });
+
+                adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                adb.show();
+            } else if (doUpdate == false) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getString(R.string.update));
+                builder.setMessage(getString(R.string.already_new));
+                builder.setPositiveButton("OK", null);
+                AlertDialog dialog = builder.show();
+            }
         }
     }
 
@@ -1257,7 +1285,7 @@ public class ir extends Activity {
         messageView.setGravity(Gravity.CENTER);*/
         if (!lastWord.isEmpty()) {
             mProgressDialog = new ProgressDialog(ir.this);
-            mProgressDialog.setMessage("Downloading keys...");
+            mProgressDialog.setMessage(getString(R.string.down_keys));
             mProgressDialog.setIndeterminate(true);
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             mProgressDialog.setCancelable(true);

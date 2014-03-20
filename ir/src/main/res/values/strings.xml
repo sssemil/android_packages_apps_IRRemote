@@ -54,4 +54,15 @@
 
     <string name="exit">Exit</string>
     <string name="update">Update</string>
+    <string name="ser3">The Server is unreachable, please try again later!
+Try now?</string>
+    <string name="new_version_available">New version available!
+
+Do you want to update to a newer version?</string>
+    <string name="downloading_new">Downloading new version...</string>
+    <string name="already_new">You already have the latest version installed!</string>
+    <string name="cancel">Cancel</string>
+    <string name="down_keys">Downloading keys...</string>
+    <string name="failed_lk">Failed! - learnKey </string>
+    <string name="failed_sk">Failed! - sendKey </string>
 </resources>
