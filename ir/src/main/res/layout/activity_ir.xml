@@ -164,8 +164,8 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/button21"
         android:layout_above="@+id/button19"
-        android:layout_alignRight="@+id/button18"
-        android:layout_alignEnd="@+id/button18" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -175,7 +175,9 @@
         android:onClick="onDownClick"
         android:layout_alignBottom="@+id/button23"
         android:layout_alignLeft="@+id/button19"
-        android:layout_alignStart="@+id/button19" />
+        android:layout_alignStart="@+id/button19"
+        android:layout_alignRight="@+id/button20"
+        android:layout_alignEnd="@+id/button20" />
 
     <Button
         android:layout_width="wrap_content"
@@ -265,10 +267,12 @@
         android:layout_height="wrap_content"
         android:text="@string/home"
         android:id="@+id/button24"
-        android:layout_below="@+id/button4"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/button6"
-        android:onClick="onHomeClick" />
+        android:onClick="onHomeClick"
+        android:layout_below="@+id/button18"
+        android:layout_alignRight="@+id/spinner"
+        android:layout_alignEnd="@+id/spinner"
+        android:layout_above="@+id/button2"
+        android:layout_alignLeft="@+id/button18"
+        android:layout_alignStart="@+id/button18" />
 
 </RelativeLayout>

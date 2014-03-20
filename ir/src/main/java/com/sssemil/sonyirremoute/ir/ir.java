@@ -5,9 +5,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -74,33 +76,72 @@ public class ir extends Activity {
         }).start();
         prepIRKeys();
         prepItemBrandArray();
-        cur_ver = "1.5.2";
-        /*Timer t = new Timer();
-        t.schedule(new TimerTask() {
-            @Override
+        cur_ver = "1.5.3";
+        Thread thread = new Thread() {
             public void run() {
-                File f = new File(irpath + brand + "/" + item + "/disable.ini");
-                prepItemBrandArray();
-                if (f.exists()) {
-                    try {
-                        FileInputStream is = new FileInputStream(f);
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                        String line = null;
-                        while ((line = reader.readLine()) != null) {
-                            int id = getResources().getIdentifier(line, "id", null);
-                            button = ((Button) findViewById(id));
-                            button.setEnabled(false);
+                Log.i("SonyIRRemote", "new Thread()");
+                File f;
+                while (true) {
+                    f = new File(irpath + brand + "/" + item + "/disable.ini");
+                    /*runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            prepItemBrandArray();
                         }
-                        reader.close();
-                        //String ret = convertStreamToString(is);
-                        is.close();
-                        //Toast.makeText(this, ret, Toast.LENGTH_SHORT).show();
+                    });*/
+                    if (f.exists() && wrt == false) {
+                        try {
+                            FileInputStream is = new FileInputStream(f);
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                            String line = null;
+                            while ((line = reader.readLine()) != null) {
+                                final String finalLine = line;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int id = getResources().getIdentifier(finalLine, "id", "com.sssemil.sonyirremoute.ir");
+                                        //Log.i("SonyIRRemote", "name: " + finalLine + " id: " + id );
+                                        Button button = ((Button) findViewById(id));
+                                        try {
+                                            button.setEnabled(false);
+                                        } catch (Exception ex) {
+                                        }
+                                    }
+                                });
+                            }
+                            reader.close();
+                            //String ret = convertStreamToString(is);
+                            is.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        for(int i = 0; i<25; i++)
+                        {
+                            final String btn = "button" + i;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int id = getResources().getIdentifier(btn, "id", "com.sssemil.sonyirremoute.ir");
+                                    //Log.i("SonyIRRemote", "name: " + finalLine + " id: " + id );
+                                    Button button = ((Button) findViewById(id));
+                                    try {
+                                        button.setEnabled(true);
+                                    } catch (Exception ex) {
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    try {
+                        Thread.sleep(500);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
-        }, 500);*/
+        };
+        thread.start();
     }
 
     static {
@@ -115,10 +156,43 @@ public class ir extends Activity {
 
     public native int sendKey(String filename);
 
+    public void errorT(String msg)
+    {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
     private void learnKeyBool(final String filename) {
         new Thread(new Runnable() {
             public void run() {
-                learnKey(filename);
+                state = learnKey(filename);
+                Log.i("stateLearn", String.valueOf(state));
+                if(state < 0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            errorT("Failed! - learnKey " + filename);
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    public int state = 0;
+
+    private void sendKeyBool(final String filename) {
+        new Thread(new Runnable() {
+            public void run() {
+                state = sendKey(filename);
+                Log.i("stateSend", String.valueOf(state));
+                if(state < 0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            errorT("Failed! - sendKey " + filename);
+                        }
+                    });
+                }
             }
         }).start();
     }
@@ -147,7 +221,7 @@ public class ir extends Activity {
         }
     }
 
-    Button button;
+
     Spinner spinner, spinner2, spinner6;
 
     private ArrayList localArrayList1, localArrayList2;
@@ -157,26 +231,32 @@ public class ir extends Activity {
         localArrayList1 = new ArrayList();
         spinner2 = ((Spinner) findViewById(R.id.spinner));
         localArrayList2 = new ArrayList();
+        boolean edited = false;
+
         for (File localFile1 : new File(this.irpath).listFiles()) {
             if (localFile1.isDirectory()) {
                 if (!localArrayList1.contains(localFile1.getName())) {
                     localArrayList1.add(localFile1.getName());
+                    edited = true;
                 }
                 for (File localFile2 : new File(localFile1.getPath() + "/").listFiles())
                     if (localFile2.isDirectory()) {
                         if (!localArrayList2.contains(localFile2.getName())) {
                             localArrayList2.add(localFile2.getName());
+                            edited = true;
                         }
                     }
             }
 
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner2.setAdapter(dataAdapter);
+            if (edited == true) {
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
+                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner2.setAdapter(dataAdapter);
 
-            ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList2);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(dataAdapter2);
+                ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList2);
+                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(dataAdapter2);
+            }
         }
     }
 
@@ -188,11 +268,14 @@ public class ir extends Activity {
             itemN = ((EditText) findViewById(R.id.editText));
             brandN = ((EditText) findViewById(R.id.editText2));
             File localFile1 = new File(irpath + brandN.getText().toString());
-            if (!localFile1.isDirectory())
+            if (!localFile1.isDirectory()) {
                 localFile1.mkdirs();
+            }
             File localFile2 = new File(irpath + brandN.getText().toString() + "/" + itemN.getText().toString());
-            if (!localFile2.isDirectory())
+            if (!localFile2.isDirectory()) {
                 localFile2.mkdirs();
+            }
+            prepItemBrandArray();
             //Toast.makeText(this, this.irpath + this.brandN.getText().toString() + "/" + this.itemN.getText().toString(), 0).show();
 
         } catch (Exception ex) {
@@ -265,8 +348,6 @@ public class ir extends Activity {
             ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
             dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner6.setAdapter(dataAdapter);
-
-            Toast.makeText(this, ar.toString(), Toast.LENGTH_SHORT).show();
 
             prepItemBrandArray();
 
@@ -401,7 +482,7 @@ public class ir extends Activity {
 
             Toast.makeText(this, "Power" + brand, Toast.LENGTH_SHORT).show();
 
-            sendKey(irpath + brand + "/" + item + "/power.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/power.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -423,7 +504,7 @@ public class ir extends Activity {
 
             Toast.makeText(this, "ChanelPl" + brand, Toast.LENGTH_SHORT).show();
 
-            sendKey(irpath + brand + "/" + item + "/chanelPl.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/chanelPl.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -444,7 +525,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "ChanelMn" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/chanelMn.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/chanelMn.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -464,7 +545,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "VolumePl" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/volPl.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/volPl.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -484,7 +565,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "VolumeMn" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/volMn.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/volMn.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -504,7 +585,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "1" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/1.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/1.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -524,7 +605,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "2" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/2.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/2.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -544,7 +625,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "3" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/3.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/3.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -564,7 +645,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "4" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/4.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/4.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -584,7 +665,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "5" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/5.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/5.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -604,7 +685,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "6" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/6.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/6.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -624,7 +705,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "7" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/7.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/7.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -644,7 +725,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "8" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/8.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/8.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -664,7 +745,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "9" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/9.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/9.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -684,7 +765,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "0" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/0.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/0.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -704,7 +785,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "up" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/up.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/up.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -724,7 +805,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "down" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/down.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/down.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -744,7 +825,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "left" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/left.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/left.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -764,7 +845,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "right" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/right.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/right.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -784,7 +865,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "enter" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/enter.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/enter.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -805,7 +886,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "mute" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/mute.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/mute.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -826,7 +907,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "home" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/home.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/home.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -847,7 +928,7 @@ public class ir extends Activity {
             item = spinner2.getSelectedItem().toString();
 
             Toast.makeText(this, "input" + brand, Toast.LENGTH_SHORT).show();
-            sendKey(irpath + brand + "/" + item + "/input.bin");
+            sendKeyBool(irpath + brand + "/" + item + "/input.bin");
         } else if (wrt) {
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             brand = spinner.getSelectedItem().toString();
@@ -928,7 +1009,6 @@ public class ir extends Activity {
     }
 
 
-
     class DownloadApp extends AsyncTask<String, Integer, String> {
 
         private Context context;
@@ -981,14 +1061,20 @@ public class ir extends Activity {
                     output.write(data, 0, count);
                 }
                 Log.v("DownloadApp", "Done!");
-                Log.v("pm", "pm install /sdcard/upd.apk");
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(new File("/sdcard/upd.apk")), "application/vnd.android.package-archive");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+                /*Log.v("pm", "pm install /sdcard/upd.apk");
                 String[] pm = {"pm", "install -r", "/sdcard/upd.apk"};
                 try {
                     Runtime.getRuntime().exec(pm);
                     Log.v("pm", "Done! pm install -r /sdcard/upd.apk");
                 } catch (IOException e) {
                     Log.e("pm", e.getMessage());
-                }
+                }*/
             } catch (Exception e) {
                 Log.e("DownloadApp", e.getMessage());
                 return e.toString();
@@ -1051,13 +1137,15 @@ public class ir extends Activity {
                             downloadApp1.cancel(true);
                         }
                     });
-                } });
+                }
+            });
 
             adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
 
                     finish();
-                } });
+                }
+            });
             adb.show();
         } else if (doUpdate == false) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
