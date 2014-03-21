@@ -1,4 +1,4 @@
-package com.sssemil.sonyirremoute.ir;
+package com.sssemil.sonyirremote.ir;
 
 import android.util.Log;
 import java.io.File; 

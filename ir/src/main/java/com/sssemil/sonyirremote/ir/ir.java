@@ -1,4 +1,4 @@
-package com.sssemil.sonyirremoute.ir;
+package com.sssemil.sonyirremote.ir;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,7 +6,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,6 +17,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -70,6 +74,7 @@ public class ir extends Activity {
         prepIRKeys();
         prepItemBrandArray();
         cur_ver = "1.5.3";
+        firstRunChecker();
         Thread thread = new Thread() {
             public void run() {
                 Log.i("SonyIRRemote", "new Thread()");
@@ -92,7 +97,7 @@ public class ir extends Activity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        int id = getResources().getIdentifier(finalLine, "id", "com.sssemil.sonyirremoute.ir");
+                                        int id = getResources().getIdentifier(finalLine, "id", "com.sssemil.sonyirremote.ir");
                                         //Log.i("SonyIRRemote", "name: " + finalLine + " id: " + id );
                                         Button button = ((Button) findViewById(id));
                                         try {
@@ -114,7 +119,7 @@ public class ir extends Activity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    int id = getResources().getIdentifier(btn, "id", "com.sssemil.sonyirremoute.ir");
+                                    int id = getResources().getIdentifier(btn, "id", "com.sssemil.sonyirremote.ir");
                                     //Log.i("SonyIRRemote", "name: " + finalLine + " id: " + id );
                                     Button button = ((Button) findViewById(id));
                                     try {
@@ -136,8 +141,35 @@ public class ir extends Activity {
         thread.start();
     }
 
+    public static final String PREFS_NAME = "SIRR";
+
+    public void firstRunChecker() {
+        boolean isFirstRun = true;
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        if (!settings.contains("isFirstRun")) {
+            isFirstRun = true;
+        } else {
+            isFirstRun = settings.getBoolean("isFirstRun", false);
+        }
+        if (isFirstRun) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.welcome));
+            builder.setMessage(getString(R.string.fr));
+            builder.setPositiveButton("OK", null);
+            AlertDialog dialog = builder.show();
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean("isFirstRun", false);
+            editor.commit();
+        }
+    }
+
     static {
         System.loadLibrary("jni_sonyopenir");
+    }
+
+    public void restartIR() {
+        stopIR();
+        startIR();
     }
 
     public native int startIR();
@@ -155,6 +187,7 @@ public class ir extends Activity {
     private void learnKeyBool(final String filename) {
         new Thread(new Runnable() {
             public void run() {
+                restartIR();
                 state = learnKey(filename);
                 Log.i("stateLearn", String.valueOf(state));
                 if (state < 0) {
@@ -188,7 +221,7 @@ public class ir extends Activity {
         }).start();
     }
 
-    public String irpath = "/data/data/com.sssemil.sonyirremoute.ir/ir/";
+    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";
 
     public static String convertStreamToString(InputStream is) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -366,7 +399,15 @@ public class ir extends Activity {
         } else if (id == R.id.action_about) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.about));
-            builder.setMessage(getResources().getString(R.string.license1) + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
+            PackageInfo pInfo = null;
+            String version = "?";
+            try {
+                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            version = pInfo.versionName;
+            builder.setMessage(getResources().getString(R.string.license1) + " v" + version + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
 
@@ -389,8 +430,18 @@ public class ir extends Activity {
     public String item;
     public boolean wrt = false;
 
+    long lastPress;
+
     @Override
     public void onBackPressed() {
+        long currentTime = System.currentTimeMillis();
+        if(currentTime - lastPress > 5000){
+            Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_LONG).show();
+            lastPress = currentTime;
+        }else{
+            stopIR();
+            super.onBackPressed();
+        }
         setContentView(R.layout.activity_ir);
         prepItemBrandArray();
         //super.onBackPressed();
@@ -1108,7 +1159,7 @@ public class ir extends Activity {
     public void update() {
         final GetLastVer getLastVer1 = new GetLastVer(ir.this);
         try {
-            Log.i("Update","last_ver : " + getLastVer1.execute().get() + " cur_ver : " + cur_ver);
+            Log.i("Update", "last_ver : " + getLastVer1.execute().get() + " cur_ver : " + cur_ver);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -1179,7 +1230,7 @@ public class ir extends Activity {
                 builder.setTitle(getString(R.string.update));
                 builder.setMessage(getString(R.string.already_new));
                 builder.setPositiveButton("OK", null);
-                AlertDialog dialog = builder.show();
+                builder.show();
             }
         }
     }

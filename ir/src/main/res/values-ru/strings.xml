@@ -38,7 +38,7 @@
     <string name="save">Сохранить</string>
     <string name="about">О программе</string>
     <string name="license1">Copyright © 2014 Emil Suleymanov</string>
-    <string name="license2">Распростроняется под GNU GPL v2. Полные условия см. фаил LICENSE.</string>
+    <string name="license2">Распростроняется под GNU GPL v2.</string>
     <string name="license3">Исходный код доступен на https://github.com/sssemil/SonyIRRemote .</string>
     <string name="license4">Используется lib_sony_ir от BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
 
@@ -65,4 +65,9 @@
     <string name="down_keys">Загрузка ключей...</string>
     <string name="failed_lk">Не удалось выучить команду! </string>
     <string name="failed_sk">Не удалось отправить команду! </string>
+    <string name="fr">Спасибо за установку моего приложения!
+Чтобы начать пользоваться, зайдите в настройки и скачайте файлы вашего телевизора или чего-либо еще. Если вы не можете найти ваше устройство, вы можете записать команды самостоятельно, просто добавив новое устройство в настройках.
+Спасибо!
+    ВАЖНО: Это приложение находится на стадии разрабодки и было проверено на устройстве Sony Xperia ZL(odin) с прошивкой CyanogenMod 11!</string>
+    <string name="welcome">Добро пожаловать!</string>
 </resources>
