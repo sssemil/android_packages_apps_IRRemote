@@ -73,7 +73,14 @@ public class ir extends Activity {
         }).start();
         prepIRKeys();
         prepItemBrandArray();
-        cur_ver = "1.5.3";
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            cur_ver = pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        cur_ver = pInfo.versionName;
         firstRunChecker();
         Thread thread = new Thread() {
             public void run() {
