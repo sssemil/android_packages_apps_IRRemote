@@ -59,10 +59,10 @@
     <string name="new_version_available">Есть новая версия!
 
 Хотите обновиться до последней версии?</string>
-    <string name="downloading_new">Обновление скачивается...</string>
+    <string name="downloading_new">Обновление скачивается…</string>
     <string name="already_new">Вы уже установили самую последнюю версию!</string>
     <string name="cancel">Отменить</string>
-    <string name="down_keys">Загрузка ключей...</string>
+    <string name="down_keys">Загрузка ключей…</string>
     <string name="failed_lk">Не удалось выучить команду! </string>
     <string name="failed_sk">Не удалось отправить команду! </string>
     <string name="fr">Спасибо за установку моего приложения!
@@ -70,4 +70,14 @@
 Спасибо!
     ВАЖНО: Это приложение находится на стадии разрабодки и было проверено на устройстве Sony Xperia ZL(odin) с прошивкой CyanogenMod 11!</string>
     <string name="welcome">Добро пожаловать!</string>
+    <string name="una">1</string>
+    <string name="dos">2</string>
+    <string name="tres">3</string>
+    <string name="cuatro">4</string>
+    <string name="cinco">5</string>
+    <string name="seis">6</string>
+    <string name="ocho">8</string>
+    <string name="nueve">9</string>
+    <string name="cero">0</string>
+    <string name="siete">7</string>
 </resources>

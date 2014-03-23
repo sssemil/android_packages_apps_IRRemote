@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -442,10 +441,10 @@ public class ir extends Activity {
     @Override
     public void onBackPressed() {
         long currentTime = System.currentTimeMillis();
-        if(currentTime - lastPress > 5000){
+        if (currentTime - lastPress > 5000) {
             Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_LONG).show();
             lastPress = currentTime;
-        }else{
+        } else {
             stopIR();
             super.onBackPressed();
         }
