@@ -82,4 +82,8 @@
     <string name="siete">7</string>
     <string name="done">Все!</string>
     <string name="downloadT">Загрузка</string>
+    <string name="error">Ошибка</string>
+    <string name="done_removing">Завершилось удаление </string>
+    <string name="files"> файлов!</string>
+    <string name="you_need_to_select">You need to select an option first!</string>
 </resources>

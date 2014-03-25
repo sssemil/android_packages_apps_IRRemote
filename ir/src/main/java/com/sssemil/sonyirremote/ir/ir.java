@@ -83,7 +83,6 @@ public class ir extends Activity {
         firstRunChecker();
         Thread thread = new Thread() {
             public void run() {
-                Log.i("SonyIRRemote", "new Thread()");
                 File f;
                 while (true) {
                     f = new File(irpath + brand + "/" + item + "/disable.ini");
@@ -104,7 +103,6 @@ public class ir extends Activity {
                                     @Override
                                     public void run() {
                                         int id = getResources().getIdentifier(finalLine, "id", "com.sssemil.sonyirremote.ir");
-                                        //Log.i("SonyIRRemote", "name: " + finalLine + " id: " + id );
                                         Button button = ((Button) findViewById(id));
                                         try {
                                             button.setEnabled(false);
@@ -114,7 +112,6 @@ public class ir extends Activity {
                                 });
                             }
                             reader.close();
-                            //String ret = convertStreamToString(is);
                             is.close();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -126,7 +123,6 @@ public class ir extends Activity {
                                 @Override
                                 public void run() {
                                     int id = getResources().getIdentifier(btn, "id", "com.sssemil.sonyirremote.ir");
-                                    //Log.i("SonyIRRemote", "name: " + finalLine + " id: " + id );
                                     Button button = ((Button) findViewById(id));
                                     try {
                                         button.setEnabled(true);
@@ -195,7 +191,6 @@ public class ir extends Activity {
             public void run() {
                 restartIR();
                 state = learnKey(filename);
-                Log.i("stateLearn", String.valueOf(state));
                 if (state < 0) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -214,7 +209,6 @@ public class ir extends Activity {
         new Thread(new Runnable() {
             public void run() {
                 state = sendKey(filename);
-                Log.i("stateSend", String.valueOf(state));
                 if (state < 0) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -246,8 +240,6 @@ public class ir extends Activity {
         File f = new File(irpath);
         if (!f.isDirectory()) {
             f.mkdirs();
-            //DownloadALL();
-            //UnzipALL();
         }
     }
 
@@ -297,7 +289,6 @@ public class ir extends Activity {
         try {
             itemN = ((EditText) findViewById(R.id.editText));
             brandN = ((EditText) findViewById(R.id.editText2));
-            Log.i(itemN.toString(), brandN.toString());
             File localFile1 = new File(irpath + brandN.getText().toString());
             if (!localFile1.isDirectory()) {
                 localFile1.mkdirs();
@@ -330,8 +321,8 @@ public class ir extends Activity {
             spinner.setAdapter(dataAdapter2);
         } catch (NullPointerException ex) {
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle("Error");
-            adb.setMessage("You need to type an option first!");
+            adb.setTitle(getString(R.string.error));
+            adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -363,8 +354,6 @@ public class ir extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.ir, menu);
         return true;
     }
@@ -391,9 +380,6 @@ public class ir extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             setContentView(R.layout.settings_ir);
@@ -425,7 +411,6 @@ public class ir extends Activity {
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
 
-// Must call show() prior to fetching text view
             TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
             messageView.setGravity(Gravity.CENTER);
             return true;
@@ -458,7 +443,6 @@ public class ir extends Activity {
         }
         setContentView(R.layout.activity_ir);
         prepItemBrandArray();
-        //super.onBackPressed();
     }
 
     public void onWrtClick(View view) {
@@ -521,8 +505,8 @@ public class ir extends Activity {
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Done!");
-            builder.setMessage("Done removing " + brand + "/" + item + " files!");
+            builder.setTitle(getString(R.string.done));
+            builder.setMessage(getString(R.string.done_removing) + brand + "/" + item + getString(R.string.files));
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
 
@@ -530,8 +514,8 @@ public class ir extends Activity {
             messageView.setGravity(Gravity.CENTER);
         } catch (NullPointerException ex) {
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle("Error");
-            adb.setMessage("You need to select an option first!");
+            adb.setTitle(getString(R.string.error));
+            adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -1027,29 +1011,6 @@ public class ir extends Activity {
 
     ProgressDialog mProgressDialog;
 
-    public void DownloadALL() {
-        /*final ProgressDialog mProgressDialog = ProgressDialog.show(ir.this, "Please wait ...", "Downloading keys ...", true);
-
-        final DownloadTask downloadTask = new DownloadTask(ir.this);
-        downloadTask.execute("http://sssemil.or.gs/sony-tv.zip");*/
-
-        mProgressDialog = new ProgressDialog(ir.this);
-        mProgressDialog.setMessage("Downloading keys...");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
-
-        final DownloadTask downloadTask = new DownloadTask(ir.this);
-        downloadTask.execute("http://sssemil.or.gs/sonyirremote/sony-tv.zip");
-
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                downloadTask.cancel(true);
-            }
-        });
-    }
-
     public ArrayList<String> ar = new ArrayList<String>();
     public String last_ver = "zirt";
     public String cur_ver;
@@ -1059,7 +1020,6 @@ public class ir extends Activity {
         String s2 = normalisedVersion(v2);
         int cmp = s1.compareTo(s2);
         String cmpStr = cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
-        //System.out.printf("'%s' %s '%s'%n", v1, cmpStr, v2);
         return cmpStr;
     }
 
@@ -1134,15 +1094,6 @@ public class ir extends Activity {
                 intent.setDataAndType(Uri.fromFile(new File("/sdcard/upd.apk")), "application/vnd.android.package-archive");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-
-                /*Log.v("pm", "pm install /sdcard/upd.apk");
-                String[] pm = {"pm", "install -r", "/sdcard/upd.apk"};
-                try {
-                    Runtime.getRuntime().exec(pm);
-                    Log.v("pm", "Done! pm install -r /sdcard/upd.apk");
-                } catch (IOException e) {
-                    Log.e("pm", e.getMessage());
-                }*/
             } catch (Exception e) {
                 Log.e("DownloadApp", e.getMessage());
                 return e.toString();
@@ -1191,7 +1142,6 @@ public class ir extends Activity {
         } else {
             String result = compare(cur_ver, last_ver);
             boolean doUpdate = false;
-            Log.i("Compare", result);
             if (result == ">") {
                 doUpdate = false;
             } else if (result == "<") {
@@ -1318,16 +1268,6 @@ public class ir extends Activity {
         }
     }
 
-    /*public void prepItemBrandArray() {
-        spinner = ((Spinner) findViewById(R.id.spinner6));
-        ArrayList localArrayList3 = new ArrayList();
-
-        localArrayList1.add(localFile1.getName());
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList3);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner2.setAdapter(dataAdapter);
-    }*/
-
     String resp = "ko";
     String lastWord, test;
     boolean cont = false;
@@ -1341,8 +1281,8 @@ public class ir extends Activity {
         } catch (NullPointerException ex) {
             cont = false;
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle("Error");
-            adb.setMessage("You need to select an option first!");
+            adb.setTitle(getString(R.string.error));
+            adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -1412,33 +1352,6 @@ public class ir extends Activity {
 
     public void onDownItemsClick(View view) {
         doOnDown();
-    }
-
-    public void onGetAwItemsClick(View view) {
-        mProgressDialog = new ProgressDialog(ir.this);
-        mProgressDialog.setMessage("Getting  list...");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
-
-// execute this when the downloader must be fired
-        final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-        getAwItems1.execute();
-
-        spinner6 = ((Spinner) findViewById(R.id.spinner6));
-
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner6.setAdapter(dataAdapter);
-
-        Toast.makeText(this, ar.toString(), Toast.LENGTH_SHORT).show();
-
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                getAwItems1.cancel(true);
-            }
-        });
     }
 
     class DownloadTask extends AsyncTask<String, Integer, String> {
