@@ -148,7 +148,7 @@ public class ir extends Activity {
 
     public static final String PREFS_NAME = "SIRR";
     public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";
-    public String http_path_root = "http://192.168.1.4/sonyirremote/";
+    public String http_path_root = "http://sssemil.or.gs/sonyirremote/";
     public String http_path_root2 = "https://raw.githubusercontent.com/sssemil/SonyIRRemote/gh-pages/sonyirremote/";
 
     public void firstRunChecker() {
