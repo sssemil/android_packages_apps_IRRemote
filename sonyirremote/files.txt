@@ -1,2 +1,2 @@
-sony tv http://sssemil.or.gs/sonyirremote/sony-tv.zip
-philips tv http://sssemil.or.gs/sonyirremote/philips-tv.zip
+sony tv https://github.com/sssemil/SonyIRRemote/raw/gh-pages/sonyirremote/sony-tv.zip
+philips tv https://github.com/sssemil/SonyIRRemote/raw/gh-pages/sonyirremote/philips-tv.zip
