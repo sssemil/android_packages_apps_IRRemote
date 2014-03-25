@@ -1,3 +1,3 @@
+philips-tvshka https://github.com/sssemil/SonyIRRemote/raw/gh-pages/sonyirremote/philips-tvshka.zip
 sony-tv https://github.com/sssemil/SonyIRRemote/raw/gh-pages/sonyirremote/sony-tv.zip
 philips-tv https://github.com/sssemil/SonyIRRemote/raw/gh-pages/sonyirremote/philips-tv.zip
-philips-tvshka https://github.com/sssemil/SonyIRRemote/raw/gh-pages/sonyirremote/philips-tvshka.zip
