@@ -81,18 +81,6 @@
         android:layout_alignTop="@+id/textView4">
 
 
-        <Spinner
-            android:layout_width="169dp"
-            android:layout_height="70dp"
-            android:id="@+id/spinner2"
-            android:layout_gravity="left|bottom" />
-
-        <Spinner
-            android:layout_width="216dp"
-            android:layout_height="70dp"
-            android:id="@+id/spinner"
-            android:layout_gravity="center_horizontal|bottom" />
-
         <Button
             android:layout_width="106dp"
             android:layout_height="65dp"
@@ -111,9 +99,15 @@
 
         <Spinner
             android:layout_width="461dp"
-            android:layout_height="70dp"
+            android:layout_height="65dp"
             android:id="@+id/spinner6"
             android:layout_gravity="left|top" />
+
+        <Spinner
+            android:layout_width="461dp"
+            android:layout_height="65dp"
+            android:id="@+id/spinner"
+            android:layout_gravity="left|bottom" />
 
 
     </FrameLayout>

@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string-array name="brand_arrays">
-        <item>sony</item>
-    </string-array>
-
-    <string-array name="item_arrays">
-        <item>tv</item>
-    </string-array>
-
-    <string-array name="button_arrays">
-        <item>tv</item>
-    </string-array>
-
+    <string name="one" translatable="false">1</string>
+    <string name="two" translatable="false">2</string>
+    <string name="tree" translatable="false">3</string>
+    <string name="four" translatable="false">4</string>
+    <string name="five" translatable="false">5</string>
+    <string name="six" translatable="false">6</string>
+    <string name="seven" translatable="false">7</string>
+    <string name="eight" translatable="false">8</string>
+    <string name="nine" translatable="false">9</string>
+    <string name="zero" translatable="false">0</string>
     <string name="ChanelMn">Chanel -</string>
     <string name="ChanelPl">Chanel +</string>
     <string name="Down">Down</string>
@@ -31,7 +28,6 @@
     <string name="brand">Brand:</string>
     <string name="brand_prompt">Choose your TV`s brand</string>
     <string name="go_back">Back to main menu</string>
-    <string name="irpath">/sdcard/ir/</string>
     <string name="item">Type:</string>
     <string name="path">Path to keys</string>
     <string name="pwr_btn">Power ON/OFF</string>
@@ -62,7 +58,7 @@ Do you want to update to a newer version?</string>
     <string name="downloading_new">Downloading new version…</string>
     <string name="already_new">You already have the latest version installed!</string>
     <string name="cancel">Cancel</string>
-    <string name="down_keys">Downloading keys…</string>
+    <string name="down_keys">Downloading buttons base…</string>
     <string name="failed_lk">Failed! - learnKey </string>
     <string name="failed_sk">Failed! - sendKey </string>
     <string name="fr">Thanks for installing my app!
@@ -71,20 +67,15 @@ Thanks!
     NOTE: This app is under development and it was tested only on Sony Xperia ZL(odin) running CyanogenMod 11!</string>
 
     <string name="welcome">Welcome!</string>
-    <string name="una">1</string>
-    <string name="dos">2</string>
-    <string name="tres">3</string>
-    <string name="cuatro">4</string>
-    <string name="cinco">5</string>
-    <string name="seis">6</string>
-    <string name="ocho">8</string>
-    <string name="nueve">9</string>
-    <string name="cero">0</string>
-    <string name="siete">7</string>
     <string name="done">Done!</string>
     <string name="downloadT">Download</string>
     <string name="error">Error</string>
     <string name="done_removing">Done removing </string>
     <string name="files"> files!</string>
     <string name="you_need_to_select">You need to select an option first!</string>
+    <string name="waiting_for_signal">Waiting for signal to learn…</string>
+    <string name="warning">Warning!</string><string name="alredy_exists">The command you are trying to write already exists! By doing this you will overwrite existing command!
+
+Do you want to continue?</string>
+    <string name="not_exists">The command for this button does not exists! Do you want to write it now?</string>
 </resources>

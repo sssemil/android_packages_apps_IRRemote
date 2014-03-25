@@ -22,7 +22,8 @@ public class Decompress {
     _dirChecker(""); 
   } 
  
-  public void unzip() { 
+  public void unzip() {
+    Log.v("Decompress", "Starting... ");
     try  { 
       FileInputStream fin = new FileInputStream(_zipFile); 
       ZipInputStream zin = new ZipInputStream(fin); 
@@ -43,11 +44,11 @@ public class Decompress {
         } 
          
       } 
-      zin.close(); 
+      zin.close();
+      Log.v("Decompress", "Done! ");
     } catch(Exception e) { 
       Log.e("Decompress", "unzip", e); 
-    } 
- 
+    }
   } 
  
   private void _dirChecker(String dir) { 
