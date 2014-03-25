@@ -81,4 +81,6 @@ Thanks!
     <string name="nueve">9</string>
     <string name="cero">0</string>
     <string name="siete">7</string>
+    <string name="done">Done!</string>
+    <string name="downloadT">Download</string>
 </resources>
