@@ -78,4 +78,5 @@ Thanks!
 
 Do you want to continue?</string>
     <string name="not_exists">The command for this button does not exists! Do you want to write it now?</string>
+    <string name="non_zero">Failed! Non-zero exit status returned!</string>
 </resources>

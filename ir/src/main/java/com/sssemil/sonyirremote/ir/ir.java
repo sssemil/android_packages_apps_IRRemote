@@ -82,7 +82,7 @@ public class ir extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ir);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        fixPermissionsForIr();
+        //fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner));
         spinner6 = ((Spinner) findViewById(R.id.spinner6));
         new Thread(new Runnable() {
@@ -265,26 +265,54 @@ public class ir extends Activity {
 
     private void sendKeyBool(final String filename) {
         File to = new File(filename);
-        if (!to.exists()) {
-            AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
-            adb1.setTitle(getString(R.string.warning));
-            adb1.setMessage(getString(R.string.not_exists));
-            adb1.setIcon(android.R.drawable.ic_dialog_alert);
-            adb1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    startLearning(filename);
-                }
-            });
+        spinner = ((Spinner) findViewById(R.id.spinner));
+        if( spinner.getSelectedItem() != null) {
+            if (!to.exists()) {
+                AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
+                adb1.setTitle(getString(R.string.warning));
+                adb1.setMessage(getString(R.string.not_exists));
+                adb1.setIcon(android.R.drawable.ic_dialog_alert);
+                adb1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startLearning(filename);
+                    }
+                });
 
-            adb1.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
+                adb1.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
 
-                }
-            });
-            adb1.show();
-        } else {
-            sendAction(filename);
+                    }
+                });
+                adb1.show();
+            } else {
+                sendAction(filename);
+            }
         }
+        else {
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setTitle(getString(R.string.error));
+            adb.setMessage(getString(R.string.you_need_to_select));
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            adb.show();
+        }
+
+    }
+
+    public void alert(String msg)
+    {
+        AlertDialog.Builder errorD = new AlertDialog.Builder(this);
+        errorD.setTitle(getString(R.string.error));
+        errorD.setMessage(msg);
+        errorD.setIcon(android.R.drawable.ic_dialog_alert);
+        errorD.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        errorD.show();
     }
 
     public void sendAction(final String filename) {
@@ -295,7 +323,7 @@ public class ir extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            errorT(getString(R.string.failed_sk) + filename);
+                            alert(getString(R.string.non_zero));
                         }
                     });
                 }
@@ -324,7 +352,8 @@ public class ir extends Activity {
             }
 
             if (edited) {
-                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                        android.R.layout.simple_spinner_item, localArrayList1);
                 dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(dataAdapter);
             }
@@ -361,6 +390,7 @@ public class ir extends Activity {
     }
 
     public static boolean fixPermissionsForIr() {
+        //TODO add all this to ramdisk
         // IR Paths
         String[] irEnable = {"su", "-c", "chown system:sdcard_rw /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
         String[] enablePermissions = {"su", "-c", "chmod 220 /sys/devices/platform/ir_remote_control/enable"};
