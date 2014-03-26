@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -55,6 +54,29 @@ import java.util.regex.Pattern;
 
 public class ir extends Activity {
 
+    public static final String PREFS_NAME = "SIRR";
+    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
+    public String http_path_root2 = "https://raw.githubusercontent.com/sssemil/SonyIRRemote/gh-pages/sonyirremote/";
+    public String http_path_last_download1 = "https://github.com/sssemil/SonyIRRemote/blob/gh-pages/sonyirremote/apk/SonyIRRemote-v";
+    public String http_path_last_download2 = ".apk?raw=true";
+    public int state = 0;
+    Spinner spinner, spinner6;
+    private ArrayList localArrayList1;
+    EditText brandN, itemN;
+    boolean main = true;
+    public String brand;
+    public String item;
+    public boolean wrt = false;
+    long lastPress;
+    ProgressDialog mProgressDialog;
+    public ArrayList<String> ar = new ArrayList<String>();
+    public String last_ver = "zirt";
+    public String cur_ver;
+    String resp = "ko";
+    String lastWord, test;
+    boolean cont = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +105,7 @@ public class ir extends Activity {
             public void run() {
                 File f;
                 while (true) {
-                    if(main) {
+                    if (main) {
                         try {
                             spinner = (Spinner) findViewById(R.id.spinner);
                             item = spinner.getSelectedItem().toString();
@@ -98,7 +120,8 @@ public class ir extends Activity {
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                int id = getResources().getIdentifier(finalLine, "id", "com.sssemil.sonyirremote.ir");
+                                                int id = getResources().getIdentifier(finalLine,
+                                                        "id", "com.sssemil.sonyirremote.ir");
                                                 Button button = ((Button) findViewById(id));
                                                 try {
                                                     button.setEnabled(false);
@@ -120,7 +143,8 @@ public class ir extends Activity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            int id = getResources().getIdentifier(btn, "id", "com.sssemil.sonyirremote.ir");
+                                            int id = getResources().getIdentifier(btn,
+                                                    "id", "com.sssemil.sonyirremote.ir");
                                             Button button = ((Button) findViewById(id));
                                             try {
                                                 button.setEnabled(true);
@@ -145,11 +169,6 @@ public class ir extends Activity {
         };
         thread.start();
     }
-
-    public static final String PREFS_NAME = "SIRR";
-    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";
-    public String http_path_root = "http://sssemil.or.gs/sonyirremote/";
-    public String http_path_root2 = "https://raw.githubusercontent.com/sssemil/SonyIRRemote/gh-pages/sonyirremote/";
 
     public void firstRunChecker() {
         boolean isFirstRun = true;
@@ -196,8 +215,7 @@ public class ir extends Activity {
         startLearning(filename);
     }
 
-    public void startLearning(final String filename)
-    {
+    public void startLearning(final String filename) {
         File to = new File(filename);
         if (to.exists()) {
             AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
@@ -245,8 +263,6 @@ public class ir extends Activity {
         }).start();
     }
 
-    public int state = 0;
-
     private void sendKeyBool(final String filename) {
         File to = new File(filename);
         if (!to.exists()) {
@@ -271,8 +287,7 @@ public class ir extends Activity {
         }
     }
 
-    public void sendAction(final String filename)
-    {
+    public void sendAction(final String filename) {
         new Thread(new Runnable() {
             public void run() {
                 state = sendKey(filename);
@@ -295,11 +310,6 @@ public class ir extends Activity {
         }
     }
 
-
-    Spinner spinner, spinner6;
-
-    private ArrayList localArrayList1;
-
     public void prepItemBrandArray() {
         spinner = ((Spinner) findViewById(R.id.spinner));
         localArrayList1 = new ArrayList();
@@ -321,14 +331,11 @@ public class ir extends Activity {
         }
     }
 
-    EditText brandN;
-    EditText itemN;
-
     public void onAddDeviceClick(View paramView) {
         try {
             itemN = ((EditText) findViewById(R.id.editText));
             brandN = ((EditText) findViewById(R.id.editText2));
-            if (itemN.getText()!=null || brandN.getText()!=null) {
+            if (itemN.getText() != null || brandN.getText() != null) {
                 String all = brandN.getText().toString() + "-" + itemN.getText().toString();
                 if (!all.equals("-")) {
                     File localFile2 = new File(irpath + brandN.getText().toString() + "-" + itemN.getText().toString());
@@ -337,11 +344,10 @@ public class ir extends Activity {
                     }
                     prepItemBrandArray();
                 }
-            }
-            else {
+            } else {
                 throw new NullPointerException();
             }
-        }catch (NullPointerException ex) {
+        } catch (NullPointerException ex) {
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
@@ -377,8 +383,6 @@ public class ir extends Activity {
         getMenuInflater().inflate(R.menu.ir, menu);
         return true;
     }
-
-    boolean main = true;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -427,12 +431,6 @@ public class ir extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    public String brand;
-    public String item;
-    public boolean wrt = false;
-
-    long lastPress;
 
     @Override
     public void onBackPressed() {
@@ -494,7 +492,6 @@ public class ir extends Activity {
         }
         return result;
     }
-
 
     public void onRemoveClick(View view) {
         try {
@@ -913,12 +910,6 @@ public class ir extends Activity {
         }
     }
 
-    ProgressDialog mProgressDialog;
-
-    public ArrayList<String> ar = new ArrayList<String>();
-    public String last_ver = "zirt";
-    public String cur_ver;
-
     public String compare(String v1, String v2) {
         String s1 = normalisedVersion(v1);
         String s2 = normalisedVersion(v2);
@@ -1069,7 +1060,7 @@ public class ir extends Activity {
                         mProgressDialog.setCancelable(true);
 
                         final DownloadApp downloadApp1 = new DownloadApp(ir.this);
-                        downloadApp1.execute(http_path_root +  "download.php?v=last");
+                        downloadApp1.execute(http_path_last_download1 + last_ver + http_path_last_download2);
 
                         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                             @Override
@@ -1108,7 +1099,7 @@ public class ir extends Activity {
 
         protected String doInBackground(String... sUrl) {
             try {
-                HttpGet httppost = new HttpGet(http_path_root2 +  "last.php");
+                HttpGet httppost = new HttpGet(http_path_root2 + "last.php");
                 HttpResponse response = httpclient.execute(httppost);
                 HttpEntity ht = response.getEntity();
 
@@ -1170,10 +1161,6 @@ public class ir extends Activity {
             }
         }
     }
-
-    String resp = "ko";
-    String lastWord, test;
-    boolean cont = false;
 
     public void doOnDown() {
         spinner6 = ((Spinner) findViewById(R.id.spinner6));
