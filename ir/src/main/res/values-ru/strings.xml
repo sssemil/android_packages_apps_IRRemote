@@ -61,7 +61,7 @@
     <string name="error">Ошибка</string>
     <string name="done_removing">Завершилось удаление </string>
     <string name="files"> файлов!</string>
-    <string name="you_need_to_select">You need to select an option first!</string>
+    <string name="you_need_to_select">Вам нужно сделать выбор!</string>
     <string name="waiting_for_signal">Ожидание сигнала для записи…</string>
     <string name="warning">Предупреждение!</string>
     <string name="alredy_exists">Команда, которую вы пытаетесь записать уже существует! Если вы продолжите, то вы уничтожите страрую команду!
