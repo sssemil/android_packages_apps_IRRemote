@@ -82,7 +82,7 @@ public class ir extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ir);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        //fixPermissionsForIr();
+        fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner));
         spinner6 = ((Spinner) findViewById(R.id.spinner6));
         new Thread(new Runnable() {
@@ -422,7 +422,13 @@ public class ir extends Activity {
             main = false;
 
             final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-            getAwItems1.execute();
+            try {
+                String ret = getAwItems1.execute().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
 
             spinner6 = ((Spinner) findViewById(R.id.spinner6));
             spinner6.setSelection(0);
