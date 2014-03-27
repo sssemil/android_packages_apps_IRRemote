@@ -7,9 +7,9 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_PACKAGE_NAME := SonyIRRemote
 
+LOCAL_REQUIRED_MODULES := libjni_sonyopenir
 LOCAL_JNI_SHARED_LIBRARIES := libjni_sonyopenir
 
 include $(BUILD_PACKAGE)
 
-include $(call all-makefiles-under, jni)
-
+include $(call all-makefiles-under,$(LOCAL_PATH))
