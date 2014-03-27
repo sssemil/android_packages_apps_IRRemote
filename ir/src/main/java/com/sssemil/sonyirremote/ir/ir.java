@@ -422,9 +422,16 @@ public class ir extends Activity {
             main = false;
 
             final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-            getAwItems1.execute();
+            try {
+                String ret = getAwItems1.execute().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
 
             spinner6 = ((Spinner) findViewById(R.id.spinner6));
+            spinner6.setSelection(0);
 
             ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
             dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1166,7 +1173,7 @@ public class ir extends Activity {
 
         protected String doInBackground(String... sUrl) {
             try {
-                HttpGet httppost = new HttpGet(http_path_root2 + "aaa");
+                HttpGet httppost = new HttpGet(http_path_root2 + "downloads");
                 HttpResponse response = httpclient.execute(httppost);
                 HttpEntity ht = response.getEntity();
 
@@ -1185,7 +1192,7 @@ public class ir extends Activity {
                 }
                 Log.i("line", String.valueOf(ar.size()));
 
-                return total.toString();
+                return ar.get(0);
             } catch (IOException ex) {
                 return null;
             }
