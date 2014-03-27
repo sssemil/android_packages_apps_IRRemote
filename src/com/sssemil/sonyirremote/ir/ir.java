@@ -422,7 +422,7 @@ public class ir extends Activity {
             main = false;
 
             final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-            String ret = getAwItems1.execute().get();
+            getAwItems1.execute();
 
             spinner6 = ((Spinner) findViewById(R.id.spinner6));
             spinner6.setSelection(0);
