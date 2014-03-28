@@ -1,7 +1,7 @@
 SonyIRRemote
 =============
 
-Infrared Remote Control for Sony Xperia ZL
+Infrared Remote Control for Sony Xperia ZL and Sony Xperia Tab Z
 
 (c)2014 by Emil Suleymanov
 
