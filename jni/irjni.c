@@ -76,3 +76,20 @@ JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_ir_sendKey
   return ret;
 
 }
+
+
+JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_ir_sendRawKey
+  (JNIEnv * je, jobject jo, jstring js, jint ji){
+
+  const char *key = (*je)->GetStringUTFChars(je, js, 0);
+  int length = (int) ji;
+  int ret = IRsendRawKey(key, length);
+
+  LOGI("%s : key %s\n",__func__,key);
+
+  (*je)->ReleaseStringUTFChars(je, js, key);
+
+  return ret;
+
+
+}

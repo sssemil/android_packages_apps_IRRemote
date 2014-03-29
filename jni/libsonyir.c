@@ -248,9 +248,7 @@ int IRlearnKeyToFile(const char *filename){
 
 }
 
-int IRsendKeyFromFile(const char *filename){
-
-    
+int IRsendKeyFromFile(const char *filename){    
     int infile = open(filename, O_RDONLY);
 
     if (infile < 0){
@@ -269,10 +267,8 @@ int IRsendKeyFromFile(const char *filename){
     close(infile);
 
     LOGI("%s : Sending Key Of Length %d\n", __func__, keylen);
-    int status = IRsendRawKey(keydata, keylen);
+    int status = IRsendRawKey(keydata, keylen);    
     return status;
-
-
 }
 
 int IRsendRawKey(char *data, int length){
@@ -281,6 +277,7 @@ int IRsendRawKey(char *data, int length){
     usleep(sleeptime);
 
     LOGI("%s : CALLED\n", __func__);
+    LOGI("%s : data %s\n", __func__, data);
 
     cmdSendKeyData keySend;
 

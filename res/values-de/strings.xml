@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ChanelMn">Kanal -</string>
+    <string name="ChanelPl">Kanal +</string>
+    <string name="Down">Unten</string>
+    <string name="Enter">OK</string>
+    <string name="Left">Links</string>
+    <string name="Right">Rechts</string>
+    <string name="Send_signal">Lassen Schreibmodus</string>
+    <string name="Up">Oben</string>
+    <string name="VolMn">Ton -</string>
+    <string name="VolPl">Ton +</string>
+    <string name="Write_signal">Rückkehr zum Schreibmodus</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="add">Addieren</string>
+    <string name="add_brnd">Fernbedienung hinzufügen</string>
+    <string name="app_name">Sony IR Remote</string>
+    <string name="brand">Marke:</string>
+    <string name="brand_prompt">Wählen Sie Ihre TV `s Marke</string>
+    <string name="go_back">Zurück zum Hauptmenü</string>
+    <string name="item">Typ(z.B. TV):</string>
+    <string name="path">Pfad zum Schlüssel</string>
+    <string name="pwr_btn">Power ON/OFF</string>
+    <string name="save">Sparen</string>
+    <string name="about">Über</string>
+    <string name="license1">Copyright © 2014 Emil Suleymanov</string>
+    <string name="license2">Verteilt unter dem GNU GPL v2.</string>
+    <string name="license3">Der Quellcode ist verfügbar auf https://github.com/sssemil/SonyIRRemote .</string>
+    <string name="license4">Mit lib_sony_ir von BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
+
+    <string name="mute">Stumm</string>
+    <string name="input">TV</string>
+    <string name="home">Haus</string>
+
+    <string name="download_brnd">Laden oder Entfernen von Gerätedateien</string>
+    <string name="download">Laden</string>
+    <string name="refresh">Aktualisieren</string>
+
+    <string name="remove">Entfernen</string>
+
+    <string name="exit">Verlassen</string>
+    <string name="update">Aktualisieren</string>
+    <string name="ser3">Der Server ist nicht erreichbar, bitte versuchen Sie es später noch einmal! 
+Versuchen Sie jetzt?</string>
+    <string name="new_version_available">Neue Version verfügbar! 
+
+Wollen Sie auf eine neuere Version aktualisieren?</string>
+    <string name="downloading_new">Herunterladen neuer Version…</string>
+    <string name="already_new">Sie haben bereits die neueste Version installiert ist!</string>
+    <string name="cancel">Stornieren</string>
+    <string name="down_keys">Herunterladen von Dateien Tasten…</string>
+    <string name="failed_lk">Failed! - learnKey </string>
+    <string name="failed_sk">Failed! - sendKey </string>
+    <string name="fr">Vielen Dank für die Installation meiner app! 
+Um ihn zu benutzen, um die Einstellungen und laden Sie Gerätedateien für TV oder sonst etwas. Wenn Sie `t finden können Ihr Gerät, können Sie Befehle, die von sich selbst zu schreiben, indem einfach neue Gerät aus-Einstellungen.
+Vielen Dank! 
+     ACHTUNG: Diese App ist in der Entwicklung, und es wurde nur auf Sony Xperia ZL (odin) läuft CyanogenMod 11 getestet!</string>
+
+    <string name="welcome">Willkommen!</string>
+    <string name="done">Fertig!</string>
+    <string name="downloadT">Laden</string>
+    <string name="error">Fehler</string>
+    <string name="done_removing">Fertig Entfernen von </string>
+    <string name="files"> Dateien!</string>
+    <string name="you_need_to_select">Sie müssen eine Auswahl zuerst auswählen!</string>
+    <string name="waiting_for_signal">Warten auf Signal zu lernen…</string>
+    <string name="warning">Warnung!</string>
+    <string name="alredy_exists">Der Befehl, den Sie versuchen zu schreiben, sind bereits vorhanden! Auf diese Weise werden Sie vorhandenen Befehl überschreiben! 
+
+Wollen Sie fortfahren?</string>
+    <string name="not_exists">Der Befehl für diese Taste nicht existiert! Wissen Sie, es jetzt zu schreiben??</string>
+    <string name="non_zero">Failed! Nicht-Null-Exit-Status!</string>
+    <string name="failed_del_fl_io">Fehler beim Löschen von Dateien!</string>
+</resources>

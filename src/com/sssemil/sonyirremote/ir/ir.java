@@ -36,6 +36,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +47,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Copyright (c) 2014 Emil Suleymanov
@@ -76,6 +78,11 @@ public class ir extends Activity {
     String lastWord, test;
     boolean cont = false;
 
+    /*public void onTClick(View view) {
+        String key = "$...D....d.V..>.s.i..o...... ....}..F";
+        int length = key.length();
+        sendRawKey(key, length);
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,6 +214,8 @@ public class ir extends Activity {
 
     public native int sendKey(String filename);
 
+    public native int sendRawKey(String key, int length);
+
     public void errorT(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
@@ -266,7 +275,7 @@ public class ir extends Activity {
     private void sendKeyBool(final String filename) {
         File to = new File(filename);
         spinner = ((Spinner) findViewById(R.id.spinner));
-        if( spinner.getSelectedItem() != null) {
+        if (spinner.getSelectedItem() != null) {
             if (!to.exists()) {
                 AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
                 adb1.setTitle(getString(R.string.warning));
@@ -287,8 +296,7 @@ public class ir extends Activity {
             } else {
                 sendAction(filename);
             }
-        }
-        else {
+        } else {
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
@@ -302,8 +310,7 @@ public class ir extends Activity {
 
     }
 
-    public void alert(String msg)
-    {
+    public void alert(String msg) {
         AlertDialog.Builder errorD = new AlertDialog.Builder(this);
         errorD.setTitle(getString(R.string.error));
         errorD.setMessage(msg);
@@ -422,7 +429,13 @@ public class ir extends Activity {
             main = false;
 
             final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-            getAwItems1.execute();
+            try {
+                String ret = getAwItems1.execute().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
 
             spinner6 = ((Spinner) findViewById(R.id.spinner6));
             spinner6.setSelection(0);
@@ -483,7 +496,7 @@ public class ir extends Activity {
             wrt = false;
             final Button btntxt = (Button) findViewById(R.id.button2);
             btntxt.setText(getResources().getString(R.string.Write_signal));
-            btntxt.setTextColor(Color.BLACK);
+            btntxt.setTextColor(Color.WHITE);
         } else if (!wrt) {
             wrt = true;
             final Button btntxt = (Button) findViewById(R.id.button2);
@@ -524,36 +537,30 @@ public class ir extends Activity {
         return result;
     }
 
+
     public void onRemoveClick(View view) {
         try {
-            Toast.makeText(this, item, Toast.LENGTH_SHORT).show();
+        spinner = (Spinner) findViewById(R.id.spinner);
+        item = spinner.getSelectedItem().toString();
 
-            String[] remove = {"rm", "-rf", irpath + item};
-            try {
-                Process p = Runtime.getRuntime().exec(remove);
-                Log.i("rm", "Waiting... " + irpath + item);
-                p.waitFor();
-                Log.i("rm", "Done! " + irpath + item);
-            } catch (Exception e) {
-                Log.e("rm", "Failed! " + irpath + item);
-                e.printStackTrace();
-            }
+        File dir = new File(irpath + item);
+        FileUtils.deleteDirectory(dir);
 
-            spinner = ((Spinner) findViewById(R.id.spinner));
-            localArrayList1 = new ArrayList();
-            localArrayList1.remove(item);
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(dataAdapter);
+        spinner = ((Spinner) findViewById(R.id.spinner));
+        localArrayList1 = new ArrayList();
+        localArrayList1.remove(item);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.done));
-            builder.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
-            builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.done));
+        builder.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
+        builder.setPositiveButton("OK", null);
+        AlertDialog dialog = builder.show();
 
-            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-            messageView.setGravity(Gravity.CENTER);
+        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+        messageView.setGravity(Gravity.CENTER);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
@@ -565,7 +572,18 @@ public class ir extends Activity {
                 }
             });
             adb.show();
-        }
+        } catch (IOException ex) {
+        ex.printStackTrace();
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle(getString(R.string.error));
+        adb.setMessage(getString(R.string.failed_del_fl_io));
+        adb.setIcon(android.R.drawable.ic_dialog_alert);
+        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        adb.show();
+    }
     }
 
     public void onPowerClick(View view) {

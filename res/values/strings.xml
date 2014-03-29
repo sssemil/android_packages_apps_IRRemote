@@ -13,7 +13,7 @@
     <string name="ChanelMn">Chanel -</string>
     <string name="ChanelPl">Chanel +</string>
     <string name="Down">Down</string>
-    <string name="Enter">Enter</string>
+    <string name="Enter">OK</string>
     <string name="Left">Left</string>
     <string name="Right">Right</string>
     <string name="Send_signal">Leave Write mode</string>
@@ -28,7 +28,7 @@
     <string name="brand">Brand:</string>
     <string name="brand_prompt">Choose your TV`s brand</string>
     <string name="go_back">Back to main menu</string>
-    <string name="item">Type:</string>
+    <string name="item">Type(ex. TV):</string>
     <string name="path">Path to keys</string>
     <string name="pwr_btn">Power ON/OFF</string>
     <string name="save">Save</string>
@@ -58,7 +58,7 @@ Do you want to update to a newer version?</string>
     <string name="downloading_new">Downloading new version…</string>
     <string name="already_new">You already have the latest version installed!</string>
     <string name="cancel">Cancel</string>
-    <string name="down_keys">Downloading buttons base…</string>
+    <string name="down_keys">Downloading buttons` files…</string>
     <string name="failed_lk">Failed! - learnKey </string>
     <string name="failed_sk">Failed! - sendKey </string>
     <string name="fr">Thanks for installing my app!
@@ -79,4 +79,5 @@ Thanks!
 Do you want to continue?</string>
     <string name="not_exists">The command for this button does not exists! Do you want to write it now?</string>
     <string name="non_zero">Failed! Non-zero exit status returned!</string>
+    <string name="failed_del_fl_io">Failed to delete files!</string>
 </resources>

@@ -3,7 +3,7 @@
     <string name="ChanelMn">Канал -</string>
     <string name="ChanelPl">Канал +</string>
     <string name="Down">Вниз</string>
-    <string name="Enter">Ввести</string>
+    <string name="Enter">OK</string>
     <string name="Left">Влево</string>
     <string name="Right">Вправо</string>
     <string name="Send_signal">Покинуть режим записи</string>
@@ -18,7 +18,7 @@
     <string name="brand">Бренд:</string>
     <string name="brand_prompt">Выберите бренд устройства</string>
     <string name="go_back">Назад в главное меню</string>
-    <string name="item">Тип:</string>
+    <string name="item">Тип(пр. TV):</string>
     <string name="path">Путь до команд</string>
     <string name="pwr_btn">Выкл./Вкл.</string>
     <string name="save">Сохранить</string>
@@ -69,4 +69,5 @@
 Продолжить?</string>
     <string name="not_exists">Команда для этой кнопки не существует! Хотите записать сейчас?</string>
     <string name="non_zero">Не удалось отправить сигнал! Статус не равен нулю!</string>
+    <string name="failed_del_fl_io">Не удалось удалить файлы!</string>
 </resources>

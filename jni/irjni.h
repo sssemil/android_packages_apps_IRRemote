@@ -89,6 +89,14 @@ JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_ir_learnKey
 JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_ir_sendKey
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     com_sssemil_sonyirremote_ir_ir
+ * Method:    sendRawKey
+ * Signature: (Ljava/lang/String, Ljava/lang/int;)I
+ */
+JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_ir_sendRawKey
+  (JNIEnv *, jobject, jstring, jint);
+
 #ifdef __cplusplus
 }
 #endif
