@@ -132,7 +132,7 @@ public class ir extends Activity {
                                                 try {
                                                     button.setEnabled(false);
                                                 } catch (Exception ex) {
-                                                    ex.printStackTrace();
+                                                    //ex.printStackTrace();
                                                 }
                                             }
                                         });
@@ -548,6 +548,7 @@ public class ir extends Activity {
 
 
     public void onRemoveClick(View view) {
+        //TODO fix
         try {
             spinner = (Spinner) findViewById(R.id.spinner);
             item = spinner.getSelectedItem().toString();
@@ -555,21 +556,18 @@ public class ir extends Activity {
             File dir = new File(irpath + item);
             FileUtils.deleteDirectory(dir);
 
-            spinner = ((Spinner) findViewById(R.id.spinner));
-            localArrayList1 = new ArrayList();
+            /*spinner = ((Spinner) findViewById(R.id.spinner));
             localArrayList1.remove(item);
             ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
             dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(dataAdapter);
+            spinner.setAdapter(dataAdapter);*/
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.done));
             builder.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
             builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.show();
-
-            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-            messageView.setGravity(Gravity.CENTER);
+            builder.show();
+            prepItemBrandArray();
         } catch (NullPointerException ex) {
             ex.printStackTrace();
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
@@ -1286,6 +1284,7 @@ public class ir extends Activity {
 
     public void onDownItemsClick(View view) {
         doOnDown();
+        prepItemBrandArray();
     }
 
     class DownloadTask extends AsyncTask<String, Integer, String> {
