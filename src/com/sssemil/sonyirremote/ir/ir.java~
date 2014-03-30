@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,7 +28,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -54,34 +54,6 @@ import java.util.regex.Pattern;
  */
 
 public class ir extends Activity {
-
-    public static final String PREFS_NAME = "SIRR";
-    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
-    public String http_path_root2 = "https://raw.githubusercontent.com/sssemil/SonyIRRemote/gh-pages/sonyirremote/";
-    public String http_path_last_download1 = "https://github.com/sssemil/SonyIRRemote/blob/gh-pages/sonyirremote/apk/SonyIRRemote-v";
-    public String http_path_last_download2 = ".apk?raw=true";
-    public int state = 0;
-    Spinner spinner, spinner6;
-    private ArrayList localArrayList1;
-    EditText brandN, itemN;
-    boolean main = true;
-    public String brand;
-    public String item;
-    public boolean wrt = false;
-    long lastPress;
-    ProgressDialog mProgressDialog;
-    public ArrayList<String> ar = new ArrayList<String>();
-    public String last_ver = "zirt";
-    public String cur_ver;
-    String resp = "ko";
-    String lastWord, test;
-    boolean cont = false;
-
-    /*public void onTClick(View view) {
-        String key = "$...D....d.V..>.s.i..o...... ....}..F";
-        int length = key.length();
-        sendRawKey(key, length);
-    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +83,7 @@ public class ir extends Activity {
             public void run() {
                 File f;
                 while (true) {
-                    if (main) {
+                    if(main) {
                         try {
                             spinner = (Spinner) findViewById(R.id.spinner);
                             item = spinner.getSelectedItem().toString();
@@ -126,8 +98,7 @@ public class ir extends Activity {
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                int id = getResources().getIdentifier(finalLine,
-                                                        "id", "com.sssemil.sonyirremote.ir");
+                                                int id = getResources().getIdentifier(finalLine, "id", "com.sssemil.sonyirremote.ir");
                                                 Button button = ((Button) findViewById(id));
                                                 try {
                                                     button.setEnabled(false);
@@ -149,13 +120,12 @@ public class ir extends Activity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            int id = getResources().getIdentifier(btn,
-                                                    "id", "com.sssemil.sonyirremote.ir");
+                                            int id = getResources().getIdentifier(btn, "id", "com.sssemil.sonyirremote.ir");
                                             Button button = ((Button) findViewById(id));
                                             try {
                                                 button.setEnabled(true);
                                             } catch (Exception ex) {
-                                                //ex.printStackTrace();
+                                                ex.printStackTrace();
                                             }
                                         }
                                     });
@@ -167,7 +137,7 @@ public class ir extends Activity {
                                 e.printStackTrace();
                             }
                         } catch (Exception e) {
-                            //e.printStackTrace();
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -175,6 +145,11 @@ public class ir extends Activity {
         };
         thread.start();
     }
+
+    public static final String PREFS_NAME = "SIRR";
+    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";
+    public String http_path_root = "http://192.168.1.4/sonyirremote/";
+    public String http_path_root2 = "https://raw.githubusercontent.com/sssemil/SonyIRRemote/gh-pages/sonyirremote/";
 
     public void firstRunChecker() {
         boolean isFirstRun = true;
@@ -213,8 +188,6 @@ public class ir extends Activity {
 
     public native int sendKey(String filename);
 
-    public native int sendRawKey(String key, int length);
-
     public void errorT(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
@@ -223,7 +196,8 @@ public class ir extends Activity {
         startLearning(filename);
     }
 
-    public void startLearning(final String filename) {
+    public void startLearning(final String filename)
+    {
         File to = new File(filename);
         if (to.exists()) {
             AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
@@ -271,57 +245,34 @@ public class ir extends Activity {
         }).start();
     }
 
+    public int state = 0;
+
     private void sendKeyBool(final String filename) {
         File to = new File(filename);
-        spinner = ((Spinner) findViewById(R.id.spinner));
-        if (spinner.getSelectedItem() != null) {
-            if (!to.exists()) {
-                AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
-                adb1.setTitle(getString(R.string.warning));
-                adb1.setMessage(getString(R.string.not_exists));
-                adb1.setIcon(android.R.drawable.ic_dialog_alert);
-                adb1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        startLearning(filename);
-                    }
-                });
-
-                adb1.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-                adb1.show();
-            } else {
-                sendAction(filename);
-            }
-        } else {
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.error));
-            adb.setMessage(getString(R.string.you_need_to_select));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        if (!to.exists()) {
+            AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
+            adb1.setTitle(getString(R.string.warning));
+            adb1.setMessage(getString(R.string.not_exists));
+            adb1.setIcon(android.R.drawable.ic_dialog_alert);
+            adb1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
+                    startLearning(filename);
                 }
             });
-            adb.show();
+
+            adb1.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            adb1.show();
+        } else {
+            sendAction(filename);
         }
-
     }
 
-    public void alert(String msg) {
-        AlertDialog.Builder errorD = new AlertDialog.Builder(this);
-        errorD.setTitle(getString(R.string.error));
-        errorD.setMessage(msg);
-        errorD.setIcon(android.R.drawable.ic_dialog_alert);
-        errorD.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        errorD.show();
-    }
-
-    public void sendAction(final String filename) {
+    public void sendAction(final String filename)
+    {
         new Thread(new Runnable() {
             public void run() {
                 state = sendKey(filename);
@@ -329,7 +280,7 @@ public class ir extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            alert(getString(R.string.non_zero));
+                            errorT(getString(R.string.failed_sk) + filename);
                         }
                     });
                 }
@@ -343,6 +294,11 @@ public class ir extends Activity {
             f.mkdirs();
         }
     }
+
+
+    Spinner spinner, spinner6;
+
+    private ArrayList localArrayList1;
 
     public void prepItemBrandArray() {
         spinner = ((Spinner) findViewById(R.id.spinner));
@@ -358,31 +314,40 @@ public class ir extends Activity {
             }
 
             if (edited) {
-                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                        android.R.layout.simple_spinner_item, localArrayList1);
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
                 dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(dataAdapter);
             }
         }
     }
 
+    EditText brandN;
+    EditText itemN;
+
     public void onAddDeviceClick(View paramView) {
         try {
             itemN = ((EditText) findViewById(R.id.editText));
             brandN = ((EditText) findViewById(R.id.editText2));
-            if (itemN.getText() != null || brandN.getText() != null) {
-                String all = brandN.getText().toString() + "-" + itemN.getText().toString();
-                if (!all.equals("-")) {
-                    File localFile2 = new File(irpath + brandN.getText().toString() + "-" + itemN.getText().toString());
-                    if (!localFile2.isDirectory()) {
-                        localFile2.mkdirs();
-                    }
-                    prepItemBrandArray();
+            if (itemN.getText()!=null || brandN.getText()!=null) {
+                File localFile2 = new File(irpath + brandN.getText().toString() + "-" + itemN.getText().toString());
+                if (!localFile2.isDirectory()) {
+                    localFile2.mkdirs();
                 }
-            } else {
+                prepItemBrandArray();
+
+                spinner = ((Spinner) findViewById(R.id.spinner));
+                localArrayList1 = new ArrayList();
+
+                localArrayList1.add(brandN.getText() + "-" + itemN.getText());
+
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
+                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(dataAdapter);
+            }
+            else {
                 throw new NullPointerException();
             }
-        } catch (NullPointerException ex) {
+        }catch (NullPointerException ex) {
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
@@ -396,7 +361,6 @@ public class ir extends Activity {
     }
 
     public static boolean fixPermissionsForIr() {
-        //TODO add all this to ramdisk
         // IR Paths
         String[] irEnable = {"su", "-c", "chown system:sdcard_rw /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
         String[] enablePermissions = {"su", "-c", "chmod 220 /sys/devices/platform/ir_remote_control/enable"};
@@ -420,40 +384,25 @@ public class ir extends Activity {
         return true;
     }
 
+    boolean main = true;
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             setContentView(R.layout.settings_ir);
             main = false;
-            final Context thisS = this;
 
-            new Thread(new Runnable() {
-                public void run() {
-                    final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-                    try {
-                        String ret = getAwItems1.execute().get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
+            final GetAwItems getAwItems1 = new GetAwItems(ir.this);
+            getAwItems1.execute();
 
-                    spinner6 = ((Spinner) findViewById(R.id.spinner6));
+            spinner6 = ((Spinner) findViewById(R.id.spinner6));
 
-                    final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(thisS, android.R.layout.simple_spinner_item, ar);
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner6.setAdapter(dataAdapter);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            spinner6.setAdapter(dataAdapter);
-                            spinner6.setSelection(0);
-                            prepItemBrandArray();
-                        }
-                    });
-                }
-            }).start();
+            prepItemBrandArray();
 
             return true;
         } else if (id == R.id.action_about) {
@@ -485,6 +434,12 @@ public class ir extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    public String brand;
+    public String item;
+    public boolean wrt = false;
+
+    long lastPress;
+
     @Override
     public void onBackPressed() {
         long currentTime = System.currentTimeMillis();
@@ -505,14 +460,14 @@ public class ir extends Activity {
             wrt = false;
             final Button btntxt = (Button) findViewById(R.id.button2);
             btntxt.setText(getResources().getString(R.string.Write_signal));
-            btntxt.setTextColor(Color.WHITE);
+            btntxt.setTextColor(Color.BLACK);
         } else if (!wrt) {
             wrt = true;
             final Button btntxt = (Button) findViewById(R.id.button2);
             btntxt.setText(getResources().getString(R.string.Send_signal));
             btntxt.setTextColor(Color.RED);
 
-            File f = new File(irpath + item);
+            File f = new File(irpath + brand + "-" + item);
             if (!f.isDirectory()) {
                 f.mkdirs();
             }
@@ -549,22 +504,40 @@ public class ir extends Activity {
 
     public void onRemoveClick(View view) {
         try {
-            spinner = (Spinner) findViewById(R.id.spinner);
-            item = spinner.getSelectedItem().toString();
+            Toast.makeText(this, brand + "-" + item, Toast.LENGTH_SHORT).show();
 
-            File dir = new File(irpath + item);
-            FileUtils.deleteDirectory(dir);
+            String[] remove = {"rm", "-rf", irpath + brand + "-" + item};
+            try {
+                Process p = Runtime.getRuntime().exec(remove);
+                Log.i("rm", "Waiting... " + irpath + brand + "-" + item);
+                p.waitFor();
+                Log.i("rm", "Done! " + irpath + brand + "-" + item);
+            } catch (Exception e) {
+                Log.e("rm", "Failed! " + irpath + brand + "-" + item);
+                e.printStackTrace();
+            }
 
-            spinner = ((Spinner) findViewById(R.id.spinner));
-            localArrayList1 = new ArrayList();
-            localArrayList1.remove(item);
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(dataAdapter);
+            File directory = new File(irpath + brand);
+            File[] contents = directory.listFiles();
+            if (contents != null) {
+                if (contents.length == 0) {
+                    Log.i("", String.valueOf(contents.length));
+                    String[] remove2 = {"rm", "-rf", irpath + brand};
+                    try {
+                        Process p2 = Runtime.getRuntime().exec(remove2);
+                        Log.i("rm", "Waiting... " + irpath + brand);
+                        p2.waitFor();
+                        Log.i("rm", "Done! " + irpath + brand);
+                    } catch (Exception e) {
+                        Log.e("rm", "Failed! " + irpath + brand);
+                        e.printStackTrace();
+                    }
+                }
+            }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.done));
-            builder.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
+            builder.setMessage(getString(R.string.done_removing) + " " + brand + "-" + item + " " + getString(R.string.files));
             builder.setPositiveButton("OK", null);
             AlertDialog dialog = builder.show();
 
@@ -581,17 +554,6 @@ public class ir extends Activity {
                 }
             });
             adb.show();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.error));
-            adb.setMessage(getString(R.string.failed_del_fl_io));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            adb.show();
         }
     }
 
@@ -602,11 +564,11 @@ public class ir extends Activity {
             if (!wrt) {
                 Toast.makeText(this, "Power" + brand, Toast.LENGTH_SHORT).show();
 
-                sendKeyBool(irpath + item + "/power.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/power.bin");
             } else if (wrt) {
                 Toast.makeText(this, "Power" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
 
-                learnKeyBool(irpath + item + "/power.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/power.bin");
             }
         }
     }
@@ -618,13 +580,13 @@ public class ir extends Activity {
             if (!wrt) {
                 Toast.makeText(this, "ChanelPl" + brand, Toast.LENGTH_SHORT).show();
 
-                sendKeyBool(irpath + item + "/chanelPl.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/chanelPl.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "ChanelPl" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
 
-                learnKeyBool(irpath + item + "/chanelPl.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/chanelPl.bin");
             }
         }
     }
@@ -635,12 +597,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "ChanelMn" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/chanelMn.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/chanelMn.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "ChanelMn" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/chanelMn.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/chanelMn.bin");
             }
         }
     }
@@ -651,12 +613,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "VolumePl" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/volPl.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/volPl.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "VolumePl" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/volPl.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/volPl.bin");
             }
         }
     }
@@ -667,12 +629,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "VolumeMn" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/volMn.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/volMn.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "VolumeMn" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/volMn.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/volMn.bin");
             }
         }
     }
@@ -683,12 +645,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "1" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/1.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/1.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "1" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/1.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/1.bin");
             }
         }
     }
@@ -699,12 +661,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "2" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/2.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/2.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "2" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/2.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/2.bin");
             }
         }
     }
@@ -715,12 +677,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "3" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/3.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/3.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "3" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/3.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/3.bin");
             }
         }
     }
@@ -731,12 +693,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "4" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/4.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/4.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "4" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/4.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/4.bin");
             }
         }
     }
@@ -747,12 +709,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "5" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/5.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/5.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "5" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/5.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/5.bin");
             }
         }
     }
@@ -763,12 +725,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "6" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/6.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/6.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "6" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/6.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/6.bin");
             }
         }
     }
@@ -779,12 +741,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "7" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/7.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/7.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "7" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/7.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/7.bin");
             }
         }
     }
@@ -795,12 +757,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "8" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/8.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/8.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "8" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/8.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/8.bin");
             }
         }
     }
@@ -811,12 +773,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "9" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/9.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/9.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "9" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/9.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/9.bin");
             }
         }
     }
@@ -827,12 +789,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "0" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/0.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/0.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "0" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/0.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/0.bin");
             }
         }
     }
@@ -843,12 +805,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "up" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/up.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/up.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "up" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/up.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/up.bin");
             }
         }
     }
@@ -859,12 +821,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "down" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/down.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/down.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "down" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/down.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/down.bin");
             }
         }
     }
@@ -875,12 +837,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "left" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/left.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/left.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "left" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/left.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/left.bin");
             }
         }
     }
@@ -891,12 +853,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "right" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/right.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/right.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "right" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/right.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/right.bin");
             }
         }
     }
@@ -907,12 +869,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "enter" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/enter.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/enter.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "enter" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/enter.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/enter.bin");
             }
         }
     }
@@ -924,12 +886,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "mute" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/mute.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/mute.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "mute" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/mute.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/mute.bin");
             }
         }
     }
@@ -941,12 +903,12 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "home" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/home.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/home.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "home" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/home.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/home.bin");
             }
         }
     }
@@ -958,15 +920,21 @@ public class ir extends Activity {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "input" + brand, Toast.LENGTH_SHORT).show();
-                sendKeyBool(irpath + item + "/input.bin");
+                sendKeyBool(irpath + brand + "-" + item + "/input.bin");
             } else if (wrt) {
 
 
                 Toast.makeText(this, "input" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-                learnKeyBool(irpath + item + "/input.bin");
+                learnKeyBool(irpath + brand + "-" + item + "/input.bin");
             }
         }
     }
+
+    ProgressDialog mProgressDialog;
+
+    public ArrayList<String> ar = new ArrayList<String>();
+    public String last_ver = "zirt";
+    public String cur_ver;
 
     public String compare(String v1, String v2) {
         String s1 = normalisedVersion(v1);
@@ -1118,7 +1086,7 @@ public class ir extends Activity {
                         mProgressDialog.setCancelable(true);
 
                         final DownloadApp downloadApp1 = new DownloadApp(ir.this);
-                        downloadApp1.execute(http_path_last_download1 + last_ver + http_path_last_download2);
+                        downloadApp1.execute(http_path_root +  "download.php?v=last");
 
                         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                             @Override
@@ -1157,7 +1125,7 @@ public class ir extends Activity {
 
         protected String doInBackground(String... sUrl) {
             try {
-                HttpGet httppost = new HttpGet(http_path_root2 + "last.php");
+                HttpGet httppost = new HttpGet(http_path_root2 +  "last.php");
                 HttpResponse response = httpclient.execute(httppost);
                 HttpEntity ht = response.getEntity();
 
@@ -1194,7 +1162,7 @@ public class ir extends Activity {
 
         protected String doInBackground(String... sUrl) {
             try {
-                HttpGet httppost = new HttpGet(http_path_root2 + "downloads");
+                HttpGet httppost = new HttpGet(http_path_root2 + "aaa");
                 HttpResponse response = httpclient.execute(httppost);
                 HttpEntity ht = response.getEntity();
 
@@ -1213,12 +1181,16 @@ public class ir extends Activity {
                 }
                 Log.i("line", String.valueOf(ar.size()));
 
-                return ar.get(0);
+                return total.toString();
             } catch (IOException ex) {
                 return null;
             }
         }
     }
+
+    String resp = "ko";
+    String lastWord, test;
+    boolean cont = false;
 
     public void doOnDown() {
         spinner6 = ((Spinner) findViewById(R.id.spinner6));
