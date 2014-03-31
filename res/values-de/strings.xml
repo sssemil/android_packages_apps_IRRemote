@@ -47,7 +47,6 @@ Versuchen Sie jetzt?</string>
 Wollen Sie auf eine neuere Version aktualisieren?</string>
     <string name="downloading_new">Herunterladen neuer Version…</string>
     <string name="already_new">Sie haben bereits die neueste Version installiert ist!</string>
-    <string name="cancel">Stornieren</string>
     <string name="down_keys">Herunterladen von Dateien Tasten…</string>
     <string name="failed_lk">Failed! - learnKey </string>
     <string name="failed_sk">Failed! - sendKey </string>
@@ -71,4 +70,8 @@ Wollen Sie fortfahren?</string>
     <string name="not_exists">Der Befehl für diese Taste nicht existiert! Wissen Sie, es jetzt zu schreiben??</string>
     <string name="non_zero">Failed! Nicht-Null-Exit-Status!</string>
     <string name="failed_del_fl_io">Fehler beim Löschen von Dateien!</string>
+    <string name="downloading">Herunterladen…</string>
+    <string name="pos_ans">Ja</string>
+    <string name="cancel">Stornieren</string>
+    <string name="checking">Überprüfung…</string>
 </resources>

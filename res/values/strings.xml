@@ -57,7 +57,6 @@ Try now?</string>
 Do you want to update to a newer version?</string>
     <string name="downloading_new">Downloading new version…</string>
     <string name="already_new">You already have the latest version installed!</string>
-    <string name="cancel">Cancel</string>
     <string name="down_keys">Downloading buttons` files…</string>
     <string name="failed_lk">Failed! - learnKey </string>
     <string name="failed_sk">Failed! - sendKey </string>
@@ -80,4 +79,8 @@ Do you want to continue?</string>
     <string name="not_exists">The command for this button does not exists! Do you want to write it now?</string>
     <string name="non_zero">Failed! Non-zero exit status returned!</string>
     <string name="failed_del_fl_io">Failed to delete files!</string>
+    <string name="downloading">Downloading…</string>
+    <string name="pos_ans">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="checking">Checking…</string>
 </resources>

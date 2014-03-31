@@ -188,7 +188,7 @@ public class ir extends Activity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.welcome));
             builder.setMessage(getString(R.string.fr));
-            builder.setPositiveButton("OK", null);
+            builder.setPositiveButton(getString(R.string.pos_ans), null);
             builder.show();
             SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean("isFirstRun", false);
@@ -226,22 +226,22 @@ public class ir extends Activity {
     public void startLearning(final String filename) {
         File to = new File(filename);
         if (to.exists()) {
-            AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
-            adb1.setTitle(getString(R.string.warning));
-            adb1.setMessage(getString(R.string.alredy_exists));
-            adb1.setIcon(android.R.drawable.ic_dialog_alert);
-            adb1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setTitle(getString(R.string.warning));
+            adb.setMessage(getString(R.string.alredy_exists));
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     learnAction(filename);
                 }
             });
 
-            adb1.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
 
                 }
             });
-            adb1.show();
+            adb.show();
         } else {
             learnAction(filename);
         }
@@ -276,22 +276,22 @@ public class ir extends Activity {
         spinner = ((Spinner) findViewById(R.id.spinner));
         if (spinner.getSelectedItem() != null) {
             if (!to.exists()) {
-                AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
-                adb1.setTitle(getString(R.string.warning));
-                adb1.setMessage(getString(R.string.not_exists));
-                adb1.setIcon(android.R.drawable.ic_dialog_alert);
-                adb1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                AlertDialog.Builder adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.warning));
+                adb.setMessage(getString(R.string.not_exists));
+                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         startLearning(filename);
                     }
                 });
 
-                adb1.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 });
-                adb1.show();
+                adb.show();
             } else {
                 sendAction(filename);
             }
@@ -300,7 +300,7 @@ public class ir extends Activity {
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                 }
             });
@@ -314,7 +314,7 @@ public class ir extends Activity {
         errorD.setTitle(getString(R.string.error));
         errorD.setMessage(msg);
         errorD.setIcon(android.R.drawable.ic_dialog_alert);
-        errorD.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        errorD.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             }
         });
@@ -387,7 +387,7 @@ public class ir extends Activity {
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                 }
             });
@@ -447,9 +447,12 @@ public class ir extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            spinner6.setAdapter(dataAdapter);
-                            spinner6.setSelection(0);
-                            prepItemBrandArray();
+                            try {
+                                spinner6.setAdapter(dataAdapter);
+                                spinner6.setSelection(0);
+                                prepItemBrandArray();
+                            }
+                            catch (NullPointerException e){}
                         }
                     });
                 }
@@ -468,7 +471,7 @@ public class ir extends Activity {
             }
             version = pInfo.versionName;
             builder.setMessage(getResources().getString(R.string.license1) + " v" + version + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
-            builder.setPositiveButton("OK", null);
+            builder.setPositiveButton(getString(R.string.pos_ans), null);
             AlertDialog dialog = builder.show();
 
             TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
@@ -536,7 +539,7 @@ public class ir extends Activity {
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     result = false;
                 }
@@ -565,7 +568,7 @@ public class ir extends Activity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.done));
             builder.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
-            builder.setPositiveButton("OK", null);
+            builder.setPositiveButton(getString(R.string.pos_ans), null);
             builder.show();
             prepItemBrandArray();
         } catch (NullPointerException ex) {
@@ -574,7 +577,7 @@ public class ir extends Activity {
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                 }
             });
@@ -585,7 +588,7 @@ public class ir extends Activity {
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.failed_del_fl_io));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                 }
             });
@@ -1066,80 +1069,120 @@ public class ir extends Activity {
 
     public void update() {
         final GetLastVer getLastVer1 = new GetLastVer(ir.this);
-        try {
-            Log.i("Update", "last_ver : " + getLastVer1.execute().get() + " cur_ver : " + cur_ver);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        if (last_ver == "zirt") {
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.update));
-            adb.setMessage(getString(R.string.ser3));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    update();
-                }
-            });
-
-            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    //finish();
-                }
-            });
-            adb.show();
-        } else {
-            String result = compare(cur_ver, last_ver);
-            boolean doUpdate = false;
-            if (result == ">") {
-                doUpdate = false;
-            } else if (result == "<") {
-                doUpdate = true;
-            } else if (result == "==") {
-                doUpdate = false;
+        //TODO mif
+        final AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        mProgressDialog = new ProgressDialog(ir.this);
+        mProgressDialog.setMessage(getString(R.string.checking));
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.show();
             }
+        });
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Log.i("Update", "last_ver : " + getLastVer1.execute().get() + " cur_ver : " + cur_ver);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                if (last_ver == "zirt") {
+                    adb.setTitle(getString(R.string.update));
+                    adb.setMessage(getString(R.string.ser3));
+                    adb.setIcon(android.R.drawable.ic_dialog_alert);
+                    adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            update();
+                        }
+                    });
+
+                    adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //finish();
+                        }
+                    });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressDialog.cancel();
+                            adb.show();
+                        }
+                    });
+                } else {
+                    String result = compare(cur_ver, last_ver);
+                    boolean doUpdate = false;
+                    if (result == ">") {
+                        doUpdate = false;
+                    } else if (result == "<") {
+                        doUpdate = true;
+                    } else if (result == "==") {
+                        doUpdate = false;
+                    }
 
 
-            if (doUpdate == true) {
-                AlertDialog.Builder adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.update));
-                adb.setMessage(getString(R.string.new_version_available));
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
-                adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mProgressDialog = new ProgressDialog(ir.this);
-                        mProgressDialog.setMessage(getString(R.string.downloading_new));
-                        mProgressDialog.setIndeterminate(true);
-                        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                        mProgressDialog.setCancelable(true);
+                    if (doUpdate == true) {
+                        adb.setTitle(getString(R.string.update));
+                        adb.setMessage(getString(R.string.new_version_available));
+                        adb.setIcon(android.R.drawable.ic_dialog_alert);
+                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mProgressDialog = new ProgressDialog(ir.this);
+                                new Thread(new Runnable() {
+                                    public void run() {
+                                        mProgressDialog.setMessage(getString(R.string.downloading_new));
+                                        mProgressDialog.setIndeterminate(true);
+                                        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mProgressDialog.show();
+                                            }
+                                        });
 
-                        final DownloadApp downloadApp1 = new DownloadApp(ir.this);
-                        downloadApp1.execute(http_path_last_download1 + last_ver + http_path_last_download2);
+                                        final DownloadApp downloadApp1 = new DownloadApp(ir.this);
+                                        try {
+                                            downloadApp1.execute(http_path_last_download1 + last_ver + http_path_last_download2).get();
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        } catch (ExecutionException e) {
+                                            e.printStackTrace();
+                                        }
+                                        mProgressDialog.cancel();
+                                    }
+                                }).start();
+                            }
+                        });
 
-                        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        runOnUiThread(new Runnable() {
                             @Override
-                            public void onCancel(DialogInterface dialog) {
-                                downloadApp1.cancel(true);
+                            public void run() {
+                                mProgressDialog.cancel();
+                                adb.show();
+                            }
+                        });
+                    } else if (doUpdate == false) {
+                        adb.setTitle(getString(R.string.update));
+                        adb.setMessage(getString(R.string.already_new));
+                        adb.setPositiveButton(getString(R.string.pos_ans), null);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressDialog.cancel();
+                                adb.show();
                             }
                         });
                     }
-                });
-
-                adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                adb.show();
-            } else if (doUpdate == false) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(getString(R.string.update));
-                builder.setMessage(getString(R.string.already_new));
-                builder.setPositiveButton("OK", null);
-                builder.show();
+                }
             }
-        }
+        }).start();
     }
 
     class GetLastVer extends AsyncTask<String, Integer, String> {
@@ -1219,67 +1262,110 @@ public class ir extends Activity {
     }
 
     public void doOnDown() {
-        spinner6 = ((Spinner) findViewById(R.id.spinner6));
-        try {
-            test = spinner6.getSelectedItem().toString();
-            lastWord = test.substring(test.lastIndexOf(" ") + 1);
-            cont = true;
-        } catch (NullPointerException ex) {
-            cont = false;
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.error));
-            adb.setMessage(getString(R.string.you_need_to_select));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
+        final AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        mProgressDialog = new ProgressDialog(ir.this);
+        mProgressDialog.setMessage(getString(R.string.checking));
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.show();
+            }
+        });
+        new Thread(new Runnable() {
+            public void run() {
+                cont = false;
+                spinner6 = ((Spinner) findViewById(R.id.spinner6));
+                try {
+                    test = spinner6.getSelectedItem().toString();
+                    lastWord = test.substring(test.lastIndexOf(" ") + 1);
+                    cont = true;
+                } catch (NullPointerException ex) {
+                    cont = false;
+                    //AlertDialog.Builder adb = new AlertDialog.Builder(this);
+                    adb.setTitle(getString(R.string.error));
+                    adb.setMessage(getString(R.string.you_need_to_select));
+                    adb.setIcon(android.R.drawable.ic_dialog_alert);
+                    adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressDialog.cancel();
+                            adb.show();
+                        }
+                    });
                 }
-            });
-            adb.show();
-        }
-        if (cont) {
-
+                if (cont) {
+                    mProgressDialog.setMessage(getString(R.string.downloading));
+                    mProgressDialog.setIndeterminate(true);
+                    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressDialog.cancel();
+                            mProgressDialog.show();
+                        }
+                    });
 // execute this when the downloader must be fired
-            final DownloadTask downloadTask = new DownloadTask(ir.this);
-            try {
-                downloadTask.execute(lastWord).get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
+                    final DownloadTask downloadTask = new DownloadTask(ir.this);
+                    try {
+                        downloadTask.execute(lastWord).get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                    mProgressDialog.cancel();
+
+                    if (!resp.equals("ok")) {
+                        adb.setTitle(getString(R.string.download));
+                        adb.setMessage(getString(R.string.ser3));
+                        adb.setIcon(android.R.drawable.ic_dialog_alert);
+                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                doOnDown();
+                            }
+                        });
+
+                        adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        });
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressDialog.cancel();
+                                adb.show();
+                            }
+                        });
+                    } else {
+                        adb.setTitle(getString(R.string.downloadT));
+                        adb.setMessage(getString(R.string.done));
+                        adb.setIcon(android.R.drawable.ic_dialog_alert);
+                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressDialog.cancel();
+                                adb.show();
+                            }
+                        });
+                    }
+
+                    resp = "ko";
+                }
+
+
             }
-
-            if (!resp.equals("ok")) {
-                AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
-                adb1.setTitle(getString(R.string.download));
-                adb1.setMessage(getString(R.string.ser3));
-                adb1.setIcon(android.R.drawable.ic_dialog_alert);
-                adb1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        doOnDown();
-                    }
-                });
-
-                adb1.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        //finish();
-                    }
-                });
-                adb1.show();
-            } else {
-                AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
-                adb1.setTitle(getString(R.string.downloadT));
-                adb1.setMessage(getString(R.string.done));
-                adb1.setIcon(android.R.drawable.ic_dialog_alert);
-                adb1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                adb1.show();
-            }
-
-            resp = "ko";
-        }
-        cont = false;
+        }).start();
     }
 
     public void onDownItemsClick(View view) {
