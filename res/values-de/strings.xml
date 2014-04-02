@@ -15,10 +15,10 @@
     <string name="add">Addieren</string>
     <string name="add_brnd">Fernbedienung hinzufügen</string>
     <string name="app_name">Sony IR Remote</string>
-    <string name="brand">Marke:</string>
+    <string name="brand">Marke(z.B. Sony)</string>
     <string name="brand_prompt">Wählen Sie Ihre TV `s Marke</string>
     <string name="go_back">Zurück zum Hauptmenü</string>
-    <string name="item">Typ(z.B. TV):</string>
+    <string name="item">Typ(z.B. TV)</string>
     <string name="path">Pfad zum Schlüssel</string>
     <string name="pwr_btn">Power ON/OFF</string>
     <string name="save">Sparen</string>

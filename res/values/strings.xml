@@ -29,10 +29,10 @@
     <string name="add">Add</string>
     <string name="add_brnd">Add new device</string>
     <string name="app_name">Sony IR Remote</string>
-    <string name="brand">Brand:</string>
+    <string name="brand">Brand(ex. Sony)</string>
     <string name="brand_prompt">Choose your TV`s brand</string>
     <string name="go_back">Back to main menu</string>
-    <string name="item">Type(ex. TV):</string>
+    <string name="item">Type(ex. TV)</string>
     <string name="path">Path to keys</string>
     <string name="pwr_btn">Power ON/OFF</string>
     <string name="save">Save</string>

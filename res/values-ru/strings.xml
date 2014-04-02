@@ -15,10 +15,10 @@
     <string name="add">Добавить</string>
     <string name="add_brnd">Добавить новое устройство</string>
     <string name="app_name">Sony IR Remote</string>
-    <string name="brand">Бренд:</string>
+    <string name="brand">Бренд(пр. Sony)</string>
     <string name="brand_prompt">Выберите бренд устройства</string>
     <string name="go_back">Назад в главное меню</string>
-    <string name="item">Тип(пр. TV):</string>
+    <string name="item">Тип(пр. TV)</string>
     <string name="path">Путь до команд</string>
     <string name="pwr_btn">Выкл./Вкл.</string>
     <string name="save">Сохранить</string>
