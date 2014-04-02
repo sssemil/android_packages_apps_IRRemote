@@ -60,7 +60,7 @@ public class ir extends Activity {
     public String http_path_last_download1;
     public String http_path_last_download2;
     public int state = 0;
-    Spinner spinner, spinner6;
+    Spinner spinner;
     private ArrayList localArrayList1;
     EditText brandN, itemN;
     boolean main = true;
@@ -69,21 +69,30 @@ public class ir extends Activity {
     public boolean wrt = false;
     long lastPress;
     ProgressDialog mProgressDialog;
-    public ArrayList<String> ar = new ArrayList<String>();
+    //public ArrayList<String> ar = new ArrayList<String>();
     public String last_ver = "zirt";
     public String cur_ver;
-    String resp = "ko";
+    /*String resp = "ko";
     String lastWord, test;
-    boolean cont = false;
+    boolean cont = false;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        if (settings.contains("theme")) {
+            if (settings.getString("theme", null).equals("1")) {
+                super.setTheme(R.style.Holo );
+            } else if (settings.getString("theme", null).equals("2")) {
+                super.setTheme( R.style.Holo_Light_DarkActionBar );
+            } else if (settings.getString("theme", null).equals("3")) {
+                super.setTheme( R.style.Theme_Holo_Light );
+            }
+        }
         setContentView(R.layout.activity_ir);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner));
-        spinner6 = ((Spinner) findViewById(R.id.spinner6));
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
@@ -1165,7 +1174,7 @@ public class ir extends Activity {
         }
     }
 
-    public void doOnDown() {
+    /*public void doOnDown() {
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
         mProgressDialog = new ProgressDialog(ir.this);
         mProgressDialog.setMessage(getString(R.string.checking));
@@ -1356,5 +1365,5 @@ public class ir extends Activity {
                     connection.disconnect();
             }
         }
-    }
+    }*/
 }

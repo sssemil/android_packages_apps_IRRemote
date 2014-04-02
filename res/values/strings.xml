@@ -104,4 +104,13 @@ Do you want to continue?</string>
     <string name="other">Other</string>
     <string name="gtlst">Getting list…</string>
     <string name="are_u_s_del">Are you sure you want to permanently delete this folder?</string>
+    <string name="select_dev">Select device</string>
+    <string name="submit">Submit</string>
+    <string name="submit_new_dev">Submit new device</string>
+    <string name="submit_new_devD">Submit new device files</string>
+    <string name="submit_bug">Submit bug</string>
+    <string name="submit_bugD">Tell me if you see some bug</string>
+    <string name="theme">Theme</string>
+    <string name="ch_th">Change theme</string>
+    <string name="ch_thD">Select another theme</string>
 </resources>

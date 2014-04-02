@@ -25,6 +25,25 @@
             android:summary="@string/chfupdD"
             android:key="checkUpd" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/submit">
+        <Preference
+            android:title="@string/submit_new_dev"
+            android:summary="@string/submit_new_devD"
+            android:key="sbmtDev"/>
+        <Preference
+            android:title="@string/submit_bug"
+            android:summary="@string/submit_bugD"
+            android:key="sbmtBug" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/theme">
+        <ListPreference
+            android:title="@string/ch_th"
+            android:summary="@string/ch_thD"
+            android:key="theme"
+            android:defaultValue="Holo"
+            android:entries="@array/listThemes"
+            android:entryValues="@array/listValues" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/other">
         <Preference
             android:title="@string/about"

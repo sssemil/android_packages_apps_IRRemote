@@ -40,7 +40,8 @@ public class IRCommon {
         startIR();
     }
 
-    protected IRCommon() { }
+    protected IRCommon() {
+    }
 
     private static IRCommon instance = null;
 

@@ -91,4 +91,11 @@
     <string name="other">Другое</string>
     <string name="gtlst">Получение списка…</string>
     <string name="are_u_s_del">Вы уверены, что хотите удалить эту папку?</string>
+    <string name="select_dev">Выберите устройство</string>
+    <string name="submit">Выложить</string>
+    <string name="submit_new_devD">Выложить файлы нового устройства</string>
+    <string name="submit_bug">Сообщить об ошибке</string>
+    <string name="submit_bugD">Сказать мне о замеченной ошибке</string>
+    <string name="theme">Тема</string>
+    <string name="ch_thD">Выбрать другую тему</string>
 </resources>

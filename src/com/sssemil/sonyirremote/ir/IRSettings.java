@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -16,7 +17,15 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.sssemil.sonyirremote.ir.Zip.Compress;
+import com.sssemil.sonyirremote.ir.Zip.Decompress;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
@@ -58,10 +67,22 @@ public class IRSettings extends PreferenceActivity {
     String item = "null";
     public String last_ver = "zirt";
     public String cur_ver;
+    EditText brandN, itemN;
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        if (settings.contains("theme")) {
+            if (settings.getString("theme", null).equals("1")) {
+                super.setTheme(R.style.Holo );
+            } else if (settings.getString("theme", null).equals("2")) {
+                super.setTheme( R.style.Holo_Light_DarkActionBar );
+            } else if (settings.getString("theme", null).equals("3")) {
+                super.setTheme( R.style.Theme_Holo_Light );
+            }
+        }
         addPreferencesFromResource(R.xml.settings);
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
@@ -201,6 +222,44 @@ public class IRSettings extends PreferenceActivity {
         return sb.toString();
     }
 
+    public void onAddDeviceClick(View paramView) {
+        try {
+            itemN = (EditText) paramView
+                    .findViewById(R.id.editText);
+            brandN = (EditText) paramView
+                    .findViewById(R.id.editText2);
+            if (itemN.getText() != null || brandN.getText() != null) {
+                String all = brandN.getText().toString() + "-" + itemN.getText().toString();
+                if (!all.equals("-")) {
+                    File localFile2 = new File(irpath + brandN.getText().toString() + "-" + itemN.getText().toString());
+                    if (!localFile2.isDirectory()) {
+                        localFile2.mkdirs();
+                    }
+                }
+                AlertDialog.Builder adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.done));
+                adb.setMessage(getString(R.string.new_item) + " " + brandN.getText().toString() + "-" + itemN.getText().toString() + " " + getString(R.string.crt_slf));
+                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                adb.show();
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException ex) {
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setTitle(getString(R.string.error));
+            adb.setMessage(getString(R.string.you_need_to_select));
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            adb.show();
+        }
+    }
+
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
                                          final Preference preference) {
         String key = preference.getKey();
@@ -223,9 +282,34 @@ public class IRSettings extends PreferenceActivity {
             TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
             messageView.setGravity(Gravity.CENTER);
         } else if (key.equals("addBtn")) {
-            Intent intent = new Intent(this,
+
+            LayoutInflater li = LayoutInflater.from(thisS);
+            final View promptsView = li.inflate(R.layout.add_device_menu, null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                    thisS);
+            alertDialogBuilder.setTitle(getString(R.string.add_new_device));
+            alertDialogBuilder
+                    .setCancelable(false)
+                    .setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    onAddDeviceClick(promptsView);
+                                }
+                            }
+                    )
+                    .setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            }
+                    );
+            alertDialogBuilder.setView(promptsView);
+            alertDialogBuilder.show();
+
+            /*Intent intent = new Intent(this,
                     AddDevice.class);
-            startActivity(intent);
+            startActivity(intent);*/
         } else if (key.equals("downBtn")) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setMessage(getString(R.string.gtlst));
@@ -339,8 +423,90 @@ public class IRSettings extends PreferenceActivity {
             }
         } else if (key.equals("checkUpd")) {
             update();
-        }
+        } else if (key.equals("sbmtBug")) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sssemil/android_packages_apps_SonyIRRemote/issues"));
+            startActivity(browserIntent);
+        } else if (key.equals("sbmtDev")) {
+            LayoutInflater li = LayoutInflater.from(thisS);
+            final View promptsView = li.inflate(R.layout.sbmt_device_menu, null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                    thisS);
+            alertDialogBuilder.setTitle(getString(R.string.select_dev));
+            alertDialogBuilder
+                    .setCancelable(false)
+                    .setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    try {
+                                        spinner = (Spinner) promptsView.findViewById(R.id.spinner);
+                                        item = spinner.getSelectedItem().toString();
+                                        Compress c = new Compress(irpath + item, "/sdcard/" + item + ".zip");
+                                        c.zip();
+                                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                                        emailIntent.setType("application/zip");
+                                        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"suleymanovemil8@gmail.com"});
+                                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "New IR device");
+                                        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, item);
+                                        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/" + item + ".zip"));
+                                        startActivity(Intent.createChooser(emailIntent, "Send by mail..."));
+                                    } catch (NullPointerException ex) {
+                                        AlertDialog.Builder adb = new AlertDialog.Builder(thisS);
+                                        adb.setTitle(getString(R.string.error));
+                                        adb.setMessage(getString(R.string.you_need_to_select));
+                                        adb.setIcon(android.R.drawable.ic_dialog_alert);
+                                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
 
+                                            }
+                                        });
+                                        adb.show();
+                                    }
+
+                                }
+                            }
+                    )
+                    .setNegativeButton(getString(R.string.cancel),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            }
+                    );
+            alertDialogBuilder.setView(promptsView);
+            alertDialogBuilder.show();
+
+            spinner = ((Spinner) promptsView.findViewById(R.id.spinner));
+            ArrayList localArrayList1 = new ArrayList();
+            boolean edited = false;
+
+            for (File localFile1 : new File(irpath).listFiles()) {
+                if (localFile1.isDirectory()) {
+                    if (!localArrayList1.contains(localFile1.getName())) {
+                        localArrayList1.add(localFile1.getName());
+                        edited = true;
+                    }
+                }
+
+                if (edited) {
+                    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                            android.R.layout.simple_spinner_item, localArrayList1);
+                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinner.setAdapter(dataAdapter);
+                }
+            }
+        } else if (key.equals(("theme"))) {
+            Log.i("Theme", "tan-tan");
+            SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+            if (settings.contains("theme")) {
+                if (settings.getString("theme", null).equals("1")) {
+                    super.setTheme(R.style.Holo );
+                } else if (settings.getString("theme", null).equals("2")) {
+                    super.setTheme( R.style.Holo_Light_DarkActionBar );
+                } else if (settings.getString("theme", null).equals("3")) {
+                    super.setTheme( R.style.Theme_Holo_Light );
+                }
+            }
+        }
         return true;
     }
 

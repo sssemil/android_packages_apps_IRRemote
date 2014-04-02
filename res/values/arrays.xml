@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="listThemes">
+        <item>Holo</item>
+        <item>Holo_Light_DarkActionBar</item>
+        <item>Theme_Holo_Light</item>
+    </string-array>
+
+    <string-array name="listValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+</resources>

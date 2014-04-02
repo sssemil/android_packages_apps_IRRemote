@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sssemil.sonyirremote.ir"
     android:versionCode="1"
-    android:versionName="1.6.0" >
+    android:versionName="1.6.1" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -17,7 +17,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Holo">
         <activity
             android:name="com.sssemil.sonyirremote.ir.ir"
             android:label="@string/app_name" >
@@ -29,11 +29,7 @@
         </activity>
         <activity
             android:name=".IRSettings"
-            android:theme="@style/AppTheme">
-        </activity>
-        <activity
-            android:name=".AddDevice"
-            android:theme="@style/AppTheme">
+            android:theme="@style/Holo">
         </activity>
     </application>
 

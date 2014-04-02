@@ -93,4 +93,12 @@ Wollen Sie fortfahren?</string>
     <string name="other">Andere</string>
     <string name="gtlst">Erste Liste…</string>
     <string name="are_u_s_del">Sind Sie sicher, dass Sie diesen Ordner endgültig löschen?</string>
+
+    <string name="select_dev">Wählen Sie Gerät </string>
+    <string name="submit">Einreichen</string>
+    <string name="submit_new_devD">Senden Neuer Gerätedateien </string>
+    <string name="submit_bug">Fehler einreichen</string>
+    <string name="submit_bugD">Sag mir, wenn Sie sehen, einige Fehler </string>
+    <string name="theme">Thema</string>
+    <string name="ch_thD">Ein anderes Thema wählen</string>
 </resources>
