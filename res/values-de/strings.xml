@@ -74,4 +74,23 @@ Wollen Sie fortfahren?</string>
     <string name="pos_ans">Ja</string>
     <string name="cancel">Stornieren</string>
     <string name="checking">Überprüfung…</string>
+    <string name="new_item">Neue Artikel </string>
+    <string name="crt_slf"> erfolgreich erstellt!</string>
+    <string name="pr_bck_ag">Drücken wieder zu verlassen</string>
+
+    <string name="add_new_device">Neues Gerät hinzufügen</string>
+    <string name="creates_folder_for_new_device_files">Erzeugt Ordner für neue Gerätedateien</string>
+    <string name="ddfl">Gerätedateien herunterladen </string>
+    <string name="ddflD">Wählen Sie das Gerät, um es Dateien herunterladen </string>
+    <string name="rmdfl">Gerätedateien entfernen </string>
+    <string name="rmdflD">Wählen Sie das Gerät, um es Dateien entfernen </string>
+    <string name="edit_devs">Geräte bearbeiten</string>
+    <string name="updateT">Aktualisierung</string>
+    <string name="updch">Aktualisierung zu überprüfen</string>
+    <string name="updchD">Überprüfen auf neue Version beim Start</string>
+    <string name="chfupd">Auf Update überprüfen</string>
+    <string name="chfupdD">Prüfen Sie, ob eine neuere Version </string>
+    <string name="other">Andere</string>
+    <string name="gtlst">Erste Liste…</string>
+    <string name="are_u_s_del">Sind Sie sicher, dass Sie diesen Ordner endgültig löschen?</string>
 </resources>

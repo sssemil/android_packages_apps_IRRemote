@@ -16,7 +16,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
@@ -48,6 +46,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
+
 /**
  * Copyright (c) 2014 Emil Suleymanov
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
@@ -57,9 +56,9 @@ public class ir extends Activity {
 
     public static final String PREFS_NAME = "SIRR";
     public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
-    public String http_path_root2 = "https://raw.githubusercontent.com/sssemil/SonyIRRemote/gh-pages/sonyirremote/";
-    public String http_path_last_download1 = "https://github.com/sssemil/SonyIRRemote/blob/gh-pages/sonyirremote/apk/SonyIRRemote-v";
-    public String http_path_last_download2 = ".apk?raw=true";
+    public String http_path_root2;
+    public String http_path_last_download1;
+    public String http_path_last_download2;
     public int state = 0;
     Spinner spinner, spinner6;
     private ArrayList localArrayList1;
@@ -77,12 +76,6 @@ public class ir extends Activity {
     String lastWord, test;
     boolean cont = false;
 
-    /*public void onTClick(View view) {
-        String key = "$...D....d.V..>.s.i..o...... ....}..F";
-        int length = key.length();
-        sendRawKey(key, length);
-    }*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,9 +84,12 @@ public class ir extends Activity {
         fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner));
         spinner6 = ((Spinner) findViewById(R.id.spinner6));
+        http_path_root2 = getString(R.string.http_path_root2);
+        http_path_last_download1 = getString(R.string.http_path_last_download1);
+        http_path_last_download2 = getString(R.string.http_path_last_download2);
         new Thread(new Runnable() {
             public void run() {
-                startIR();
+                IRCommon.getInstance().start();
             }
         }).start();
         prepIRKeys();
@@ -194,26 +190,18 @@ public class ir extends Activity {
             editor.putBoolean("isFirstRun", false);
             editor.commit();
         }
+
+        boolean checUpd = false;
+        SharedPreferences settings2 = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        if (!settings2.contains("checkUpd")) {
+            checUpd = false;
+        } else {
+            checUpd = settings.getBoolean("checkUpd", true);
+        }
+        if (checUpd) {
+            update(true);
+        }
     }
-
-    static {
-        System.loadLibrary("jni_sonyopenir");
-    }
-
-    public void restartIR() {
-        stopIR();
-        startIR();
-    }
-
-    public native int startIR();
-
-    public native int stopIR();
-
-    public native int learnKey(String filename);
-
-    public native int sendKey(String filename);
-
-    public native int sendRawKey(String key, int length);
 
     public void errorT(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
@@ -256,8 +244,8 @@ public class ir extends Activity {
         new Thread(new Runnable() {
             public void run() {
                 mProgressDialog.show();
-                restartIR();
-                state = learnKey(filename);
+                IRCommon.getInstance().restart();
+                state = IRCommon.getInstance().learn(filename);
                 if (state < 0) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -324,7 +312,7 @@ public class ir extends Activity {
     public void sendAction(final String filename) {
         new Thread(new Runnable() {
             public void run() {
-                state = sendKey(filename);
+                state = IRCommon.getInstance().send(filename);
                 if (state < 0) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -424,65 +412,18 @@ public class ir extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            setContentView(R.layout.settings_ir);
+            //setContentView(R.layout.settings_ir);
             main = false;
-            final Context thisS = this;
-
-            new Thread(new Runnable() {
-                public void run() {
-                    final GetAwItems getAwItems1 = new GetAwItems(ir.this);
-                    try {
-                        String ret = getAwItems1.execute().get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-
-                    spinner6 = ((Spinner) findViewById(R.id.spinner6));
-
-                    final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(thisS, android.R.layout.simple_spinner_item, ar);
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                spinner6.setAdapter(dataAdapter);
-                                spinner6.setSelection(0);
-                                prepItemBrandArray();
-                            }
-                            catch (NullPointerException e){}
-                        }
-                    });
-                }
-            }).start();
-
-            return true;
-        } else if (id == R.id.action_about) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.about));
-            PackageInfo pInfo = null;
-            String version = "?";
-            try {
-                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-            version = pInfo.versionName;
-            builder.setMessage(getResources().getString(R.string.license1) + " v" + version + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
-            builder.setPositiveButton(getString(R.string.pos_ans), null);
-            AlertDialog dialog = builder.show();
-
-            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-            messageView.setGravity(Gravity.CENTER);
+            Intent intent = new Intent(ir.this,
+                    IRSettings.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_exit) {
-            stopIR();
+            IRCommon.getInstance().stop();
             System.exit(0);
             return true;
         } else if (id == R.id.action_update) {
-            update();
+            update(false);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -492,10 +433,10 @@ public class ir extends Activity {
     public void onBackPressed() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastPress > 5000) {
-            Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
             lastPress = currentTime;
         } else {
-            stopIR();
+            IRCommon.getInstance().stop();
             super.onBackPressed();
         }
         setContentView(R.layout.activity_ir);
@@ -558,12 +499,6 @@ public class ir extends Activity {
 
             File dir = new File(irpath + item);
             FileUtils.deleteDirectory(dir);
-
-            /*spinner = ((Spinner) findViewById(R.id.spinner));
-            localArrayList1.remove(item);
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, localArrayList1);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(dataAdapter);*/
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.done));
@@ -1067,20 +1002,22 @@ public class ir extends Activity {
         }
     }
 
-    public void update() {
+    public void update(final boolean silent) {
         final GetLastVer getLastVer1 = new GetLastVer(ir.this);
         //TODO mif
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        mProgressDialog = new ProgressDialog(ir.this);
-        mProgressDialog.setMessage(getString(R.string.checking));
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.show();
-            }
-        });
+        if (!silent) {
+            mProgressDialog = new ProgressDialog(ir.this);
+            mProgressDialog.setMessage(getString(R.string.checking));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mProgressDialog.show();
+                }
+            });
+        }
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -1091,27 +1028,29 @@ public class ir extends Activity {
                     e.printStackTrace();
                 }
                 if (last_ver == "zirt") {
-                    adb.setTitle(getString(R.string.update));
-                    adb.setMessage(getString(R.string.ser3));
-                    adb.setIcon(android.R.drawable.ic_dialog_alert);
-                    adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            update();
-                        }
-                    });
+                    if (!silent) {
+                        adb.setTitle(getString(R.string.update));
+                        adb.setMessage(getString(R.string.ser3));
+                        adb.setIcon(android.R.drawable.ic_dialog_alert);
+                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                update(silent);
+                            }
+                        });
 
-                    adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //finish();
-                        }
-                    });
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressDialog.cancel();
-                            adb.show();
-                        }
-                    });
+                        adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        });
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressDialog.cancel();
+                                adb.show();
+                            }
+                        });
+                    }
                 } else {
                     String result = compare(cur_ver, last_ver);
                     boolean doUpdate = false;
@@ -1164,21 +1103,25 @@ public class ir extends Activity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mProgressDialog.cancel();
+                                if (!silent) {
+                                    mProgressDialog.cancel();
+                                }
                                 adb.show();
                             }
                         });
                     } else if (doUpdate == false) {
-                        adb.setTitle(getString(R.string.update));
-                        adb.setMessage(getString(R.string.already_new));
-                        adb.setPositiveButton(getString(R.string.pos_ans), null);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.cancel();
-                                adb.show();
-                            }
-                        });
+                        if (!silent) {
+                            adb.setTitle(getString(R.string.update));
+                            adb.setMessage(getString(R.string.already_new));
+                            adb.setPositiveButton(getString(R.string.pos_ans), null);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressDialog.cancel();
+                                    adb.show();
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -1217,45 +1160,6 @@ public class ir extends Activity {
                 return last_ver;
             } catch (IOException ex) {
                 Log.e("GetLastVer", ex.getMessage());
-                return null;
-            }
-        }
-    }
-
-    class GetAwItems extends AsyncTask<String, Integer, String> {
-
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        public GetAwItems(Context context) {
-            this.context = context;
-        }
-
-        protected String doInBackground(String... sUrl) {
-            try {
-                HttpGet httppost = new HttpGet(http_path_root2 + "downloads");
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity ht = response.getEntity();
-
-                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-
-                InputStream is = buf.getContent();
-
-                BufferedReader r = new BufferedReader(new InputStreamReader(is));
-
-                StringBuilder total = new StringBuilder();
-                String line;
-                ar.clear();
-                while ((line = r.readLine()) != null) {
-                    total.append(line + "\n");
-                    ar.add(line);
-                }
-                Log.i("line", String.valueOf(ar.size()));
-
-                return ar.get(0);
-            } catch (IOException ex) {
                 return null;
             }
         }

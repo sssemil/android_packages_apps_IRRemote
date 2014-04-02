@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/edit_devs">
+        <Preference
+            android:title="@string/add_new_device"
+            android:summary="@string/creates_folder_for_new_device_files"
+            android:key="addBtn"/>
+        <Preference
+            android:title="@string/ddfl"
+            android:summary="@string/ddflD"
+            android:key="downBtn" />
+        <Preference
+            android:title="@string/rmdfl"
+            android:summary="@string/rmdflD"
+            android:key="rmBtn" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/updateT">
+        <CheckBoxPreference
+            android:title="@string/updch"
+            android:defaultValue="false"
+            android:summary="@string/updchD"
+            android:key="autoUpd" />
+        <Preference
+            android:title="@string/chfupd"
+            android:summary="@string/chfupdD"
+            android:key="checkUpd" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/other">
+        <Preference
+            android:title="@string/about"
+            android:summary="@string/license1"
+            android:key="aboutPref" />
+    </PreferenceCategory>
+</PreferenceScreen>

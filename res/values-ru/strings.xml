@@ -3,7 +3,7 @@
     <string name="ChanelMn">Канал -</string>
     <string name="ChanelPl">Канал +</string>
     <string name="Down">Вниз</string>
-    <string name="Enter">OK</string>
+    <string name="Enter">Ввести</string>
     <string name="Left">Влево</string>
     <string name="Right">Вправо</string>
     <string name="Send_signal">Покинуть режим записи</string>
@@ -46,7 +46,7 @@
 
 Хотите обновиться до последней версии?</string>
     <string name="downloading_new">Обновление скачивается…</string>
-    <string name="already_new">Вы уже установили самую последнюю версию!</string>
+    <string name="already_new">У вас уже установлена последняя версия!</string>
     <string name="down_keys">Загрузка базы кнопок…</string>
     <string name="failed_lk">Не удалось выучить команду! </string>
     <string name="failed_sk">Не удалось отправить команду! </string>
@@ -73,4 +73,22 @@
     <string name="pos_ans">Да</string>
     <string name="cancel">Отменить</string>
     <string name="checking">Идет проверка…</string>
+    <string name="new_item">Новая запись </string>
+    <string name="crt_slf"> успешно создана!</string>
+    <string name="pr_bck_ag">Нажмите снова для выхода</string>
+    <string name="add_new_device">Добавить новое устройство</string>
+    <string name="creates_folder_for_new_device_files">Зоздает папку для нового устройства</string>
+    <string name="ddfl">Скачать файлы устройства</string>
+    <string name="ddflD">Выбрать устройство для загруски его файлов</string>
+    <string name="rmdfl">Удалить файлы устройства</string>
+    <string name="rmdflD">Выбрать устройство для удаления его файлов</string>
+    <string name="edit_devs">Редактировать устройства</string>
+    <string name="updateT">Обновления</string>
+    <string name="updch">Проверка обновлений</string>
+    <string name="updchD">Проверять на наличие обновлений при каждой загрузке</string>
+    <string name="chfupd">Обновить</string>
+    <string name="chfupdD">Проверять на наличие обновлений</string>
+    <string name="other">Другое</string>
+    <string name="gtlst">Получение списка…</string>
+    <string name="are_u_s_del">Вы уверены, что хотите удалить эту папку?</string>
 </resources>

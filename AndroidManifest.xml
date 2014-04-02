@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sssemil.sonyirremote.ir"
     android:versionCode="1"
-    android:versionName="1.5.8" >
+    android:versionName="1.6.0" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -26,6 +26,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".IRSettings"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".AddDevice"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 

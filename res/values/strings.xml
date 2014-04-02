@@ -10,6 +10,10 @@
     <string name="eight" translatable="false">8</string>
     <string name="nine" translatable="false">9</string>
     <string name="zero" translatable="false">0</string>
+    <string name="http_path_root2" translatable="false">https://raw.githubusercontent.com/sssemil/android_packages_apps_SonyIRRemote/gh-pages/sonyirremote/</string>
+    <string name="http_path_last_download1" translatable="false">https://github.com/sssemil/SonyIRRemote/blob/gh-pages/sonyirremote/apk/SonyIRRemote-v</string>
+    <string name="http_path_last_download2" translatable="false">.apk?raw=true</string>
+
     <string name="ChanelMn">Chanel -</string>
     <string name="ChanelPl">Chanel +</string>
     <string name="Down">Down</string>
@@ -82,5 +86,22 @@ Do you want to continue?</string>
     <string name="downloading">Downloading…</string>
     <string name="pos_ans">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="checking">Checking…</string>
+    <string name="checking">Checking…</string><string name="new_item">New item </string>
+    <string name="crt_slf"> created successfully!</string>
+    <string name="pr_bck_ag">Press back again to exit</string>
+    <string name="add_new_device">Add new device</string>
+    <string name="creates_folder_for_new_device_files">Creates folder for new device files</string>
+    <string name="ddfl">Download device files</string>
+    <string name="ddflD">Choose device to download it`s files</string>
+    <string name="rmdfl">Remove device files</string>
+    <string name="rmdflD">Choose device to remove it`s files</string>
+    <string name="edit_devs">Edit devices</string>
+    <string name="updateT">Update</string>
+    <string name="updch">Update Check</string>
+    <string name="updchD">Check for new version on startup</string>
+    <string name="chfupd">Check for update</string>
+    <string name="chfupdD">Check for a newer version</string>
+    <string name="other">Other</string>
+    <string name="gtlst">Getting list…</string>
+    <string name="are_u_s_del">Are you sure you want to permanently delete this folder?</string>
 </resources>
