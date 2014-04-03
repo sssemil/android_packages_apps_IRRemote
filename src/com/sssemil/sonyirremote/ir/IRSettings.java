@@ -18,6 +18,7 @@ import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -76,14 +77,15 @@ public class IRSettings extends PreferenceActivity {
         SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (settings.contains("theme")) {
             if (settings.getString("theme", null).equals("1")) {
-                super.setTheme(R.style.Holo );
+                super.setTheme(R.style.Holo);
             } else if (settings.getString("theme", null).equals("2")) {
-                super.setTheme( R.style.Holo_Light_DarkActionBar );
+                super.setTheme(R.style.Holo_Light_DarkActionBar);
             } else if (settings.getString("theme", null).equals("3")) {
-                super.setTheme( R.style.Theme_Holo_Light );
+                super.setTheme(R.style.Theme_Holo_Light);
             }
         }
         addPreferencesFromResource(R.xml.settings);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
@@ -96,6 +98,17 @@ public class IRSettings extends PreferenceActivity {
             e.printStackTrace();
         }
         cur_ver = pInfo.versionName;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public String compare(String v1, String v2) {
@@ -499,11 +512,11 @@ public class IRSettings extends PreferenceActivity {
             SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
             if (settings.contains("theme")) {
                 if (settings.getString("theme", null).equals("1")) {
-                    super.setTheme(R.style.Holo );
+                    super.setTheme(R.style.Holo);
                 } else if (settings.getString("theme", null).equals("2")) {
-                    super.setTheme( R.style.Holo_Light_DarkActionBar );
+                    super.setTheme(R.style.Holo_Light_DarkActionBar);
                 } else if (settings.getString("theme", null).equals("3")) {
-                    super.setTheme( R.style.Theme_Holo_Light );
+                    super.setTheme(R.style.Theme_Holo_Light);
                 }
             }
         }

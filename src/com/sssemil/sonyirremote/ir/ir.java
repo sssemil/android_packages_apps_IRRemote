@@ -82,11 +82,11 @@ public class ir extends Activity {
         SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (settings.contains("theme")) {
             if (settings.getString("theme", null).equals("1")) {
-                super.setTheme(R.style.Holo );
+                super.setTheme(R.style.Holo);
             } else if (settings.getString("theme", null).equals("2")) {
-                super.setTheme( R.style.Holo_Light_DarkActionBar );
+                super.setTheme(R.style.Holo_Light_DarkActionBar);
             } else if (settings.getString("theme", null).equals("3")) {
-                super.setTheme( R.style.Theme_Holo_Light );
+                super.setTheme(R.style.Theme_Holo_Light);
             }
         }
         setContentView(R.layout.activity_ir);

@@ -4,7 +4,7 @@
         <Preference
             android:title="@string/add_new_device"
             android:summary="@string/creates_folder_for_new_device_files"
-            android:key="addBtn"/>
+            android:key="addBtn" />
         <Preference
             android:title="@string/ddfl"
             android:summary="@string/ddflD"
@@ -29,7 +29,7 @@
         <Preference
             android:title="@string/submit_new_dev"
             android:summary="@string/submit_new_devD"
-            android:key="sbmtDev"/>
+            android:key="sbmtDev" />
         <Preference
             android:title="@string/submit_bug"
             android:summary="@string/submit_bugD"

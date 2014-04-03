@@ -86,7 +86,8 @@ Do you want to continue?</string>
     <string name="downloading">Downloading…</string>
     <string name="pos_ans">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="checking">Checking…</string><string name="new_item">New item </string>
+    <string name="checking">Checking…</string>
+    <string name="new_item">New item </string>
     <string name="crt_slf"> created successfully!</string>
     <string name="pr_bck_ag">Press back again to exit</string>
     <string name="add_new_device">Add new device</string>

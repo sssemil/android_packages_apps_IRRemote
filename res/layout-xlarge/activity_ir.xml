@@ -36,6 +36,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true">
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -274,12 +275,12 @@
             android:layout_alignStart="@+id/button20" />
 
         <Button
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:text="@string/mute"
-        android:id="@+id/button22"
-        android:onClick="onMuteClick"
-        android:textSize="30dp"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="@string/mute"
+            android:id="@+id/button22"
+            android:onClick="onMuteClick"
+            android:textSize="30dp"
             android:layout_below="@+id/button21"
             android:layout_toRightOf="@+id/button15" />
 

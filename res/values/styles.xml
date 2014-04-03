@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="Holo" parent="android:Theme.Holo">
         <!-- Customize your theme here. -->
@@ -12,5 +11,4 @@
     <style name="Theme_Holo_Light" parent="android:Theme.Holo.Light">
         <!-- Customize your theme here. -->
     </style>
-
 </resources>
