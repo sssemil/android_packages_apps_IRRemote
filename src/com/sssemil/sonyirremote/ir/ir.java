@@ -25,7 +25,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -500,7 +499,7 @@ public class ir extends Activity {
     }
 
 
-    public void onRemoveClick(View view) {
+    /*public void onRemoveClick(View view) {
         //TODO fix
         try {
             spinner = (Spinner) findViewById(R.id.spinner);
@@ -538,7 +537,7 @@ public class ir extends Activity {
             });
             adb.show();
         }
-    }
+    }*/
 
     public void onPowerClick(View view) {
         if (prepBISpinner()) ;
@@ -858,6 +857,71 @@ public class ir extends Activity {
 
                 Toast.makeText(this, "enter" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/enter.bin");
+            }
+        }
+    }
+
+    public void onTsttClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                Toast.makeText(this, "tstt" + brand, Toast.LENGTH_SHORT).show();
+                sendKeyBool(irpath + item + "/tstt.bin");
+            } else if (wrt) {
+
+
+                Toast.makeText(this, "tstt" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+                learnKeyBool(irpath + item + "/tstt.bin");
+            }
+        }
+    }
+
+    public void onReturnClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                Toast.makeText(this, "return" + brand, Toast.LENGTH_SHORT).show();
+                sendKeyBool(irpath + item + "/return.bin");
+            } else if (wrt) {
+
+
+                Toast.makeText(this, "return" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+                learnKeyBool(irpath + item + "/return.bin");
+            }
+        }
+    }
+
+    public void onOptionsClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                Toast.makeText(this, "options" + brand, Toast.LENGTH_SHORT).show();
+                sendKeyBool(irpath + item + "/options.bin");
+            } else if (wrt) {
+
+
+                Toast.makeText(this, "options" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+                learnKeyBool(irpath + item + "/options.bin");
+            }
+        }
+    }
+
+
+    public void onGuideClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                Toast.makeText(this, "guide" + brand, Toast.LENGTH_SHORT).show();
+                sendKeyBool(irpath + item + "/guide.bin");
+            } else if (wrt) {
+
+
+                Toast.makeText(this, "guide" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
+                learnKeyBool(irpath + item + "/guide.bin");
             }
         }
     }

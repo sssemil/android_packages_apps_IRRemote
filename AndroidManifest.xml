@@ -27,9 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".IRSettings"
-            android:theme="@style/Holo"></activity>
+        <activity android:name=".IRSettings"></activity>
     </application>
 
 </manifest>

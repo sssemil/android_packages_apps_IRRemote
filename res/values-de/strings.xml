@@ -101,4 +101,7 @@ Wollen Sie fortfahren?</string>
     <string name="submit_bugD">Sag mir, wenn Sie sehen, einige Fehler </string>
     <string name="theme">Thema</string>
     <string name="ch_thD">Ein anderes Thema wählen</string>
+    <string name="options">Optionen</string>
+    <string name="guide">Führung</string>
+    <string name="returnbtn">Rück</string>
 </resources>

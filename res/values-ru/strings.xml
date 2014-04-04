@@ -98,4 +98,7 @@
     <string name="submit_bugD">Сказать мне о замеченной ошибке</string>
     <string name="theme">Тема</string>
     <string name="ch_thD">Выбрать другую тему</string>
+    <string name="options">Опции</string>
+    <string name="guide">Гид</string>
+    <string name="returnbtn">Назад</string>
 </resources>
