@@ -16,6 +16,14 @@
     <string name="vol" translatable="false">VOL</string>
     <string name="prog" translatable="false">PROG</string>
     <string name="tstt" translatable="false">-/--</string>
+    <string name="plus" translatable="false">+</string>
+    <string name="minus" translatable="false">—</string>
+    <string name="up" translatable="false">↑</string>
+    <string name="down" translatable="false">↓</string>
+    <string name="ok_btn" translatable="false">✥</string>
+    <string name="right" translatable="false">→</string>
+    <string name="left" translatable="false">←</string>
+    <string name="power_btn" translatable="false">I/O</string>
 
     <string name="ChanelMn">Chanel -</string>
     <string name="ChanelPl">Chanel +</string>
@@ -120,4 +128,9 @@ Do you want to continue?</string>
     <string name="options">Options</string>
     <string name="guide">Guide</string>
     <string name="returnbtn">Return</string>
+
+    <string name="irremote_dialog_learning_sig_desc_closer_txt">"Aim the IR transmitter at the receiver as close as possible, as shown in the figure.
+
+Select Start and press the button you want the app to learn."</string>
+    <string name="start">Start</string>
 </resources>

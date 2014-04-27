@@ -101,4 +101,9 @@
     <string name="options">Опции</string>
     <string name="guide">Гид</string>
     <string name="returnbtn">Назад</string>
+    <string name="irremote_dialog_learning_sig_desc_closer_txt">"Поднесите ИК-передатчик к приемнику как можно ближе, как показано на рисунке.
+
+Выберите \"Начать\" и нажмите кнопку, действие которой необходимо запомнить."</string>
+
+    <string name="start">Начать</string>
 </resources>

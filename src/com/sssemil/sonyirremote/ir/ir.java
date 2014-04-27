@@ -16,13 +16,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -68,17 +72,14 @@ public class ir extends Activity {
     public boolean wrt = false;
     long lastPress;
     ProgressDialog mProgressDialog;
-    //public ArrayList<String> ar = new ArrayList<String>();
     public String last_ver = "zirt";
     public String cur_ver;
-    /*String resp = "ko";
-    String lastWord, test;
-    boolean cont = false;*/
+    SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (settings.contains("theme")) {
             if (settings.getString("theme", null).equals("1")) {
                 super.setTheme(R.style.Holo);
@@ -178,6 +179,342 @@ public class ir extends Activity {
             }
         };
         thread.start();
+
+        Thread btn3 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button3);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/chanelPl.bin");
+                                                    sleep(100);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/chanelPl.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn3.start();
+
+        Thread btn4 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button4);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/chanelMn.bin");
+                                                    sleep(100);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/chanelMn.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn4.start();
+
+        Thread btn5 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button5);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/volPl.bin");
+                                                    sleep(100);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/volPl.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn5.start();
+
+        Thread btn6 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button6);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/volMn.bin");
+                                                    sleep(100);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/volMn.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn6.start();
+
+        Thread btn17 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button17);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/up.bin");
+                                                    sleep(100);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/up.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn17.start();
+
+        Thread btn18 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button18);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/down.bin");
+                                                    sleep(100);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/down.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn18.start();
+
+        Thread btn20 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button20);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/right.bin");
+                                                    sleep(100);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/right.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn20.start();
+
+        Thread btn21 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button21);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/left.bin");
+                                                    sleep(100);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/left.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn21.start();
     }
 
     public void firstRunChecker() {
@@ -362,35 +699,6 @@ public class ir extends Activity {
         }
     }
 
-    public void onAddDeviceClick(View paramView) {
-        try {
-            itemN = ((EditText) findViewById(R.id.editText));
-            brandN = ((EditText) findViewById(R.id.editText2));
-            if (itemN.getText() != null || brandN.getText() != null) {
-                String all = brandN.getText().toString() + "-" + itemN.getText().toString();
-                if (!all.equals("-")) {
-                    File localFile2 = new File(irpath + brandN.getText().toString() + "-" + itemN.getText().toString());
-                    if (!localFile2.isDirectory()) {
-                        localFile2.mkdirs();
-                    }
-                    prepItemBrandArray();
-                }
-            } else {
-                throw new NullPointerException();
-            }
-        } catch (NullPointerException ex) {
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.error));
-            adb.setMessage(getString(R.string.you_need_to_select));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            adb.show();
-        }
-    }
-
     public static boolean fixPermissionsForIr() {
         //TODO add all this to ramdisk
         // IR Paths
@@ -457,22 +765,52 @@ public class ir extends Activity {
             wrt = false;
             final Button btntxt = (Button) findViewById(R.id.button2);
             btntxt.setText(getResources().getString(R.string.Write_signal));
-            btntxt.setTextColor(Color.WHITE);
+            settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+            if (settings.contains("theme")) {
+                if (settings.getString("theme", null).equals("1")) {
+                    btntxt.setTextColor(Color.WHITE);
+                } else {
+                    btntxt.setTextColor(Color.BLACK);
+                }
+            }
         } else if (!wrt) {
-            wrt = true;
-            final Button btntxt = (Button) findViewById(R.id.button2);
-            btntxt.setText(getResources().getString(R.string.Send_signal));
-            btntxt.setTextColor(Color.RED);
+            //TODO add warning
+            final AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            final View promptsView = LayoutInflater.from(this).inflate(R.layout.wrt_mode, null);
+            adb.setTitle(getString(R.string.warning));
+            adb.setView(promptsView);
+            adb.setPositiveButton(getString(R.string.start), null);
+            adb
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.start),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    wrt = true;
+                                    final Button btntxt = (Button) findViewById(R.id.button2);
+                                    btntxt.setText(getResources().getString(R.string.Send_signal));
+                                    btntxt.setTextColor(Color.RED);
 
-            File f = new File(irpath + item);
-            if (!f.isDirectory()) {
-                f.mkdirs();
-            }
+                                    File f = new File(irpath + item);
+                                    if (!f.isDirectory()) {
+                                        f.mkdirs();
+                                    }
 
-            File f2 = new File(irpath + brand);
-            if (!f2.isDirectory()) {
-                f2.mkdirs();
-            }
+                                    File f2 = new File(irpath + brand);
+                                    if (!f2.isDirectory()) {
+                                        f2.mkdirs();
+                                    }
+                                }
+                            }
+                    )
+                    .setNegativeButton(getString(R.string.cancel),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            }
+                    );
+            AlertDialog alertDialog = adb.show();
+            alertDialog.getWindow().setLayout(1350, 1000);
         }
     }
 
@@ -498,54 +836,12 @@ public class ir extends Activity {
         return result;
     }
 
-
-    /*public void onRemoveClick(View view) {
-        //TODO fix
-        try {
-            spinner = (Spinner) findViewById(R.id.spinner);
-            item = spinner.getSelectedItem().toString();
-
-            File dir = new File(irpath + item);
-            FileUtils.deleteDirectory(dir);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.done));
-            builder.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
-            builder.setPositiveButton(getString(R.string.pos_ans), null);
-            builder.show();
-            prepItemBrandArray();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.error));
-            adb.setMessage(getString(R.string.you_need_to_select));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            adb.show();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.error));
-            adb.setMessage(getString(R.string.failed_del_fl_io));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            adb.show();
-        }
-    }*/
-
-    public void onPowerClick(View view) {
+    public void onPowerClick(final View view) {
         if (prepBISpinner()) ;
         {
             result = false;
             if (!wrt) {
                 Toast.makeText(this, "Power" + brand, Toast.LENGTH_SHORT).show();
-
                 sendKeyBool(irpath + item + "/power.bin");
             } else if (wrt) {
                 Toast.makeText(this, "Power" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
@@ -573,7 +869,7 @@ public class ir extends Activity {
         }
     }
 
-    public void onChanelMnSonClick(View view) {
+    public void onChanelMnClick(View view) {
         if (prepBISpinner()) ;
         {
             result = false;
@@ -1077,7 +1373,6 @@ public class ir extends Activity {
 
     public void update(final boolean silent) {
         final GetLastVer getLastVer1 = new GetLastVer(ir.this);
-        //TODO mif
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
         if (!silent) {
             mProgressDialog = new ProgressDialog(ir.this);
@@ -1237,197 +1532,4 @@ public class ir extends Activity {
             }
         }
     }
-
-    /*public void doOnDown() {
-        final AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        mProgressDialog = new ProgressDialog(ir.this);
-        mProgressDialog.setMessage(getString(R.string.checking));
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.show();
-            }
-        });
-        new Thread(new Runnable() {
-            public void run() {
-                cont = false;
-                spinner6 = ((Spinner) findViewById(R.id.spinner6));
-                try {
-                    test = spinner6.getSelectedItem().toString();
-                    lastWord = test.substring(test.lastIndexOf(" ") + 1);
-                    cont = true;
-                } catch (NullPointerException ex) {
-                    cont = false;
-                    //AlertDialog.Builder adb = new AlertDialog.Builder(this);
-                    adb.setTitle(getString(R.string.error));
-                    adb.setMessage(getString(R.string.you_need_to_select));
-                    adb.setIcon(android.R.drawable.ic_dialog_alert);
-                    adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressDialog.cancel();
-                            adb.show();
-                        }
-                    });
-                }
-                if (cont) {
-                    mProgressDialog.setMessage(getString(R.string.downloading));
-                    mProgressDialog.setIndeterminate(true);
-                    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressDialog.cancel();
-                            mProgressDialog.show();
-                        }
-                    });
-// execute this when the downloader must be fired
-                    final DownloadTask downloadTask = new DownloadTask(ir.this);
-                    try {
-                        downloadTask.execute(lastWord).get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-                    mProgressDialog.cancel();
-
-                    if (!resp.equals("ok")) {
-                        adb.setTitle(getString(R.string.download));
-                        adb.setMessage(getString(R.string.ser3));
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
-                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                doOnDown();
-                            }
-                        });
-
-                        adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        });
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.cancel();
-                                adb.show();
-                            }
-                        });
-                    } else {
-                        adb.setTitle(getString(R.string.downloadT));
-                        adb.setMessage(getString(R.string.done));
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
-                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.cancel();
-                                adb.show();
-                            }
-                        });
-                    }
-
-                    resp = "ko";
-                }
-
-
-            }
-        }).start();
-    }
-
-    public void onDownItemsClick(View view) {
-        doOnDown();
-        prepItemBrandArray();
-    }
-
-    class DownloadTask extends AsyncTask<String, Integer, String> {
-
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        public DownloadTask(Context context) {
-            this.context = context;
-        }
-
-        protected String doInBackground(String... sUrl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                Log.v("DownloadTask", "Starting... ");
-                URL url = new URL(sUrl[0]);
-                String filePath = url.getFile();
-                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/" + fileName);
-                Log.v("DownloadTask", "output " + "/sdcard/" + fileName);
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    output.write(data, 0, count);
-                }
-                Log.v("DownloadTask", "Done!");
-                //---------Unzip--------
-                String zipFile = "/sdcard/" + fileName;
-                String unzipLocation = irpath;
-
-                Decompress d = new Decompress(zipFile, unzipLocation);
-                d.unzip();
-                //----------------------
-                resp = "ok";
-                return "ok";
-            } catch (Exception e) {
-                Log.e("DownloadTask", e.getMessage());
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-            }
-        }
-    }*/
 }

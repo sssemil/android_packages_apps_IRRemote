@@ -104,4 +104,8 @@ Wollen Sie fortfahren?</string>
     <string name="options">Optionen</string>
     <string name="guide">Führung</string>
     <string name="returnbtn">Rück</string>
+    <string name="irremote_dialog_learning_sig_desc_closer_txt">"Richten Sie den Infrarotsender in möglichst kurzem Abstand auf den Empfänger, wie in der Abbildung dargestellt.
+
+Wählen Sie „Start“ und drücken Sie auf die Taste, die von der App gelernt werden soll."</string>
+    <string name="start">Start</string>
 </resources>

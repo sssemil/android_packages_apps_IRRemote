@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sssemil.sonyirremote.ir.Zip.Compress;
 import com.sssemil.sonyirremote.ir.Zip.Decompress;
@@ -74,16 +75,6 @@ public class IRSettings extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
-        if (settings.contains("theme")) {
-            if (settings.getString("theme", null).equals("1")) {
-                super.setTheme(R.style.Holo);
-            } else if (settings.getString("theme", null).equals("2")) {
-                super.setTheme(R.style.Holo_Light_DarkActionBar);
-            } else if (settings.getString("theme", null).equals("3")) {
-                super.setTheme(R.style.Theme_Holo_Light);
-            }
-        }
         addPreferencesFromResource(R.xml.settings);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         http_path_root2 = getString(R.string.http_path_root2);
@@ -98,6 +89,16 @@ public class IRSettings extends PreferenceActivity {
             e.printStackTrace();
         }
         cur_ver = pInfo.versionName;
+        SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        if (settings.contains("theme")) {
+            if (settings.getString("theme", null).equals("1")) {
+                super.setTheme(R.style.Holo);
+            } else if (settings.getString("theme", null).equals("2")) {
+                super.setTheme(R.style.Holo_Light_DarkActionBar);
+            } else if (settings.getString("theme", null).equals("3")) {
+                super.setTheme(R.style.Theme_Holo_Light);
+            }
+        }
     }
 
     @Override
@@ -303,14 +304,14 @@ public class IRSettings extends PreferenceActivity {
             alertDialogBuilder.setTitle(getString(R.string.add_new_device));
             alertDialogBuilder
                     .setCancelable(false)
-                    .setPositiveButton("OK",
+                    .setPositiveButton(getString(R.string.pos_ans),
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     onAddDeviceClick(promptsView);
                                 }
                             }
                     )
-                    .setNegativeButton("Cancel",
+                    .setNegativeButton(getString(R.string.cancel),
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.cancel();
@@ -521,6 +522,23 @@ public class IRSettings extends PreferenceActivity {
             }
         }
         return true;
+    }
+
+    public void restart() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Intent i = getBaseContext().getPackageManager()
+                            .getLaunchIntentForPackage(getBaseContext().getPackageName());
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                } catch (NullPointerException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+        t.start();
     }
 
     class DownloadTask extends AsyncTask<String, Integer, String> {
@@ -836,6 +854,33 @@ public class IRSettings extends PreferenceActivity {
             }
             return null;
         }
+    }
+
+    long lastPress;
+
+    public void onBackPressed() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastPress > 5000) {
+            Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
+            lastPress = currentTime;
+        } else {
+            IRCommon.getInstance().stop();
+            super.onBackPressed();
+        }
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Intent i = getBaseContext().getPackageManager()
+                            .getLaunchIntentForPackage(getBaseContext().getPackageName());
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                } catch (NullPointerException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+        t.start();
     }
 
     class GetLastVer extends AsyncTask<String, Integer, String> {
