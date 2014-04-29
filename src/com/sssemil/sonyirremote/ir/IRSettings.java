@@ -71,6 +71,8 @@ public class IRSettings extends PreferenceActivity {
     public String cur_ver;
     EditText brandN, itemN;
     Spinner spinner;
+    boolean changed = false;
+    String saved_theme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +93,12 @@ public class IRSettings extends PreferenceActivity {
         cur_ver = pInfo.versionName;
         SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (settings.contains("theme")) {
-            if (settings.getString("theme", null).equals("1")) {
+            saved_theme = settings.getString("theme", null);
+            if (saved_theme.equals("1")) {
                 super.setTheme(R.style.Holo);
-            } else if (settings.getString("theme", null).equals("2")) {
+            } else if (saved_theme.equals("2")) {
                 super.setTheme(R.style.Holo_Light_DarkActionBar);
-            } else if (settings.getString("theme", null).equals("3")) {
+            } else if (saved_theme.equals("3")) {
                 super.setTheme(R.style.Theme_Holo_Light);
             }
         }
@@ -320,10 +323,6 @@ public class IRSettings extends PreferenceActivity {
                     );
             alertDialogBuilder.setView(promptsView);
             alertDialogBuilder.show();
-
-            /*Intent intent = new Intent(this,
-                    AddDevice.class);
-            startActivity(intent);*/
         } else if (key.equals("downBtn")) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setMessage(getString(R.string.gtlst));
@@ -382,7 +381,6 @@ public class IRSettings extends PreferenceActivity {
                         final int selected = which;
                         dialog.dismiss();
                         final AlertDialog.Builder adb = new AlertDialog.Builder(thisS);
-                        //TODO add
                         adb.setTitle(getString(R.string.warning));
                         adb.setMessage(getString(R.string.are_u_s_del));
                         adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -509,7 +507,6 @@ public class IRSettings extends PreferenceActivity {
                 }
             }
         } else if (key.equals(("theme"))) {
-            Log.i("Theme", "tan-tan");
             SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
             if (settings.contains("theme")) {
                 if (settings.getString("theme", null).equals("1")) {
@@ -663,7 +660,6 @@ public class IRSettings extends PreferenceActivity {
 
     public void update() {
         final GetLastVer getLastVer1 = new GetLastVer(this);
-        //TODO mif
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(getString(R.string.checking));
@@ -867,20 +863,7 @@ public class IRSettings extends PreferenceActivity {
             IRCommon.getInstance().stop();
             super.onBackPressed();
         }
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Intent i = getBaseContext().getPackageManager()
-                            .getLaunchIntentForPackage(getBaseContext().getPackageName());
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i);
-                } catch (NullPointerException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
-        t.start();
+        finish();
     }
 
     class GetLastVer extends AsyncTask<String, Integer, String> {

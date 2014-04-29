@@ -16,7 +16,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +25,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -91,7 +89,7 @@ public class ir extends Activity {
         }
         setContentView(R.layout.activity_ir);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        fixPermissionsForIr();
+        //fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner));
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
@@ -699,12 +697,12 @@ public class ir extends Activity {
         }
     }
 
-    public static boolean fixPermissionsForIr() {
+    /*public static boolean fixPermissionsForIr() {
         //TODO add all this to ramdisk
         // IR Paths
-        String[] irEnable = {"su", "-c", "chown system:sdcard_rw /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
-        String[] enablePermissions = {"su", "-c", "chmod 220 /sys/devices/platform/ir_remote_control/enable"};
-        String[] devicePermissions = {"su", "-c", "chmod 660 /dev/ttyHSL2"};
+        String[] irEnable = {"su", "-c", "chown system:system /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
+        String[] enablePermissions = {"su", "-c", "chmod 222 /sys/devices/platform/ir_remote_control/enable"};
+        String[] devicePermissions = {"su", "-c", "chmod 666 /dev/ttyHSL2"};
         try {
             // Try to enable Infrared Devices
             Runtime.getRuntime().exec(irEnable);
@@ -716,7 +714,7 @@ public class ir extends Activity {
         } finally {
             return true;
         }
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
