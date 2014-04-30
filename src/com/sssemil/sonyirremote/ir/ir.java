@@ -73,7 +73,7 @@ public class ir extends Activity {
     boolean result = false;
     private ArrayList localArrayList1;
 
-    public static boolean fixPermissionsForIr() {
+    /*public static boolean fixPermissionsForIr() {
         //TODO add all this to ramdisk
         // IR Paths
         String[] irEnable = {"su", "-c", "chown system:system /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
@@ -90,7 +90,7 @@ public class ir extends Activity {
         } finally {
             return true;
         }
-    }
+    }*/
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -136,7 +136,7 @@ public class ir extends Activity {
         }
         setContentView(R.layout.activity_ir);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        fixPermissionsForIr();
+        //fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner));
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
