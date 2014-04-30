@@ -74,7 +74,6 @@ public class ir extends Activity {
     private ArrayList localArrayList1;
 
     /*public static boolean fixPermissionsForIr() {
-        //TODO add all this to ramdisk
         // IR Paths
         String[] irEnable = {"su", "-c", "chown system:system /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
         String[] enablePermissions = {"su", "-c", "chmod 222 /sys/devices/platform/ir_remote_control/enable"};
@@ -669,8 +668,13 @@ public class ir extends Activity {
     public void firstRunChecker() {
         boolean isFirstRun = true;
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences settings2 = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (!settings.contains("isFirstRun")) {
             isFirstRun = true;
+            SharedPreferences.Editor editor2 = settings2.edit();
+            editor2.putString("theme", "1");
+            editor2.putBoolean("autoUpd", true);
+            editor2.commit();
         } else {
             isFirstRun = settings.getBoolean("isFirstRun", false);
         }
@@ -686,11 +690,10 @@ public class ir extends Activity {
         }
 
         boolean checUpd = false;
-        SharedPreferences settings2 = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (!settings2.contains("checkUpd")) {
             checUpd = false;
         } else {
-            checUpd = settings.getBoolean("checkUpd", true);
+            checUpd = settings2.getBoolean("checkUpd", true);
         }
         if (checUpd) {
             update(true);
@@ -1449,7 +1452,6 @@ public class ir extends Activity {
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
         private Context context;
-        private PowerManager.WakeLock mWakeLock;
 
         public setUUID(Context context) {
             this.context = context;
@@ -1457,7 +1459,6 @@ public class ir extends Activity {
 
         protected String doInBackground(String... UUID) {
             try {
-                Log.i("setUUID", UUID.toString());
                 HttpGet httppost = new HttpGet("http://sssemil.comli.com/uuid.php?uuid=" + UUID[0]);
                 HttpResponse response = httpclient.execute(httppost);
                 response.getEntity();

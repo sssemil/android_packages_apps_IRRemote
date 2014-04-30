@@ -19,7 +19,8 @@
         android:layout_toRightOf="@+id/imageView"
         android:gravity="center"
         android:text="@string/irremote_dialog_learning_sig_desc_closer_txt"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:contentDescription="" />
 
     <ImageView
         android:id="@+id/imageView"
