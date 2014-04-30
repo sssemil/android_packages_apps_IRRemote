@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -23,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -44,6 +42,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -61,18 +60,66 @@ public class ir extends Activity {
     public String http_path_last_download1;
     public String http_path_last_download2;
     public int state = 0;
-    Spinner spinner;
-    private ArrayList localArrayList1;
-    EditText brandN, itemN;
-    boolean main = true;
     public String brand;
     public String item;
     public boolean wrt = false;
-    long lastPress;
-    ProgressDialog mProgressDialog;
     public String last_ver = "zirt";
     public String cur_ver;
+    Spinner spinner;
+    boolean main = true;
+    long lastPress;
+    ProgressDialog mProgressDialog;
     SharedPreferences settings;
+    boolean result = false;
+    private ArrayList localArrayList1;
+
+    public static boolean fixPermissionsForIr() {
+        //TODO add all this to ramdisk
+        // IR Paths
+        String[] irEnable = {"su", "-c", "chown system:system /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
+        String[] enablePermissions = {"su", "-c", "chmod 222 /sys/devices/platform/ir_remote_control/enable"};
+        String[] devicePermissions = {"su", "-c", "chmod 666 /dev/ttyHSL2"};
+        try {
+            // Try to enable Infrared Devices
+            Runtime.getRuntime().exec(irEnable);
+            Runtime.getRuntime().exec(enablePermissions);
+            Runtime.getRuntime().exec(devicePermissions);
+        } catch (IOException e) {
+            // Elevating failed
+            return false;
+        } finally {
+            return true;
+        }
+    }
+
+    public static String normalisedVersion(String version) {
+        return normalisedVersion(version, ".", 4);
+    }
+
+    public static String normalisedVersion(String version, String sep, int maxWidth) {
+        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
+        StringBuilder sb = new StringBuilder();
+        for (String s : split) {
+            sb.append(String.format("%" + maxWidth + 's', s));
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        if (settings.contains("theme")) {
+            if (settings.getString("theme", null).equals("1")) {
+                super.setTheme(R.style.Holo);
+            } else if (settings.getString("theme", null).equals("2")) {
+                super.setTheme(R.style.Holo_Light_DarkActionBar);
+            } else if (settings.getString("theme", null).equals("3")) {
+                super.setTheme(R.style.Theme_Holo_Light);
+            }
+        }
+        prepItemBrandArray();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +135,8 @@ public class ir extends Activity {
             }
         }
         setContentView(R.layout.activity_ir);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        //fixPermissionsForIr();
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner));
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
@@ -101,6 +148,7 @@ public class ir extends Activity {
         }).start();
         prepIRKeys();
         prepItemBrandArray();
+        addUUID();
         PackageInfo pInfo = null;
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -198,7 +246,7 @@ public class ir extends Activity {
                                             try {
                                                 while (button.isPressed()) {
                                                     sendKeyBool(irpath + item + "/chanelPl.bin");
-                                                    sleep(100);
+                                                    sleep(400);
                                                 }
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
@@ -240,7 +288,7 @@ public class ir extends Activity {
                                             try {
                                                 while (button.isPressed()) {
                                                     sendKeyBool(irpath + item + "/chanelMn.bin");
-                                                    sleep(100);
+                                                    sleep(400);
                                                 }
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
@@ -282,7 +330,7 @@ public class ir extends Activity {
                                             try {
                                                 while (button.isPressed()) {
                                                     sendKeyBool(irpath + item + "/volPl.bin");
-                                                    sleep(100);
+                                                    sleep(400);
                                                 }
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
@@ -324,7 +372,7 @@ public class ir extends Activity {
                                             try {
                                                 while (button.isPressed()) {
                                                     sendKeyBool(irpath + item + "/volMn.bin");
-                                                    sleep(100);
+                                                    sleep(400);
                                                 }
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
@@ -366,7 +414,7 @@ public class ir extends Activity {
                                             try {
                                                 while (button.isPressed()) {
                                                     sendKeyBool(irpath + item + "/up.bin");
-                                                    sleep(100);
+                                                    sleep(400);
                                                 }
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
@@ -408,7 +456,7 @@ public class ir extends Activity {
                                             try {
                                                 while (button.isPressed()) {
                                                     sendKeyBool(irpath + item + "/down.bin");
-                                                    sleep(100);
+                                                    sleep(400);
                                                 }
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
@@ -450,7 +498,7 @@ public class ir extends Activity {
                                             try {
                                                 while (button.isPressed()) {
                                                     sendKeyBool(irpath + item + "/right.bin");
-                                                    sleep(100);
+                                                    sleep(400);
                                                 }
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
@@ -492,7 +540,7 @@ public class ir extends Activity {
                                             try {
                                                 while (button.isPressed()) {
                                                     sendKeyBool(irpath + item + "/left.bin");
-                                                    sleep(100);
+                                                    sleep(400);
                                                 }
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
@@ -513,6 +561,109 @@ public class ir extends Activity {
             }
         };
         btn21.start();
+
+        Thread btn29 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button29);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/wBack.bin");
+                                                    sleep(400);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/wBack.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn29.start();
+
+        Thread btn32 = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button32);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/wFwrd.bin");
+                                                    sleep(400);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/wFwrd.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn32.start();
+    }
+
+    private void addUUID() {
+        boolean empty = true;
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        if (!settings.contains("UUID")) {
+            empty = true;
+        } else if (settings.contains("UUID")) {
+            empty = false;
+        }
+        if (empty) {
+            String id = UUID.randomUUID().toString();
+            settings = getSharedPreferences(PREFS_NAME, 0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("UUID", id);
+            editor.commit();
+            setUUID setUUID1 = new setUUID(this);
+            setUUID1.execute(id);
+        }
     }
 
     public void firstRunChecker() {
@@ -697,25 +848,6 @@ public class ir extends Activity {
         }
     }
 
-    /*public static boolean fixPermissionsForIr() {
-        //TODO add all this to ramdisk
-        // IR Paths
-        String[] irEnable = {"su", "-c", "chown system:system /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
-        String[] enablePermissions = {"su", "-c", "chmod 222 /sys/devices/platform/ir_remote_control/enable"};
-        String[] devicePermissions = {"su", "-c", "chmod 666 /dev/ttyHSL2"};
-        try {
-            // Try to enable Infrared Devices
-            Runtime.getRuntime().exec(irEnable);
-            Runtime.getRuntime().exec(enablePermissions);
-            Runtime.getRuntime().exec(devicePermissions);
-        } catch (IOException e) {
-            // Elevating failed
-            return false;
-        } finally {
-            return true;
-        }
-    }*/
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.ir, menu);
@@ -812,8 +944,6 @@ public class ir extends Activity {
         }
     }
 
-    boolean result = false;
-
     public boolean prepBISpinner() {
         try {
             spinner = (Spinner) findViewById(R.id.spinner);
@@ -839,11 +969,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "Power" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/power.bin");
             } else if (wrt) {
-                Toast.makeText(this, "Power" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-
                 learnKeyBool(irpath + item + "/power.bin");
             }
         }
@@ -854,14 +981,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "ChanelPl" + brand, Toast.LENGTH_SHORT).show();
-
                 sendKeyBool(irpath + item + "/chanelPl.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "ChanelPl" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
-
                 learnKeyBool(irpath + item + "/chanelPl.bin");
             }
         }
@@ -872,12 +993,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "ChanelMn" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/chanelMn.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "ChanelMn" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/chanelMn.bin");
             }
         }
@@ -888,12 +1005,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "VolumePl" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/volPl.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "VolumePl" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/volPl.bin");
             }
         }
@@ -904,12 +1017,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "VolumeMn" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/volMn.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "VolumeMn" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/volMn.bin");
             }
         }
@@ -920,12 +1029,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "1" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/1.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "1" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/1.bin");
             }
         }
@@ -936,12 +1041,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "2" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/2.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "2" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/2.bin");
             }
         }
@@ -952,12 +1053,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "3" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/3.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "3" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/3.bin");
             }
         }
@@ -968,12 +1065,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "4" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/4.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "4" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/4.bin");
             }
         }
@@ -984,12 +1077,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "5" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/5.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "5" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/5.bin");
             }
         }
@@ -1000,12 +1089,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "6" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/6.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "6" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/6.bin");
             }
         }
@@ -1016,12 +1101,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "7" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/7.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "7" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/7.bin");
             }
         }
@@ -1032,12 +1113,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "8" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/8.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "8" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/8.bin");
             }
         }
@@ -1048,12 +1125,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "9" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/9.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "9" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/9.bin");
             }
         }
@@ -1064,12 +1137,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "0" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/0.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "0" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/0.bin");
             }
         }
@@ -1080,12 +1149,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "up" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/up.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "up" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/up.bin");
             }
         }
@@ -1096,12 +1161,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "down" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/down.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "down" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/down.bin");
             }
         }
@@ -1112,12 +1173,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "left" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/left.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "left" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/left.bin");
             }
         }
@@ -1128,12 +1185,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "right" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/right.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "right" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/right.bin");
             }
         }
@@ -1144,12 +1197,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "enter" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/enter.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "enter" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/enter.bin");
             }
         }
@@ -1160,12 +1209,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "tstt" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/tstt.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "tstt" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/tstt.bin");
             }
         }
@@ -1176,12 +1221,8 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "return" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/return.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "return" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/return.bin");
             }
         }
@@ -1192,81 +1233,81 @@ public class ir extends Activity {
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "options" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/options.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "options" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/options.bin");
             }
         }
     }
-
 
     public void onGuideClick(View view) {
         if (prepBISpinner()) ;
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "guide" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/guide.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "guide" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/guide.bin");
             }
         }
     }
-
 
     public void onMuteClick(View view) {
         if (prepBISpinner()) ;
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "mute" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/mute.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "mute" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/mute.bin");
             }
         }
     }
-
 
     public void onHomeClick(View view) {
         if (prepBISpinner()) ;
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "home" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/home.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "home" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/home.bin");
             }
         }
     }
-
 
     public void onInputClick(View view) {
         if (prepBISpinner()) ;
         {
             result = false;
             if (!wrt) {
-                Toast.makeText(this, "input" + brand, Toast.LENGTH_SHORT).show();
                 sendKeyBool(irpath + item + "/input.bin");
             } else if (wrt) {
-
-
-                Toast.makeText(this, "input" + brand + " LEARNING!", Toast.LENGTH_SHORT).show();
                 learnKeyBool(irpath + item + "/input.bin");
+            }
+        }
+    }
+
+    public void onPauseClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                sendKeyBool(irpath + item + "/pause.bin");
+            } else if (wrt) {
+                learnKeyBool(irpath + item + "/pause.bin");
+            }
+        }
+    }
+
+    public void onPlayClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                sendKeyBool(irpath + item + "/play.bin");
+            } else if (wrt) {
+                learnKeyBool(irpath + item + "/play.bin");
             }
         }
     }
@@ -1277,96 +1318,6 @@ public class ir extends Activity {
         int cmp = s1.compareTo(s2);
         String cmpStr = cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
         return cmpStr;
-    }
-
-    public static String normalisedVersion(String version) {
-        return normalisedVersion(version, ".", 4);
-    }
-
-    public static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
-        }
-        return sb.toString();
-    }
-
-
-    class DownloadApp extends AsyncTask<String, Integer, String> {
-
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        public DownloadApp(Context context) {
-            this.context = context;
-        }
-
-        protected String doInBackground(String... sUrl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                Log.v("DownloadApp", "Starting... ");
-                URL url = new URL(sUrl[0]);
-
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/upd.apk");
-                Log.v("DownloadApp", "output " + "/sdcard/upd.apk");
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    output.write(data, 0, count);
-                }
-                Log.v("DownloadApp", "Done!");
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File("/sdcard/upd.apk")), "application/vnd.android.package-archive");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            } catch (Exception e) {
-                Log.e("DownloadApp", e.getMessage());
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-            }
-            return null;
-        }
     }
 
     public void update(final boolean silent) {
@@ -1494,12 +1445,110 @@ public class ir extends Activity {
         }).start();
     }
 
-    class GetLastVer extends AsyncTask<String, Integer, String> {
+    class setUUID extends AsyncTask<String, Integer, String> {
+
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        private Context context;
+        private PowerManager.WakeLock mWakeLock;
+
+        public setUUID(Context context) {
+            this.context = context;
+        }
+
+        protected String doInBackground(String... UUID) {
+            try {
+                Log.i("setUUID", UUID.toString());
+                HttpGet httppost = new HttpGet("http://sssemil.comli.com/uuid.php?uuid=" + UUID[0]);
+                HttpResponse response = httpclient.execute(httppost);
+                response.getEntity();
+                return "done";
+            } catch (IOException ex) {
+                return null;
+            }
+        }
+    }
+
+    class DownloadApp extends AsyncTask<String, Integer, String> {
 
         private Context context;
         private PowerManager.WakeLock mWakeLock;
 
+        public DownloadApp(Context context) {
+            this.context = context;
+        }
+
+        protected String doInBackground(String... sUrl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+            try {
+                Log.v("DownloadApp", "Starting... ");
+                URL url = new URL(sUrl[0]);
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection.getResponseCode()
+                            + " " + connection.getResponseMessage();
+                }
+
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                int fileLength = connection.getContentLength();
+
+                // download the file
+                input = connection.getInputStream();
+                output = new FileOutputStream("/sdcard/upd.apk");
+                Log.v("DownloadApp", "output " + "/sdcard/upd.apk");
+
+                byte data[] = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                        return null;
+                    }
+                    total += count;
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                        publishProgress((int) (total * 100 / fileLength));
+                    output.write(data, 0, count);
+                }
+                Log.v("DownloadApp", "Done!");
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(new File("/sdcard/upd.apk")), "application/vnd.android.package-archive");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            } catch (Exception e) {
+                Log.e("DownloadApp", e.getMessage());
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (IOException ignored) {
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+            }
+            return null;
+        }
+    }
+
+    class GetLastVer extends AsyncTask<String, Integer, String> {
+
         DefaultHttpClient httpclient = new DefaultHttpClient();
+        private Context context;
+        private PowerManager.WakeLock mWakeLock;
 
         public GetLastVer(Context context) {
             this.context = context;

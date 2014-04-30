@@ -60,19 +60,33 @@ public class IRSettings extends PreferenceActivity {
     public String http_path_last_download1;
     public String http_path_last_download2;
     public ArrayList<String> ar = new ArrayList<String>();
+    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
+    public String last_ver = "zirt";
+    public String cur_ver;
     ProgressDialog mProgressDialog;
     String resp = "ko";
     String lastWord;
     Context thisS = this;
     boolean cont = false;
-    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
     String item = "null";
-    public String last_ver = "zirt";
-    public String cur_ver;
     EditText brandN, itemN;
     Spinner spinner;
     boolean changed = false;
-    String saved_theme;
+    String saved_theme, new_theme;
+    long lastPress;
+
+    public static String normalisedVersion(String version) {
+        return normalisedVersion(version, ".", 4);
+    }
+
+    public static String normalisedVersion(String version, String sep, int maxWidth) {
+        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
+        StringBuilder sb = new StringBuilder();
+        for (String s : split) {
+            sb.append(String.format("%" + maxWidth + 's', s));
+        }
+        return sb.toString();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +116,31 @@ public class IRSettings extends PreferenceActivity {
                 super.setTheme(R.style.Theme_Holo_Light);
             }
         }
+        Thread thread = new Thread() {
+            public void run() {
+                while (true) {
+                    try {
+                        SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+                        new_theme = settings.getString("theme", null);
+                        if (!new_theme.equals(saved_theme)) {
+                            try {
+                                Intent i = getBaseContext().getPackageManager()
+                                        .getLaunchIntentForPackage(getBaseContext().getPackageName());
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(i);
+                                break;
+                            } catch (NullPointerException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        Thread.sleep(500);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.start();
     }
 
     @Override
@@ -224,19 +263,6 @@ public class IRSettings extends PreferenceActivity {
                 }
             }
         }).start();
-    }
-
-    public static String normalisedVersion(String version) {
-        return normalisedVersion(version, ".", 4);
-    }
-
-    public static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
-        }
-        return sb.toString();
     }
 
     public void onAddDeviceClick(View paramView) {
@@ -521,143 +547,6 @@ public class IRSettings extends PreferenceActivity {
         return true;
     }
 
-    public void restart() {
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Intent i = getBaseContext().getPackageManager()
-                            .getLaunchIntentForPackage(getBaseContext().getPackageName());
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i);
-                } catch (NullPointerException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
-        t.start();
-    }
-
-    class DownloadTask extends AsyncTask<String, Integer, String> {
-
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        public DownloadTask(Context context) {
-            this.context = context;
-        }
-
-        protected String doInBackground(String... sUrl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                Log.v("DownloadTask", "Starting... ");
-                URL url = new URL(sUrl[0]);
-                String filePath = url.getFile();
-                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/" + fileName);
-                Log.v("DownloadTask", "output " + "/sdcard/" + fileName);
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    output.write(data, 0, count);
-                }
-                Log.v("DownloadTask", "Done!");
-                //---------Unzip--------
-                String zipFile = "/sdcard/" + fileName;
-                String unzipLocation = irpath;
-
-                Decompress d = new Decompress(zipFile, unzipLocation);
-                d.unzip();
-                //----------------------
-                resp = "ok";
-                return "ok";
-            } catch (Exception e) {
-                Log.e("DownloadTask", e.getMessage());
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-            }
-        }
-    }
-
-    class GetAwItems extends AsyncTask<String, Integer, String> {
-
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        public GetAwItems(Context context) {
-            this.context = context;
-        }
-
-        protected String doInBackground(String... sUrl) {
-            try {
-                HttpGet httppost = new HttpGet(http_path_root2 + "downloads");
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity ht = response.getEntity();
-
-                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-
-                InputStream is = buf.getContent();
-
-                BufferedReader r = new BufferedReader(new InputStreamReader(is));
-
-                StringBuilder total = new StringBuilder();
-                String line;
-                ar.clear();
-                while ((line = r.readLine()) != null) {
-                    total.append(line + "\n");
-                    ar.add(line);
-                }
-                Log.i("line", String.valueOf(ar.size()));
-
-                return ar.get(0);
-            } catch (IOException ex) {
-                return null;
-            }
-        }
-    }
-
     public void update() {
         final GetLastVer getLastVer1 = new GetLastVer(this);
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
@@ -775,6 +664,136 @@ public class IRSettings extends PreferenceActivity {
         }).start();
     }
 
+    public void onBackPressed() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastPress > 5000) {
+            Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
+            lastPress = currentTime;
+        } else {
+            IRCommon.getInstance().stop();
+            super.onBackPressed();
+        }
+        finish();
+    }
+
+    class DownloadTask extends AsyncTask<String, Integer, String> {
+
+        private Context context;
+        private PowerManager.WakeLock mWakeLock;
+
+        public DownloadTask(Context context) {
+            this.context = context;
+        }
+
+        protected String doInBackground(String... sUrl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+            try {
+                Log.v("DownloadTask", "Starting... ");
+                URL url = new URL(sUrl[0]);
+                String filePath = url.getFile();
+                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection.getResponseCode()
+                            + " " + connection.getResponseMessage();
+                }
+
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                int fileLength = connection.getContentLength();
+
+                // download the file
+                input = connection.getInputStream();
+                output = new FileOutputStream("/sdcard/" + fileName);
+                Log.v("DownloadTask", "output " + "/sdcard/" + fileName);
+
+                byte data[] = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                        return null;
+                    }
+                    total += count;
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                        publishProgress((int) (total * 100 / fileLength));
+                    output.write(data, 0, count);
+                }
+                Log.v("DownloadTask", "Done!");
+                //---------Unzip--------
+                String zipFile = "/sdcard/" + fileName;
+                String unzipLocation = irpath;
+
+                Decompress d = new Decompress(zipFile, unzipLocation);
+                d.unzip();
+                //----------------------
+                resp = "ok";
+                return "ok";
+            } catch (Exception e) {
+                Log.e("DownloadTask", e.getMessage());
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (IOException ignored) {
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+            }
+        }
+    }
+
+    class GetAwItems extends AsyncTask<String, Integer, String> {
+
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        private Context context;
+        private PowerManager.WakeLock mWakeLock;
+
+        public GetAwItems(Context context) {
+            this.context = context;
+        }
+
+        protected String doInBackground(String... sUrl) {
+            try {
+                HttpGet httppost = new HttpGet(http_path_root2 + "downloads");
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity ht = response.getEntity();
+
+                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
+
+                InputStream is = buf.getContent();
+
+                BufferedReader r = new BufferedReader(new InputStreamReader(is));
+
+                StringBuilder total = new StringBuilder();
+                String line;
+                ar.clear();
+                while ((line = r.readLine()) != null) {
+                    total.append(line + "\n");
+                    ar.add(line);
+                }
+                Log.i("line", String.valueOf(ar.size()));
+
+                return ar.get(0);
+            } catch (IOException ex) {
+                return null;
+            }
+        }
+    }
 
     class DownloadApp extends AsyncTask<String, Integer, String> {
 
@@ -852,26 +871,11 @@ public class IRSettings extends PreferenceActivity {
         }
     }
 
-    long lastPress;
-
-    public void onBackPressed() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastPress > 5000) {
-            Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
-            lastPress = currentTime;
-        } else {
-            IRCommon.getInstance().stop();
-            super.onBackPressed();
-        }
-        finish();
-    }
-
     class GetLastVer extends AsyncTask<String, Integer, String> {
 
+        DefaultHttpClient httpclient = new DefaultHttpClient();
         private Context context;
         private PowerManager.WakeLock mWakeLock;
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
 
         public GetLastVer(Context context) {
             this.context = context;

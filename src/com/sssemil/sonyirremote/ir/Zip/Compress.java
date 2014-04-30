@@ -22,26 +22,6 @@ public class Compress {
         _srcDir = location;
     }
 
-    public void zip() {
-        try {
-
-            FileOutputStream fos = new FileOutputStream(_zipFile);
-
-            ZipOutputStream zos = new ZipOutputStream(fos);
-
-            File srcFile = new File(_srcDir);
-
-            addDirToArchive(zos, srcFile);
-
-            // close the ZipOutputStream
-            zos.close();
-
-        } catch (IOException ioe) {
-            Log.e("Compress", "Error creating zip file: " + ioe);
-        }
-
-    }
-
     private static void addDirToArchive(ZipOutputStream zos, File srcFile) {
 
         File[] files = srcFile.listFiles();
@@ -82,6 +62,26 @@ public class Compress {
                 Log.e("Compress", "IOException :" + ioe);
             }
 
+        }
+
+    }
+
+    public void zip() {
+        try {
+
+            FileOutputStream fos = new FileOutputStream(_zipFile);
+
+            ZipOutputStream zos = new ZipOutputStream(fos);
+
+            File srcFile = new File(_srcDir);
+
+            addDirToArchive(zos, srcFile);
+
+            // close the ZipOutputStream
+            zos.close();
+
+        } catch (IOException ioe) {
+            Log.e("Compress", "Error creating zip file: " + ioe);
         }
 
     }

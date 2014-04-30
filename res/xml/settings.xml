@@ -2,52 +2,52 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/edit_devs">
         <Preference
-            android:title="@string/add_new_device"
+            android:key="addBtn"
             android:summary="@string/creates_folder_for_new_device_files"
-            android:key="addBtn" />
+            android:title="@string/add_new_device" />
         <Preference
-            android:title="@string/ddfl"
+            android:key="downBtn"
             android:summary="@string/ddflD"
-            android:key="downBtn" />
+            android:title="@string/ddfl" />
         <Preference
-            android:title="@string/rmdfl"
+            android:key="rmBtn"
             android:summary="@string/rmdflD"
-            android:key="rmBtn" />
+            android:title="@string/rmdfl" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/updateT">
         <CheckBoxPreference
-            android:title="@string/updch"
             android:defaultValue="false"
+            android:key="autoUpd"
             android:summary="@string/updchD"
-            android:key="autoUpd" />
+            android:title="@string/updch" />
         <Preference
-            android:title="@string/chfupd"
+            android:key="checkUpd"
             android:summary="@string/chfupdD"
-            android:key="checkUpd" />
+            android:title="@string/chfupd" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/submit">
         <Preference
-            android:title="@string/submit_new_dev"
+            android:key="sbmtDev"
             android:summary="@string/submit_new_devD"
-            android:key="sbmtDev" />
+            android:title="@string/submit_new_dev" />
         <Preference
-            android:title="@string/submit_bug"
+            android:key="sbmtBug"
             android:summary="@string/submit_bugD"
-            android:key="sbmtBug" />
+            android:title="@string/submit_bug" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/theme">
         <ListPreference
-            android:title="@string/ch_th"
-            android:summary="@string/ch_thD"
-            android:key="theme"
             android:defaultValue="Holo"
             android:entries="@array/listThemes"
-            android:entryValues="@array/listValues" />
+            android:entryValues="@array/listValues"
+            android:key="theme"
+            android:summary="@string/ch_thD"
+            android:title="@string/ch_th" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/other">
         <Preference
-            android:title="@string/about"
+            android:key="aboutPref"
             android:summary="@string/license1"
-            android:key="aboutPref" />
+            android:title="@string/about" />
     </PreferenceCategory>
 </PreferenceScreen>

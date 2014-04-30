@@ -24,6 +24,10 @@
     <string name="right" translatable="false">→</string>
     <string name="left" translatable="false">←</string>
     <string name="power_btn" translatable="false">I/O</string>
+    <string name="wb" translatable="false">↞</string>
+    <string name="p" translatable="false">||</string>
+    <string name="pl" translatable="false">⇛</string>
+    <string name="wf" translatable="false">↠</string>
 
     <string name="ChanelMn">Chanel -</string>
     <string name="ChanelPl">Chanel +</string>

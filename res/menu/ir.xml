@@ -4,19 +4,19 @@
 
     <item
         android:id="@+id/action_settings"
-        android:title="@string/action_settings"
         android:orderInCategory="97"
-        android:showAsAction="never" />
+        android:showAsAction="never"
+        android:title="@string/action_settings" />
 
     <item
         android:id="@+id/action_update"
-        android:title="@string/update"
         android:orderInCategory="98"
-        android:showAsAction="never" />
+        android:showAsAction="never"
+        android:title="@string/update" />
 
     <item
         android:id="@+id/action_exit"
-        android:title="@string/exit"
         android:orderInCategory="100"
-        android:showAsAction="never" />
+        android:showAsAction="never"
+        android:title="@string/exit" />
 </menu>

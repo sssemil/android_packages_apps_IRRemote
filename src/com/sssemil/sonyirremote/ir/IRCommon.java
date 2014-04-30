@@ -4,6 +4,17 @@ public class IRCommon {
     static {
         System.loadLibrary("jni_sonyopenir");
     }
+    private static IRCommon instance = null;
+
+    protected IRCommon() {
+    }
+
+    public static IRCommon getInstance() {
+        if (instance == null) {
+            instance = new IRCommon();
+        }
+        return instance;
+    }
 
     private native int startIR();
 
@@ -38,17 +49,5 @@ public class IRCommon {
     public void restart() {
         stopIR();
         startIR();
-    }
-
-    protected IRCommon() {
-    }
-
-    private static IRCommon instance = null;
-
-    public static IRCommon getInstance() {
-        if (instance == null) {
-            instance = new IRCommon();
-        }
-        return instance;
     }
 }

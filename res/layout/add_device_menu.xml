@@ -9,21 +9,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/editText2"
-        android:inputType="text"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignStart="@id/editText2"
         android:layout_below="@id/editText2"
         android:hint="@string/item"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:inputType="text" />
 
     <EditText
         android:id="@id/editText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        android:hint="@string/brand"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentStart="true"
+        android:hint="@string/brand"
+        android:inputType="text" />
 </RelativeLayout>
