@@ -664,7 +664,7 @@ public class IRSettings extends PreferenceActivity {
         }).start();
     }
 
-    public void onBackPressed() {
+    /*public void onBackPressed() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastPress > 5000) {
             Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
@@ -674,7 +674,7 @@ public class IRSettings extends PreferenceActivity {
             super.onBackPressed();
         }
         finish();
-    }
+    }*/
 
     class DownloadTask extends AsyncTask<String, Integer, String> {
 

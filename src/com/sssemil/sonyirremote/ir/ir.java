@@ -635,7 +635,6 @@ public class ir extends Activity {
         final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
         tv.setOnTouchListener(new OnSwipeTouchListener(thisS) {
             public void onSwipeLeft() {
-                Toast.makeText(thisS, "left", Toast.LENGTH_SHORT).show();
                 dvd.setVisibility(View.VISIBLE);
                 tv.setVisibility(View.INVISIBLE);
                 r1.setChecked(false);
@@ -643,7 +642,6 @@ public class ir extends Activity {
             }
 
             public void onSwipeRight() {
-                Toast.makeText(thisS, "right", Toast.LENGTH_SHORT).show();
                 dvd.setVisibility(View.INVISIBLE);
                 tv.setVisibility(View.VISIBLE);
                 r1.setChecked(true);
@@ -657,7 +655,6 @@ public class ir extends Activity {
 
         dvd.setOnTouchListener(new OnSwipeTouchListener(thisS) {
             public void onSwipeLeft() {
-                Toast.makeText(thisS, "left", Toast.LENGTH_SHORT).show();
                 dvd.setVisibility(View.VISIBLE);
                 tv.setVisibility(View.INVISIBLE);
                 r1.setChecked(false);
@@ -665,7 +662,6 @@ public class ir extends Activity {
             }
 
             public void onSwipeRight() {
-                Toast.makeText(thisS, "right", Toast.LENGTH_SHORT).show();
                 dvd.setVisibility(View.INVISIBLE);
                 tv.setVisibility(View.VISIBLE);
                 r1.setChecked(true);
