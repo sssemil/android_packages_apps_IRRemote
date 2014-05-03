@@ -930,7 +930,7 @@ public class ir extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+/*    @Override
     public void onBackPressed() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastPress > 5000) {
@@ -944,7 +944,7 @@ public class ir extends Activity {
         main = true;
         prepItemBrandArray();
     }
-
+*/
     public void onWrtClick(View view) {
         if (wrt) {
             wrt = false;
