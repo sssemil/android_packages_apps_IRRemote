@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+
 /**
- * Created by emil on 4/2/14.
+ * Copyright (c) 2014 Emil Suleymanov
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  */
 
 public class Compress {

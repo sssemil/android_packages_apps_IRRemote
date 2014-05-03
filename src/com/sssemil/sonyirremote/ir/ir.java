@@ -22,6 +22,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -71,25 +73,8 @@ public class ir extends Activity {
     ProgressDialog mProgressDialog;
     SharedPreferences settings;
     boolean result = false;
+    Context thisS = this;
     private ArrayList localArrayList1;
-
-    /*public static boolean fixPermissionsForIr() {
-        // IR Paths
-        String[] irEnable = {"su", "-c", "chown system:system /sys/devices/platform/ir_remote_control/enable /dev/ttyHSL2"};
-        String[] enablePermissions = {"su", "-c", "chmod 222 /sys/devices/platform/ir_remote_control/enable"};
-        String[] devicePermissions = {"su", "-c", "chmod 666 /dev/ttyHSL2"};
-        try {
-            // Try to enable Infrared Devices
-            Runtime.getRuntime().exec(irEnable);
-            Runtime.getRuntime().exec(enablePermissions);
-            Runtime.getRuntime().exec(devicePermissions);
-        } catch (IOException e) {
-            // Elevating failed
-            return false;
-        } finally {
-            return true;
-        }
-    }*/
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -134,8 +119,6 @@ public class ir extends Activity {
             }
         }
         setContentView(R.layout.activity_ir);
-        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        //fixPermissionsForIr();
         spinner = ((Spinner) findViewById(R.id.spinner));
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
@@ -644,6 +627,55 @@ public class ir extends Activity {
             }
         };
         btn32.start();
+
+
+        final RelativeLayout tv = (RelativeLayout) findViewById(R.id.tvL);
+        final RelativeLayout dvd = (RelativeLayout) findViewById(R.id.dvdL);
+        final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
+        final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
+        tv.setOnTouchListener(new OnSwipeTouchListener(thisS) {
+            public void onSwipeLeft() {
+                Toast.makeText(thisS, "left", Toast.LENGTH_SHORT).show();
+                dvd.setVisibility(View.VISIBLE);
+                tv.setVisibility(View.INVISIBLE);
+                r1.setChecked(false);
+                r2.setChecked(true);
+            }
+
+            public void onSwipeRight() {
+                Toast.makeText(thisS, "right", Toast.LENGTH_SHORT).show();
+                dvd.setVisibility(View.INVISIBLE);
+                tv.setVisibility(View.VISIBLE);
+                r1.setChecked(true);
+                r2.setChecked(false);
+            }
+
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+
+        dvd.setOnTouchListener(new OnSwipeTouchListener(thisS) {
+            public void onSwipeLeft() {
+                Toast.makeText(thisS, "left", Toast.LENGTH_SHORT).show();
+                dvd.setVisibility(View.VISIBLE);
+                tv.setVisibility(View.INVISIBLE);
+                r1.setChecked(false);
+                r2.setChecked(true);
+            }
+
+            public void onSwipeRight() {
+                Toast.makeText(thisS, "right", Toast.LENGTH_SHORT).show();
+                dvd.setVisibility(View.INVISIBLE);
+                tv.setVisibility(View.VISIBLE);
+                r1.setChecked(true);
+                r2.setChecked(false);
+            }
+
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
     }
 
     private void addUUID() {
@@ -737,7 +769,12 @@ public class ir extends Activity {
         mProgressDialog.setMessage(getString(R.string.waiting_for_signal));
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        mProgressDialog.show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.show();
+            }
+        });
         new Thread(new Runnable() {
             public void run() {
                 mProgressDialog.show();
@@ -761,7 +798,7 @@ public class ir extends Activity {
         spinner = ((Spinner) findViewById(R.id.spinner));
         if (spinner.getSelectedItem() != null) {
             if (!to.exists()) {
-                AlertDialog.Builder adb = new AlertDialog.Builder(this);
+                final AlertDialog.Builder adb = new AlertDialog.Builder(this);
                 adb.setTitle(getString(R.string.warning));
                 adb.setMessage(getString(R.string.not_exists));
                 adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -776,12 +813,17 @@ public class ir extends Activity {
 
                     }
                 });
-                adb.show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adb.show();
+                    }
+                });
             } else {
                 sendAction(filename);
             }
         } else {
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            final AlertDialog.Builder adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -789,13 +831,18 @@ public class ir extends Activity {
                 public void onClick(DialogInterface dialog, int which) {
                 }
             });
-            adb.show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adb.show();
+                }
+            });
         }
 
     }
 
     public void alert(String msg) {
-        AlertDialog.Builder errorD = new AlertDialog.Builder(this);
+        final AlertDialog.Builder errorD = new AlertDialog.Builder(this);
         errorD.setTitle(getString(R.string.error));
         errorD.setMessage(msg);
         errorD.setIcon(android.R.drawable.ic_dialog_alert);
@@ -803,7 +850,12 @@ public class ir extends Activity {
             public void onClick(DialogInterface dialog, int which) {
             }
         });
-        errorD.show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                errorD.show();
+            }
+        });
     }
 
     public void sendAction(final String filename) {
@@ -907,7 +959,6 @@ public class ir extends Activity {
                 }
             }
         } else if (!wrt) {
-            //TODO add warning
             final AlertDialog.Builder adb = new AlertDialog.Builder(this);
             final View promptsView = LayoutInflater.from(this).inflate(R.layout.wrt_mode, null);
             adb.setTitle(getString(R.string.warning));

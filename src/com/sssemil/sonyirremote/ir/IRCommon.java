@@ -1,9 +1,15 @@
 package com.sssemil.sonyirremote.ir;
 
+/**
+ * Copyright (c) 2014 Emil Suleymanov
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
+ */
+
 public class IRCommon {
     static {
         System.loadLibrary("jni_sonyopenir");
     }
+
     private static IRCommon instance = null;
 
     protected IRCommon() {
