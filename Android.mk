@@ -1,3 +1,4 @@
+ifeq ($(BOARD_HAVE_IR_BLASTER),true)
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -13,3 +14,4 @@ LOCAL_JNI_SHARED_LIBRARIES := libjni_sonyopenir
 include $(BUILD_PACKAGE)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
+endif
