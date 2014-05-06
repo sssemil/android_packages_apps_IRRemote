@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_btn"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/main_btn">
+    android:orientation="vertical">
 
     <Spinner
         android:id="@+id/spinner"
@@ -33,47 +33,48 @@
         android:id="@+id/dvdL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:visibility="invisible"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/spinner">
+        android:layout_below="@+id/spinner"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
         <Button
             android:id="@+id/button29"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/wb"
-            android:textSize="20dp"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/wb"
+            android:textSize="20dp" />
 
         <Button
             android:id="@+id/button30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/p"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/button31"
-            android:onClick="onPauseClick" />
+            android:onClick="onPauseClick"
+            android:text="@string/p" />
 
         <Button
             android:id="@+id/button31"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/pl"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/button29"
-            android:onClick="onPlayClick" />
+            android:onClick="onPlayClick"
+            android:text="@string/pl" />
 
         <Button
             android:id="@+id/button32"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/wf"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button30" />
+            android:layout_toRightOf="@+id/button30"
+            android:text="@string/wf" />
 
     </RelativeLayout>
 
@@ -81,8 +82,8 @@
         android:id="@+id/tvL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_below="@+id/spinner"
+        android:orientation="vertical"
         android:visibility="visible">
 
         <Button
@@ -244,11 +245,11 @@
             android:id="@+id/button16"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/button14"
+            android:layout_toRightOf="@+id/button13"
             android:onClick="on0Click"
             android:text="@string/zero"
-            android:textSize="15dp"
-            android:layout_below="@+id/button14"
-            android:layout_toRightOf="@+id/button13" />
+            android:textSize="15dp" />
 
         <Button
             android:id="@+id/button17"
@@ -416,22 +417,22 @@
     </RelativeLayout>
 
     <RadioButton
+        android:id="@+id/radioButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/radioButton"
-        android:enabled="true"
-        android:checked="true"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/radioButton2" />
+        android:layout_toLeftOf="@+id/radioButton2"
+        android:checked="true"
+        android:enabled="true" />
 
     <RadioButton
+        android:id="@+id/radioButton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/radioButton2"
-        android:clickable="false"
-        android:enabled="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:clickable="false"
+        android:enabled="true" />
 
 
 </RelativeLayout>

@@ -191,7 +191,7 @@ public class ir extends Activity {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                            } else if (!f.exists()){
+                            } else if (!f.exists()) {
                                 for (int i = 3; i < 33; i++) {
                                     final String btn = "button" + i;
                                     runOnUiThread(new Runnable() {
@@ -941,21 +941,21 @@ public class ir extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-/*    @Override
-    public void onBackPressed() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastPress > 5000) {
-            Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
-            lastPress = currentTime;
-        } else {
-            IRCommon.getInstance().stop();
-            super.onBackPressed();
+    /*    @Override
+        public void onBackPressed() {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastPress > 5000) {
+                Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
+                lastPress = currentTime;
+            } else {
+                IRCommon.getInstance().stop();
+                super.onBackPressed();
+            }
+            setContentView(R.layout.activity_ir);
+            main = true;
+            prepItemBrandArray();
         }
-        setContentView(R.layout.activity_ir);
-        main = true;
-        prepItemBrandArray();
-    }
-*/
+    */
     public void onWrtClick(View view) {
         if (wrt) {
             wrt = false;
