@@ -149,8 +149,24 @@ public class ir extends Activity {
                             spinner = (Spinner) findViewById(R.id.spinner);
                             item = spinner.getSelectedItem().toString();
                             f = new File(irpath + item + "/disable.ini");
-                            if (f.exists() && !wrt) {
+                            if (f.exists()) {
                                 try {
+                                    for (int i = 3; i < 33; i++) {
+                                        final String btn = "button" + i;
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                int id = getResources().getIdentifier(btn,
+                                                        "id", "com.sssemil.sonyirremote.ir");
+                                                Button button = ((Button) findViewById(id));
+                                                try {
+                                                    button.setEnabled(true);
+                                                } catch (Exception ex) {
+                                                    ex.printStackTrace();
+                                                }
+                                            }
+                                        });
+                                    }
                                     FileInputStream is = new FileInputStream(f);
                                     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                                     String line = null;
@@ -175,10 +191,9 @@ public class ir extends Activity {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                            } else {
-                                for (int i = 3; i < 25; i++) {
+                            } else if (!f.exists()){
+                                for (int i = 3; i < 33; i++) {
                                     final String btn = "button" + i;
-                                    final int finalI = i;
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -188,7 +203,7 @@ public class ir extends Activity {
                                             try {
                                                 button.setEnabled(true);
                                             } catch (Exception ex) {
-                                                //ex.printStackTrace();
+                                                ex.printStackTrace();
                                             }
                                         }
                                     });
@@ -200,7 +215,7 @@ public class ir extends Activity {
                                 e.printStackTrace();
                             }
                         } catch (Exception e) {
-                            //e.printStackTrace();
+                            e.printStackTrace();
                         }
                     }
                 }
