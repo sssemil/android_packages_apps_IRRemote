@@ -1,4 +1,4 @@
-SonyIRRemote
+IRRemote
 =============
 
 Infrared Remote Control for Sony Xperia ZL and Sony Xperia Tab Z
