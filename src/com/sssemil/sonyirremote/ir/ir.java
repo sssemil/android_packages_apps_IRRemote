@@ -147,7 +147,11 @@ public class ir extends Activity {
                     if (main) {
                         try {
                             spinner = (Spinner) findViewById(R.id.spinner);
-                            item = spinner.getSelectedItem().toString();
+                            if (spinner.getSelectedItem().toString() != null) {
+                                item = spinner.getSelectedItem().toString();
+                            } else {
+                                item = "sony-tv";
+                            }
                             f = new File(irpath + item + "/disable.ini");
                             if (f.exists()) {
                                 try {
@@ -981,6 +985,7 @@ public class ir extends Activity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     wrt = true;
+                                    IRCommon.getInstance().restart();
                                     final Button btntxt = (Button) findViewById(R.id.button2);
                                     btntxt.setText(getResources().getString(R.string.Send_signal));
                                     btntxt.setTextColor(Color.RED);
