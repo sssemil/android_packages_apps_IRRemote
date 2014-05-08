@@ -25,7 +25,7 @@
     <string name="about">О программе</string>
     <string name="license1">Copyright © 2014 Emil Suleymanov</string>
     <string name="license2">Распространяется под GNU GPL v2.</string>
-    <string name="license3">Исходный код доступен на https://github.com/sssemil/SonyIRRemote .</string>
+    <string name="license3">Исходный код доступен на https://github.com/sssemil/android_packages_apps_IRRemote .</string>
     <string name="license4">Используется lib_sony_ir от BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
 
     <string name="mute">Зв.0</string>
