@@ -934,10 +934,6 @@ public class ir extends Activity {
                     IRSettings.class);
             startActivity(intent);
             return true;
-        } else if (id == R.id.action_exit) {
-            IRCommon.getInstance().stop();
-            System.exit(0);
-            return true;
         } else if (id == R.id.action_update) {
             update(false);
             return true;
@@ -1648,3 +1644,4 @@ public class ir extends Activity {
         }
     }
 }
+
