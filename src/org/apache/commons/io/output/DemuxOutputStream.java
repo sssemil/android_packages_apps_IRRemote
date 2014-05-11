@@ -26,8 +26,7 @@ import java.io.OutputStream;
  * @version $Id: DemuxOutputStream.java 1302056 2012-03-18 03:03:38Z ggregory $
  */
 public class DemuxOutputStream
-    extends OutputStream
-{
+        extends OutputStream {
     private final InheritableThreadLocal<OutputStream> m_streams = new InheritableThreadLocal<OutputStream>();
 
     /**
@@ -36,10 +35,9 @@ public class DemuxOutputStream
      * @param output the stream to bind
      * @return the OutputStream that was previously active
      */
-    public OutputStream bindStream( OutputStream output )
-    {
+    public OutputStream bindStream(OutputStream output) {
         OutputStream stream = m_streams.get();
-        m_streams.set( output );
+        m_streams.set(output);
         return stream;
     }
 
@@ -50,11 +48,9 @@ public class DemuxOutputStream
      */
     @Override
     public void close()
-        throws IOException
-    {
+            throws IOException {
         OutputStream output = m_streams.get();
-        if( null != output )
-        {
+        if (null != output) {
             output.close();
         }
     }
@@ -66,11 +62,9 @@ public class DemuxOutputStream
      */
     @Override
     public void flush()
-        throws IOException
-    {
+            throws IOException {
         OutputStream output = m_streams.get();
-        if( null != output )
-        {
+        if (null != output) {
             output.flush();
         }
     }
@@ -82,13 +76,11 @@ public class DemuxOutputStream
      * @throws IOException if an error occurs
      */
     @Override
-    public void write( int ch )
-        throws IOException
-    {
+    public void write(int ch)
+            throws IOException {
         OutputStream output = m_streams.get();
-        if( null != output )
-        {
-            output.write( ch );
+        if (null != output) {
+            output.write(ch);
         }
     }
 }

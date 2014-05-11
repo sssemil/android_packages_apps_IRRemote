@@ -20,7 +20,7 @@ import java.io.OutputStream;
 
 /**
  * Proxy stream that prevents the underlying output stream from being closed.
- * <p>
+ * <p/>
  * This class is typically used in cases where an output stream needs to be
  * passed to a component that wants to explicitly close the stream even if
  * other components would still use the stream for output.

@@ -21,7 +21,7 @@ import java.io.OutputStream;
 /**
  * A decorating output stream that counts the number of bytes that have passed
  * through the stream so far.
- * <p>
+ * <p/>
  * A typical use case would be during debugging, to ensure that data is being
  * written as expected.
  *
@@ -29,15 +29,17 @@ import java.io.OutputStream;
  */
 public class CountingOutputStream extends ProxyOutputStream {
 
-    /** The count of bytes that have passed. */
+    /**
+     * The count of bytes that have passed.
+     */
     private long count = 0;
 
     /**
      * Constructs a new CountingOutputStream.
-     * 
-     * @param out  the OutputStream to write to
+     *
+     * @param out the OutputStream to write to
      */
-    public CountingOutputStream( OutputStream out ) {
+    public CountingOutputStream(OutputStream out) {
         super(out);
     }
 
@@ -55,9 +57,10 @@ public class CountingOutputStream extends ProxyOutputStream {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * The number of bytes that have passed through this stream.
-     * <p>
+     * <p/>
      * NOTE: From v1.3 this method throws an ArithmeticException if the
      * count is greater than can be expressed by an <code>int</code>.
      * See {@link #getByteCount()} for a method using a <code>long</code>.
@@ -73,9 +76,9 @@ public class CountingOutputStream extends ProxyOutputStream {
         return (int) result;
     }
 
-    /** 
-     * Set the byte count back to 0. 
-     * <p>
+    /**
+     * Set the byte count back to 0.
+     * <p/>
      * NOTE: From v1.3 this method throws an ArithmeticException if the
      * count is greater than can be expressed by an <code>int</code>.
      * See {@link #resetByteCount()} for a method using a <code>long</code>.
@@ -93,7 +96,7 @@ public class CountingOutputStream extends ProxyOutputStream {
 
     /**
      * The number of bytes that have passed through this stream.
-     * <p>
+     * <p/>
      * NOTE: This method is an alternative for <code>getCount()</code>.
      * It was added because that method returns an integer which will
      * result in incorrect count for files over 2GB.
@@ -105,9 +108,9 @@ public class CountingOutputStream extends ProxyOutputStream {
         return this.count;
     }
 
-    /** 
-     * Set the byte count back to 0. 
-     * <p>
+    /**
+     * Set the byte count back to 0.
+     * <p/>
      * NOTE: This method is an alternative for <code>resetCount()</code>.
      * It was added because that method returns an integer which will
      * result in incorrect count for files over 2GB.

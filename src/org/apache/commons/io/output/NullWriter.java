@@ -20,14 +20,14 @@ import java.io.Writer;
 
 /**
  * This {@link Writer} writes all data to the famous <b>/dev/null</b>.
- * <p>
+ * <p/>
  * This <code>Writer</code> has no destination (file/socket etc.) and all
  * characters written to it are ignored and lost.
- * 
+ *
  * @version $Id: NullWriter.java 1304052 2012-03-22 20:55:29Z ggregory $
  */
 public class NullWriter extends Writer {
-    
+
     /**
      * A singleton.
      */
@@ -41,6 +41,7 @@ public class NullWriter extends Writer {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param c The character to write
      * @return this writer
      * @since 2.0
@@ -53,9 +54,10 @@ public class NullWriter extends Writer {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
-     * @param csq The character sequence to write
+     *
+     * @param csq   The character sequence to write
      * @param start The index of the first character to write
-     * @param end  The index of the first character to write (exclusive)
+     * @param end   The index of the first character to write (exclusive)
      * @return this writer
      * @since 2.0
      */
@@ -67,6 +69,7 @@ public class NullWriter extends Writer {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param csq The character sequence to write
      * @return this writer
      * @since 2.0
@@ -79,6 +82,7 @@ public class NullWriter extends Writer {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param idx The character to write
      */
     @Override
@@ -88,6 +92,7 @@ public class NullWriter extends Writer {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param chr The characters to write
      */
     @Override
@@ -97,8 +102,9 @@ public class NullWriter extends Writer {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param chr The characters to write
-     * @param st The start offset
+     * @param st  The start offset
      * @param end The number of characters to write
      */
     @Override
@@ -108,6 +114,7 @@ public class NullWriter extends Writer {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param str The string to write
      */
     @Override
@@ -117,8 +124,9 @@ public class NullWriter extends Writer {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param str The string to write
-     * @param st The start offset
+     * @param st  The start offset
      * @param end The number of characters to write
      */
     @Override
@@ -126,13 +134,17 @@ public class NullWriter extends Writer {
         //to /dev/null
     }
 
-    /** @see java.io.Writer#flush() */
+    /**
+     * @see java.io.Writer#flush()
+     */
     @Override
     public void flush() {
         //to /dev/null
     }
 
-    /** @see java.io.Writer#close() */
+    /**
+     * @see java.io.Writer#close()
+     */
     @Override
     public void close() {
         //to /dev/null

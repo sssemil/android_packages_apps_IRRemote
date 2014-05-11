@@ -26,7 +26,7 @@ import java.io.OutputStream;
  * or {@link #mark(int)}/{@link #reset()} on the stream will result on some
  * bytes from the input stream being skipped or duplicated in the output
  * stream.
- * <p>
+ * <p/>
  * The proxied input stream is closed when the {@link #close()} method is
  * called on this proxy. It is configurable whether the associated output
  * stream will also closed.
@@ -53,7 +53,7 @@ public class TeeInputStream extends ProxyInputStream {
      * and copies all read bytes to the given {@link OutputStream}. The given
      * output stream will not be closed when this stream gets closed.
      *
-     * @param input input stream to be proxied
+     * @param input  input stream to be proxied
      * @param branch output stream that will receive a copy of all bytes read
      */
     public TeeInputStream(InputStream input, OutputStream branch) {
@@ -66,8 +66,8 @@ public class TeeInputStream extends ProxyInputStream {
      * output stream will be closed when this stream gets closed if the
      * closeBranch parameter is {@code true}.
      *
-     * @param input input stream to be proxied
-     * @param branch output stream that will receive a copy of all bytes read
+     * @param input       input stream to be proxied
+     * @param branch      output stream that will receive a copy of all bytes read
      * @param closeBranch flag for closing also the output stream when this
      *                    stream is closed
      */
@@ -101,7 +101,7 @@ public class TeeInputStream extends ProxyInputStream {
      * the associated output stream.
      *
      * @return next byte from the stream, or -1 if the stream has ended
-     * @throws IOException if the stream could not be read (or written) 
+     * @throws IOException if the stream could not be read (or written)
      */
     @Override
     public int read() throws IOException {
@@ -117,10 +117,10 @@ public class TeeInputStream extends ProxyInputStream {
      * to the associated output stream.
      *
      * @param bts byte buffer
-     * @param st start offset within the buffer
+     * @param st  start offset within the buffer
      * @param end maximum number of bytes to read
      * @return number of bytes read, or -1 if the stream has ended
-     * @throws IOException if the stream could not be read (or written) 
+     * @throws IOException if the stream could not be read (or written)
      */
     @Override
     public int read(byte[] bts, int st, int end) throws IOException {
@@ -137,7 +137,7 @@ public class TeeInputStream extends ProxyInputStream {
      *
      * @param bts byte buffer
      * @return number of bytes read, or -1 if the stream has ended
-     * @throws IOException if the stream could not be read (or written) 
+     * @throws IOException if the stream could not be read (or written)
      */
     @Override
     public int read(byte[] bts) throws IOException {

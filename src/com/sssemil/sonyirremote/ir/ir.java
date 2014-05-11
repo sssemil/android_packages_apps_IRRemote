@@ -13,8 +13,9 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -57,7 +59,7 @@ import java.util.regex.Pattern;
 public class ir extends Activity {
 
     public static final String PREFS_NAME = "SIRR";
-    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
+    public String irpath = Environment.getDataDirectory() + "/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
     public String http_path_root2;
     public String http_path_last_download1;
     public String http_path_last_download2;
@@ -69,12 +71,11 @@ public class ir extends Activity {
     public String cur_ver;
     Spinner spinner;
     boolean main = true;
-    long lastPress;
     ProgressDialog mProgressDialog;
     SharedPreferences settings;
     boolean result = false;
     Context thisS = this;
-    private ArrayList localArrayList1;
+    AlertDialog.Builder adb;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -90,8 +91,23 @@ public class ir extends Activity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        new Thread(new Runnable() {
+            public void run() {
+                IRCommon.getInstance().stop();
+            }
+        }).start();
+    }
+
+    @Override
     public void onResume() {
-        super.onResume();  // Always call the superclass method first
+        super.onResume();
+        new Thread(new Runnable() {
+            public void run() {
+                IRCommon.getInstance().start();
+            }
+        }).start();
         settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (settings.contains("theme")) {
             if (settings.getString("theme", null).equals("1")) {
@@ -136,6 +152,8 @@ public class ir extends Activity {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             cur_ver = pInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         cur_ver = pInfo.versionName;
@@ -707,13 +725,13 @@ public class ir extends Activity {
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("UUID", id);
             editor.commit();
-            setUUID setUUID1 = new setUUID(this);
+            setUUID setUUID1 = new setUUID();
             setUUID1.execute(id);
         }
     }
 
     public void firstRunChecker() {
-        boolean isFirstRun = true;
+        boolean isFirstRun;
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences settings2 = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (!settings.contains("isFirstRun")) {
@@ -736,12 +754,8 @@ public class ir extends Activity {
             editor.commit();
         }
 
-        boolean checUpd = false;
-        if (!settings2.contains("checkUpd")) {
-            checUpd = false;
-        } else {
-            checUpd = settings2.getBoolean("checkUpd", true);
-        }
+        boolean checUpd;
+        checUpd = settings2.contains("checkUpd") && settings2.getBoolean("checkUpd", true);
         if (checUpd) {
             update(true);
         }
@@ -898,7 +912,7 @@ public class ir extends Activity {
 
     public void prepItemBrandArray() {
         spinner = ((Spinner) findViewById(R.id.spinner));
-        localArrayList1 = new ArrayList();
+        ArrayList<String> localArrayList1 = new ArrayList<String>();
         boolean edited = false;
 
         for (File localFile1 : new File(this.irpath).listFiles()) {
@@ -934,28 +948,28 @@ public class ir extends Activity {
                     IRSettings.class);
             startActivity(intent);
             return true;
-        } else if (id == R.id.action_update) {
-            update(false);
+        } else if (id == R.id.action_about) {
+            adb = new AlertDialog.Builder(this);
+            adb.setTitle(getString(R.string.about));
+            PackageInfo pInfo = null;
+            String version = "-.-.-";
+            try {
+                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            version = pInfo.versionName;
+            adb.setMessage(getResources().getString(R.string.license1) + " v" + version + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
+            adb.setPositiveButton(getString(R.string.pos_ans), null);
+            AlertDialog dialog = adb.show();
+
+            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+            messageView.setGravity(Gravity.CENTER);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /*    @Override
-        public void onBackPressed() {
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastPress > 5000) {
-                Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
-                lastPress = currentTime;
-            } else {
-                IRCommon.getInstance().stop();
-                super.onBackPressed();
-            }
-            setContentView(R.layout.activity_ir);
-            main = true;
-            prepItemBrandArray();
-        }
-    */
     public void onWrtClick(View view) {
         if (wrt) {
             wrt = false;
@@ -970,8 +984,8 @@ public class ir extends Activity {
                 }
             }
         } else if (!wrt) {
-            final AlertDialog.Builder adb = new AlertDialog.Builder(this);
             final View promptsView = LayoutInflater.from(this).inflate(R.layout.wrt_mode, null);
+            adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.warning));
             adb.setView(promptsView);
             adb.setPositiveButton(getString(R.string.start), null);
@@ -981,7 +995,11 @@ public class ir extends Activity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     wrt = true;
-                                    IRCommon.getInstance().restart();
+                                    new Thread(new Runnable() {
+                                        public void run() {
+                                            IRCommon.getInstance().restart();
+                                        }
+                                    }).start();
                                     final Button btntxt = (Button) findViewById(R.id.button2);
                                     btntxt.setText(getResources().getString(R.string.Send_signal));
                                     btntxt.setTextColor(Color.RED);
@@ -1382,12 +1400,11 @@ public class ir extends Activity {
         String s1 = normalisedVersion(v1);
         String s2 = normalisedVersion(v2);
         int cmp = s1.compareTo(s2);
-        String cmpStr = cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
-        return cmpStr;
+        return cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
     }
 
     public void update(final boolean silent) {
-        final GetLastVer getLastVer1 = new GetLastVer(ir.this);
+        final GetLastVer getLastVer1 = new GetLastVer();
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
         if (!silent) {
             mProgressDialog = new ProgressDialog(ir.this);
@@ -1410,7 +1427,7 @@ public class ir extends Activity {
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
-                if (last_ver == "zirt") {
+                if (last_ver.equals("zirt")) {
                     if (!silent) {
                         adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.ser3));
@@ -1437,16 +1454,16 @@ public class ir extends Activity {
                 } else {
                     String result = compare(cur_ver, last_ver);
                     boolean doUpdate = false;
-                    if (result == ">") {
+                    if (result.equals(">")) {
                         doUpdate = false;
-                    } else if (result == "<") {
+                    } else if (result.equals("<")) {
                         doUpdate = true;
-                    } else if (result == "==") {
+                    } else if (result.equals("==")) {
                         doUpdate = false;
                     }
 
 
-                    if (doUpdate == true) {
+                    if (doUpdate) {
                         adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.new_version_available));
                         adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -1465,7 +1482,7 @@ public class ir extends Activity {
                                             }
                                         });
 
-                                        final DownloadApp downloadApp1 = new DownloadApp(ir.this);
+                                        final DownloadApp downloadApp1 = new DownloadApp();
                                         try {
                                             downloadApp1.execute(http_path_last_download1 + last_ver + http_path_last_download2).get();
                                         } catch (InterruptedException e) {
@@ -1492,7 +1509,7 @@ public class ir extends Activity {
                                 adb.show();
                             }
                         });
-                    } else if (doUpdate == false) {
+                    } else if (!doUpdate) {
                         if (!silent) {
                             adb.setTitle(getString(R.string.update));
                             adb.setMessage(getString(R.string.already_new));
@@ -1514,10 +1531,8 @@ public class ir extends Activity {
     class setUUID extends AsyncTask<String, Integer, String> {
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        private Context context;
 
-        public setUUID(Context context) {
-            this.context = context;
+        public setUUID() {
         }
 
         protected String doInBackground(String... UUID) {
@@ -1534,11 +1549,7 @@ public class ir extends Activity {
 
     class DownloadApp extends AsyncTask<String, Integer, String> {
 
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        public DownloadApp(Context context) {
-            this.context = context;
+        public DownloadApp() {
         }
 
         protected String doInBackground(String... sUrl) {
@@ -1565,8 +1576,8 @@ public class ir extends Activity {
 
                 // download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/upd.apk");
-                Log.v("DownloadApp", "output " + "/sdcard/upd.apk");
+                output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/upd.apk");
+                Log.v("DownloadApp", "output " + Environment.getExternalStorageDirectory() + "/upd.apk");
 
                 byte data[] = new byte[4096];
                 long total = 0;
@@ -1586,7 +1597,7 @@ public class ir extends Activity {
                 Log.v("DownloadApp", "Done!");
 
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File("/sdcard/upd.apk")), "application/vnd.android.package-archive");
+                intent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/upd.apk")), "application/vnd.android.package-archive");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             } catch (Exception e) {
@@ -1611,11 +1622,8 @@ public class ir extends Activity {
     class GetLastVer extends AsyncTask<String, Integer, String> {
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
 
-        public GetLastVer(Context context) {
-            this.context = context;
+        public GetLastVer() {
         }
 
         protected String doInBackground(String... sUrl) {

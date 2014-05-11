@@ -21,10 +21,10 @@ import java.io.Serializable;
 
 /**
  * This filter accepts <code>File</code>s that are hidden.
- * <p>
+ * <p/>
  * Example, showing how to print out a list of the
  * current directory's <i>hidden</i> files:
- *
+ * <p/>
  * <pre>
  * File dir = new File(".");
  * String[] files = dir.list( HiddenFileFilter.HIDDEN );
@@ -32,11 +32,11 @@ import java.io.Serializable;
  *     System.out.println(files[i]);
  * }
  * </pre>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Example, showing how to print out a list of the
  * current directory's <i>visible</i> (i.e. not hidden) files:
- *
+ * <p/>
  * <pre>
  * File dir = new File(".");
  * String[] files = dir.list( HiddenFileFilter.VISIBLE );
@@ -45,33 +45,37 @@ import java.io.Serializable;
  * }
  * </pre>
  *
- * @since 1.3
  * @version $Id: HiddenFileFilter.java 1307462 2012-03-30 15:13:11Z ggregory $
+ * @since 1.3
  */
 public class HiddenFileFilter extends AbstractFileFilter implements Serializable {
-    
-    /** Singleton instance of <i>hidden</i> filter */
-    public static final IOFileFilter HIDDEN  = new HiddenFileFilter();
-    
-    /** Singleton instance of <i>visible</i> filter */
+
+    /**
+     * Singleton instance of <i>hidden</i> filter
+     */
+    public static final IOFileFilter HIDDEN = new HiddenFileFilter();
+
+    /**
+     * Singleton instance of <i>visible</i> filter
+     */
     public static final IOFileFilter VISIBLE = new NotFileFilter(HIDDEN);
-    
+
     /**
      * Restrictive consructor.
      */
     protected HiddenFileFilter() {
     }
-    
+
     /**
      * Checks to see if the file is hidden.
-     * 
-     * @param file  the File to check
+     *
+     * @param file the File to check
      * @return {@code true} if the file is
-     *  <i>hidden</i>, otherwise {@code false}.
+     * <i>hidden</i>, otherwise {@code false}.
      */
     @Override
     public boolean accept(File file) {
         return file.isHidden();
     }
-    
+
 }

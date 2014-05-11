@@ -21,33 +21,33 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 
 /**
- * An interface which brings the FileFilter and FilenameFilter 
+ * An interface which brings the FileFilter and FilenameFilter
  * interfaces together.
- * 
- * @since 1.0
+ *
  * @version $Id: IOFileFilter.java 1304052 2012-03-22 20:55:29Z ggregory $
+ * @since 1.0
  */
 public interface IOFileFilter extends FileFilter, FilenameFilter {
 
     /**
      * Checks to see if the File should be accepted by this filter.
-     * <p>
+     * <p/>
      * Defined in {@link java.io.FileFilter}.
-     * 
-     * @param file  the File to check
+     *
+     * @param file the File to check
      * @return true if this file matches the test
      */
     boolean accept(File file);
 
     /**
      * Checks to see if the File should be accepted by this filter.
-     * <p>
+     * <p/>
      * Defined in {@link java.io.FilenameFilter}.
-     * 
+     *
      * @param dir  the directory File to check
-     * @param name  the filename within the directory to check
+     * @param name the filename within the directory to check
      * @return true if this file matches the test
      */
     boolean accept(File dir, String name);
-    
+
 }

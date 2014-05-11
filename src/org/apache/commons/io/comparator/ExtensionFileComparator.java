@@ -16,64 +16,78 @@
  */
 package org.apache.commons.io.comparator;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-
 /**
  * Compare the file name <b>extensions</b> for order
  * (see {@link FilenameUtils#getExtension(String)}).
- * <p>
+ * <p/>
  * This comparator can be used to sort lists or arrays of files
  * by their file extension either in a case-sensitive, case-insensitive or
  * system dependant case sensitive way. A number of singleton instances
  * are provided for the various case sensitivity options (using {@link IOCase})
  * and the reverse of those options.
- * <p>
+ * <p/>
  * Example of a <i>case-sensitive</i> file extension sort using the
  * {@link #EXTENSION_COMPARATOR} singleton instance:
  * <pre>
  *       List&lt;File&gt; list = ...
  *       ExtensionFileComparator.EXTENSION_COMPARATOR.sort(list);
  * </pre>
- * <p>
+ * <p/>
  * Example of a <i>reverse case-insensitive</i> file extension sort using the
  * {@link #EXTENSION_INSENSITIVE_REVERSE} singleton instance:
  * <pre>
  *       File[] array = ...
  *       ExtensionFileComparator.EXTENSION_INSENSITIVE_REVERSE.sort(array);
  * </pre>
- * <p>
+ * <p/>
  *
  * @version $Id: ExtensionFileComparator.java 1304052 2012-03-22 20:55:29Z ggregory $
  * @since 1.4
  */
 public class ExtensionFileComparator extends AbstractFileComparator implements Serializable {
 
-    /** Case-sensitive extension comparator instance (see {@link IOCase#SENSITIVE}) */
+    /**
+     * Case-sensitive extension comparator instance (see {@link IOCase#SENSITIVE})
+     */
     public static final Comparator<File> EXTENSION_COMPARATOR = new ExtensionFileComparator();
 
-    /** Reverse case-sensitive extension comparator instance (see {@link IOCase#SENSITIVE}) */
+    /**
+     * Reverse case-sensitive extension comparator instance (see {@link IOCase#SENSITIVE})
+     */
     public static final Comparator<File> EXTENSION_REVERSE = new ReverseComparator(EXTENSION_COMPARATOR);
 
-    /** Case-insensitive extension comparator instance (see {@link IOCase#INSENSITIVE}) */
+    /**
+     * Case-insensitive extension comparator instance (see {@link IOCase#INSENSITIVE})
+     */
     public static final Comparator<File> EXTENSION_INSENSITIVE_COMPARATOR
-                                                = new ExtensionFileComparator(IOCase.INSENSITIVE);
+            = new ExtensionFileComparator(IOCase.INSENSITIVE);
 
-    /** Reverse case-insensitive extension comparator instance (see {@link IOCase#INSENSITIVE}) */
+    /**
+     * Reverse case-insensitive extension comparator instance (see {@link IOCase#INSENSITIVE})
+     */
     public static final Comparator<File> EXTENSION_INSENSITIVE_REVERSE
-                                                = new ReverseComparator(EXTENSION_INSENSITIVE_COMPARATOR);
+            = new ReverseComparator(EXTENSION_INSENSITIVE_COMPARATOR);
 
-    /** System sensitive extension comparator instance (see {@link IOCase#SYSTEM}) */
+    /**
+     * System sensitive extension comparator instance (see {@link IOCase#SYSTEM})
+     */
     public static final Comparator<File> EXTENSION_SYSTEM_COMPARATOR = new ExtensionFileComparator(IOCase.SYSTEM);
 
-    /** Reverse system sensitive path comparator instance (see {@link IOCase#SYSTEM}) */
+    /**
+     * Reverse system sensitive path comparator instance (see {@link IOCase#SYSTEM})
+     */
     public static final Comparator<File> EXTENSION_SYSTEM_REVERSE = new ReverseComparator(EXTENSION_SYSTEM_COMPARATOR);
 
-    /** Whether the comparison is case sensitive. */
+    /**
+     * Whether the comparison is case sensitive.
+     */
     private final IOCase caseSensitivity;
 
     /**
@@ -94,14 +108,13 @@ public class ExtensionFileComparator extends AbstractFileComparator implements S
 
     /**
      * Compare the extensions of two files the specified case sensitivity.
-     * 
+     *
      * @param file1 The first file to compare
      * @param file2 The second file to compare
      * @return a negative value if the first file's extension
      * is less than the second, zero if the extensions are the
      * same and a positive value if the first files extension
      * is greater than the second file.
-     * 
      */
     public int compare(File file1, File file2) {
         String suffix1 = FilenameUtils.getExtension(file1.getName());

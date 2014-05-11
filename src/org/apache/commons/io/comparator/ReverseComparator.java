@@ -45,7 +45,7 @@ class ReverseComparator extends AbstractFileComparator implements Serializable {
 
     /**
      * Compare using the delegate Comparator, but reversing the result.
-     * 
+     *
      * @param file1 The first file to compare
      * @param file2 The second file to compare
      * @return the result from the delegate {@link Comparator#compare(Object, Object)}

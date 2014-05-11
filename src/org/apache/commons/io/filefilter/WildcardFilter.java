@@ -16,24 +16,24 @@
  */
 package org.apache.commons.io.filefilter;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
-
 /**
  * Filters files using the supplied wildcards.
- * <p>
+ * <p/>
  * This filter selects files, but not directories, based on one or more wildcards
  * and using case-sensitive comparison.
- * <p>
+ * <p/>
  * The wildcard matcher uses the characters '?' and '*' to represent a
  * single or multiple wildcard characters.
  * This is the same as often found on Dos/Unix command lines.
  * The extension check is case-sensitive.
  * See {@link FilenameUtils#wildcardMatch(String, String)} for more information.
- * <p>
+ * <p/>
  * For example:
  * <pre>
  * File dir = new File(".");
@@ -52,26 +52,28 @@ import org.apache.commons.io.FilenameUtils;
 @Deprecated
 public class WildcardFilter extends AbstractFileFilter implements Serializable {
 
-    /** The wildcards that will be used to match filenames. */
+    /**
+     * The wildcards that will be used to match filenames.
+     */
     private final String[] wildcards;
 
     /**
      * Construct a new case-sensitive wildcard filter for a single wildcard.
      *
-     * @param wildcard  the wildcard to match
+     * @param wildcard the wildcard to match
      * @throws IllegalArgumentException if the pattern is null
      */
     public WildcardFilter(String wildcard) {
         if (wildcard == null) {
             throw new IllegalArgumentException("The wildcard must not be null");
         }
-        this.wildcards = new String[] { wildcard };
+        this.wildcards = new String[]{wildcard};
     }
 
     /**
      * Construct a new case-sensitive wildcard filter for an array of wildcards.
      *
-     * @param wildcards  the array of wildcards to match
+     * @param wildcards the array of wildcards to match
      * @throws IllegalArgumentException if the pattern array is null
      */
     public WildcardFilter(String[] wildcards) {
@@ -85,9 +87,9 @@ public class WildcardFilter extends AbstractFileFilter implements Serializable {
     /**
      * Construct a new case-sensitive wildcard filter for a list of wildcards.
      *
-     * @param wildcards  the list of wildcards to match
+     * @param wildcards the list of wildcards to match
      * @throws IllegalArgumentException if the pattern list is null
-     * @throws ClassCastException if the list does not contain Strings
+     * @throws ClassCastException       if the list does not contain Strings
      */
     public WildcardFilter(List<String> wildcards) {
         if (wildcards == null) {
@@ -97,11 +99,12 @@ public class WildcardFilter extends AbstractFileFilter implements Serializable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Checks to see if the filename matches one of the wildcards.
      *
      * @param dir  the file directory
-     * @param name  the filename
+     * @param name the filename
      * @return true if the filename matches one of the wildcards
      */
     @Override
@@ -115,7 +118,7 @@ public class WildcardFilter extends AbstractFileFilter implements Serializable {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -136,7 +139,7 @@ public class WildcardFilter extends AbstractFileFilter implements Serializable {
                 return true;
             }
         }
-        
+
         return false;
     }
 

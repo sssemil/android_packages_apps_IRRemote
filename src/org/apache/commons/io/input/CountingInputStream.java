@@ -22,7 +22,7 @@ import java.io.InputStream;
 /**
  * A decorating input stream that counts the number of bytes that have passed
  * through the stream so far.
- * <p>
+ * <p/>
  * A typical use case would be during debugging, to ensure that data is being
  * read as expected.
  *
@@ -30,13 +30,15 @@ import java.io.InputStream;
  */
 public class CountingInputStream extends ProxyInputStream {
 
-    /** The count of bytes that have passed. */
+    /**
+     * The count of bytes that have passed.
+     */
     private long count;
 
     /**
      * Constructs a new CountingInputStream.
      *
-     * @param in  the InputStream to delegate to
+     * @param in the InputStream to delegate to
      */
     public CountingInputStream(InputStream in) {
         super(in);
@@ -48,7 +50,7 @@ public class CountingInputStream extends ProxyInputStream {
      * Skips the stream over the specified number of bytes, adding the skipped
      * amount to the count.
      *
-     * @param length  the number of bytes to skip
+     * @param length the number of bytes to skip
      * @return the actual number of bytes skipped
      * @throws IOException if an I/O error occurs
      * @see java.io.InputStream#skip(long)
@@ -74,9 +76,10 @@ public class CountingInputStream extends ProxyInputStream {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * The number of bytes that have passed through this stream.
-     * <p>
+     * <p/>
      * NOTE: From v1.3 this method throws an ArithmeticException if the
      * count is greater than can be expressed by an <code>int</code>.
      * See {@link #getByteCount()} for a method using a <code>long</code>.
@@ -92,9 +95,9 @@ public class CountingInputStream extends ProxyInputStream {
         return (int) result;
     }
 
-    /** 
-     * Set the byte count back to 0. 
-     * <p>
+    /**
+     * Set the byte count back to 0.
+     * <p/>
      * NOTE: From v1.3 this method throws an ArithmeticException if the
      * count is greater than can be expressed by an <code>int</code>.
      * See {@link #resetByteCount()} for a method using a <code>long</code>.
@@ -112,7 +115,7 @@ public class CountingInputStream extends ProxyInputStream {
 
     /**
      * The number of bytes that have passed through this stream.
-     * <p>
+     * <p/>
      * NOTE: This method is an alternative for <code>getCount()</code>
      * and was added because that method returns an integer which will
      * result in incorrect count for files over 2GB.
@@ -124,9 +127,9 @@ public class CountingInputStream extends ProxyInputStream {
         return this.count;
     }
 
-    /** 
-     * Set the byte count back to 0. 
-     * <p>
+    /**
+     * Set the byte count back to 0.
+     * <p/>
      * NOTE: This method is an alternative for <code>resetCount()</code>
      * and was added because that method returns an integer which will
      * result in incorrect count for files over 2GB.

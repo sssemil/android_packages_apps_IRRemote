@@ -22,7 +22,7 @@ import java.io.Serializable;
 /**
  * {@link Reader} implementation that can read from String, StringBuffer,
  * StringBuilder or CharBuffer.
- * <p>
+ * <p/>
  * <strong>Note:</strong> Supports {@link #mark(int)} and {@link #reset()}.
  *
  * @version $Id: CharSequenceReader.java 1307461 2012-03-30 15:12:29Z ggregory $
@@ -90,7 +90,7 @@ public class CharSequenceReader extends Reader implements Serializable {
     /**
      * Read the sepcified number of characters into the array.
      *
-     * @param array The array to store the characters in
+     * @param array  The array to store the characters in
      * @param offset The starting position in the array to store
      * @param length The maximum number of characters to read
      * @return The number of characters read or -1 if there are
@@ -114,7 +114,7 @@ public class CharSequenceReader extends Reader implements Serializable {
             if (c == -1) {
                 return count;
             }
-            array[offset + i] = (char)c;
+            array[offset + i] = (char) c;
             count++;
         }
         return count;
@@ -144,7 +144,7 @@ public class CharSequenceReader extends Reader implements Serializable {
         if (idx >= charSequence.length()) {
             return -1;
         }
-        int dest = (int)Math.min(charSequence.length(), idx + n);
+        int dest = (int) Math.min(charSequence.length(), idx + n);
         int count = dest - idx;
         idx = dest;
         return count;

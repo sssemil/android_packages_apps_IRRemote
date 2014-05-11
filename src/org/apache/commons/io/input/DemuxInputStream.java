@@ -26,8 +26,7 @@ import java.io.InputStream;
  * @version $Id: DemuxInputStream.java 1302056 2012-03-18 03:03:38Z ggregory $
  */
 public class DemuxInputStream
-    extends InputStream
-{
+        extends InputStream {
     private final InheritableThreadLocal<InputStream> m_streams = new InheritableThreadLocal<InputStream>();
 
     /**
@@ -36,10 +35,9 @@ public class DemuxInputStream
      * @param input the stream to bind
      * @return the InputStream that was previously active
      */
-    public InputStream bindStream( InputStream input )
-    {
+    public InputStream bindStream(InputStream input) {
         InputStream oldValue = m_streams.get();
-        m_streams.set( input );
+        m_streams.set(input);
         return oldValue;
     }
 
@@ -50,11 +48,9 @@ public class DemuxInputStream
      */
     @Override
     public void close()
-        throws IOException
-    {
+            throws IOException {
         InputStream input = m_streams.get();
-        if( null != input )
-        {
+        if (null != input) {
             input.close();
         }
     }
@@ -67,15 +63,11 @@ public class DemuxInputStream
      */
     @Override
     public int read()
-        throws IOException
-    {
+            throws IOException {
         InputStream input = m_streams.get();
-        if( null != input )
-        {
+        if (null != input) {
             return input.read();
-        }
-        else
-        {
+        } else {
             return -1;
         }
     }

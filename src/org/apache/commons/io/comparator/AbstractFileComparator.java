@@ -32,7 +32,7 @@ abstract class AbstractFileComparator implements Comparator<File> {
 
     /**
      * Sort an array of files.
-     * <p>
+     * <p/>
      * This method uses {@link Arrays#sort(Object[], Comparator)}
      * and returns the original array.
      *
@@ -49,7 +49,7 @@ abstract class AbstractFileComparator implements Comparator<File> {
 
     /**
      * Sort a List of files.
-     * <p>
+     * <p/>
      * This method uses {@link Collections#sort(List, Comparator)}
      * and returns the original list.
      *

@@ -23,9 +23,9 @@ import java.util.concurrent.ThreadFactory;
 /**
  * A runnable that spawns a monitoring thread triggering any
  * registered {@link FileAlterationObserver} at a specified interval.
- * 
- * @see FileAlterationObserver
+ *
  * @version $Id: FileAlterationMonitor.java 1304052 2012-03-22 20:55:29Z ggregory $
+ * @see FileAlterationObserver
  * @since 2.0
  */
 public final class FileAlterationMonitor implements Runnable {
@@ -47,7 +47,7 @@ public final class FileAlterationMonitor implements Runnable {
      * Construct a monitor with the specified interval.
      *
      * @param interval The amount of time in miliseconds to wait between
-     * checks of the file system
+     *                 checks of the file system
      */
     public FileAlterationMonitor(long interval) {
         this.interval = interval;
@@ -56,8 +56,8 @@ public final class FileAlterationMonitor implements Runnable {
     /**
      * Construct a monitor with the specified interval and set of observers.
      *
-     * @param interval The amount of time in miliseconds to wait between
-     * checks of the file system
+     * @param interval  The amount of time in miliseconds to wait between
+     *                  checks of the file system
      * @param observers The set of observers to add to the monitor.
      */
     public FileAlterationMonitor(long interval, FileAlterationObserver... observers) {
@@ -112,7 +112,7 @@ public final class FileAlterationMonitor implements Runnable {
 
     /**
      * Returns the set of {@link FileAlterationObserver} registered with
-     * this monitor. 
+     * this monitor.
      *
      * @return The set of {@link FileAlterationObserver}
      */
@@ -154,7 +154,7 @@ public final class FileAlterationMonitor implements Runnable {
      * Stop monitoring.
      *
      * @param stopInterval the amount of time in milliseconds to wait for the thread to finish.
-     * A value of zero will wait until the thread is finished (see {@link Thread#join(long)}).
+     *                     A value of zero will wait until the thread is finished (see {@link Thread#join(long)}).
      * @throws Exception if an error occurs initializing the observer
      * @since 2.1
      */

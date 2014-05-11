@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ChanelMn">Kanal -</string>
-    <string name="ChanelPl">Kanal +</string>
-    <string name="Down">Unten</string>
-    <string name="Enter">OK</string>
-    <string name="Left">Links</string>
-    <string name="Right">Rechts</string>
     <string name="Send_signal">Lassen Schreibmodus</string>
-    <string name="Up">Oben</string>
-    <string name="VolMn">Ton -</string>
-    <string name="VolPl">Ton +</string>
     <string name="Write_signal">Rückkehr zum Schreibmodus</string>
     <string name="action_settings">Einstellungen</string>
     <string name="add">Addieren</string>
     <string name="add_brnd">Fernbedienung hinzufügen</string>
-    <string name="app_name">Sony IR Remote</string>
+    <string name="app_name">IR Remote</string>
     <string name="brand">Marke(z.B. Sony)</string>
     <string name="brand_prompt">Wählen Sie Ihre TV `s Marke</string>
     <string name="go_back">Zurück zum Hauptmenü</string>

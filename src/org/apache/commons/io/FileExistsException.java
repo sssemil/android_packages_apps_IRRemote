@@ -21,7 +21,7 @@ import java.io.IOException;
 
 /**
  * Indicates that a file already exists.
- * 
+ *
  * @version $Id: FileExistsException.java 1304052 2012-03-22 20:55:29Z ggregory $
  * @since 2.0
  */

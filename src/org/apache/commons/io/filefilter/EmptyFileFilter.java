@@ -21,13 +21,13 @@ import java.io.Serializable;
 
 /**
  * This filter accepts files or directories that are empty.
- * <p>
+ * <p/>
  * If the <code>File</code> is a directory it checks that
  * it contains no files.
- * <p>
- * Example, showing how to print out a list of the 
+ * <p/>
+ * Example, showing how to print out a list of the
  * current directory's empty files/directories:
- *
+ * <p/>
  * <pre>
  * File dir = new File(".");
  * String[] files = dir.list( EmptyFileFilter.EMPTY );
@@ -35,11 +35,11 @@ import java.io.Serializable;
  *     System.out.println(files[i]);
  * }
  * </pre>
- *
- * <p>
- * Example, showing how to print out a list of the 
+ * <p/>
+ * <p/>
+ * Example, showing how to print out a list of the
  * current directory's non-empty files/directories:
- *
+ * <p/>
  * <pre>
  * File dir = new File(".");
  * String[] files = dir.list( EmptyFileFilter.NOT_EMPTY );
@@ -48,29 +48,33 @@ import java.io.Serializable;
  * }
  * </pre>
  *
- * @since 1.3
  * @version $Id: EmptyFileFilter.java 1307462 2012-03-30 15:13:11Z ggregory $
+ * @since 1.3
  */
 public class EmptyFileFilter extends AbstractFileFilter implements Serializable {
-    
-    /** Singleton instance of <i>empty</i> filter */
+
+    /**
+     * Singleton instance of <i>empty</i> filter
+     */
     public static final IOFileFilter EMPTY = new EmptyFileFilter();
-    
-    /** Singleton instance of <i>not-empty</i> filter */
+
+    /**
+     * Singleton instance of <i>not-empty</i> filter
+     */
     public static final IOFileFilter NOT_EMPTY = new NotFileFilter(EMPTY);
-    
+
     /**
      * Restrictive consructor.
      */
     protected EmptyFileFilter() {
     }
-    
+
     /**
      * Checks to see if the file is empty.
-     * 
-     * @param file  the file or directory to check
+     *
+     * @param file the file or directory to check
      * @return {@code true} if the file or directory
-     *  is <i>empty</i>, otherwise {@code false}.
+     * is <i>empty</i>, otherwise {@code false}.
      */
     @Override
     public boolean accept(File file) {
@@ -81,5 +85,5 @@ public class EmptyFileFilter extends AbstractFileFilter implements Serializable 
             return file.length() == 0;
         }
     }
-    
+
 }

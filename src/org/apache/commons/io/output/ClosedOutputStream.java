@@ -22,7 +22,7 @@ import java.io.OutputStream;
 /**
  * Closed output stream. This stream throws an exception on all attempts to
  * write something to the stream.
- * <p>
+ * <p/>
  * Typically uses of this class include testing for corner cases in methods
  * that accept an output stream and acting as a sentinel value instead of
  * a {@code null} output stream.
@@ -31,7 +31,7 @@ import java.io.OutputStream;
  * @since 1.4
  */
 public class ClosedOutputStream extends OutputStream {
-    
+
     /**
      * A singleton.
      */

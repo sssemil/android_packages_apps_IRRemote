@@ -16,6 +16,8 @@
  */
 package org.apache.commons.io.filefilter;
 
+import org.apache.commons.io.IOCase;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -27,50 +29,55 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOCase;
-
 /**
  * Useful utilities for working with file filters. It provides access to all
  * file filter implementations in this package so you don't have to import
  * every class you use.
- * 
- * @since 1.0
+ *
  * @version $Id: FileFilterUtils.java 1307459 2012-03-30 15:11:44Z ggregory $
+ * @since 1.0
  */
 public class FileFilterUtils {
-    
+
+    //-----------------------------------------------------------------------
+    /* Constructed on demand and then cached */
+    private static final IOFileFilter cvsFilter = notFileFilter(
+            and(directoryFileFilter(), nameFileFilter("CVS")));
+
+    //-----------------------------------------------------------------------
+    /* Constructed on demand and then cached */
+    private static final IOFileFilter svnFilter = notFileFilter(
+            and(directoryFileFilter(), nameFileFilter(".svn")));
+
     /**
      * FileFilterUtils is not normally instantiated.
      */
     public FileFilterUtils() {
     }
 
-    //-----------------------------------------------------------------------
-
     /**
      * <p>
-     * Applies an {@link IOFileFilter} to the provided {@link File} 
-     * objects. The resulting array is a subset of the original file list that 
+     * Applies an {@link IOFileFilter} to the provided {@link File}
+     * objects. The resulting array is a subset of the original file list that
      * matches the provided filter.
      * </p>
-     * 
+     * <p/>
      * <p>
      * The {@link Set} returned by this method is not guaranteed to be thread safe.
      * </p>
-     * 
+     * <p/>
      * <pre>
      * Set&lt;File&gt; allFiles = ...
      * Set&lt;File&gt; javaFiles = FileFilterUtils.filterSet(allFiles,
      *     FileFilterUtils.suffixFileFilter(".java"));
      * </pre>
+     *
      * @param filter the filter to apply to the set of files.
-     * @param files the array of files to apply the filter to.
-     * 
-     * @return a subset of <code>files</code> that is accepted by the 
-     *         file filter.
-     * @throws IllegalArgumentException if the filter is {@code null} 
-     *         or <code>files</code> contains a {@code null} value. 
-     * 
+     * @param files  the array of files to apply the filter to.
+     * @return a subset of <code>files</code> that is accepted by the
+     * file filter.
+     * @throws IllegalArgumentException if the filter is {@code null}
+     *                                  or <code>files</code> contains a {@code null} value.
      * @since 2.0
      */
     public static File[] filter(IOFileFilter filter, File... files) {
@@ -94,28 +101,27 @@ public class FileFilterUtils {
 
     /**
      * <p>
-     * Applies an {@link IOFileFilter} to the provided {@link File} 
-     * objects. The resulting array is a subset of the original file list that 
+     * Applies an {@link IOFileFilter} to the provided {@link File}
+     * objects. The resulting array is a subset of the original file list that
      * matches the provided filter.
      * </p>
-     * 
+     * <p/>
      * <p>
      * The {@link Set} returned by this method is not guaranteed to be thread safe.
      * </p>
-     * 
+     * <p/>
      * <pre>
      * Set&lt;File&gt; allFiles = ...
      * Set&lt;File&gt; javaFiles = FileFilterUtils.filterSet(allFiles,
      *     FileFilterUtils.suffixFileFilter(".java"));
      * </pre>
+     *
      * @param filter the filter to apply to the set of files.
-     * @param files the array of files to apply the filter to.
-     * 
-     * @return a subset of <code>files</code> that is accepted by the 
-     *         file filter.
-     * @throws IllegalArgumentException if the filter is {@code null} 
-     *         or <code>files</code> contains a {@code null} value. 
-     * 
+     * @param files  the array of files to apply the filter to.
+     * @return a subset of <code>files</code> that is accepted by the
+     * file filter.
+     * @throws IllegalArgumentException if the filter is {@code null}
+     *                                  or <code>files</code> contains a {@code null} value.
      * @since 2.0
      */
     public static File[] filter(IOFileFilter filter, Iterable<File> files) {
@@ -125,27 +131,27 @@ public class FileFilterUtils {
 
     /**
      * <p>
-     * Applies an {@link IOFileFilter} to the provided {@link File} 
-     * objects. The resulting list is a subset of the original files that 
+     * Applies an {@link IOFileFilter} to the provided {@link File}
+     * objects. The resulting list is a subset of the original files that
      * matches the provided filter.
      * </p>
-     * 
+     * <p/>
      * <p>
      * The {@link List} returned by this method is not guaranteed to be thread safe.
      * </p>
-     * 
+     * <p/>
      * <pre>
      * List&lt;File&gt; filesAndDirectories = ...
      * List&lt;File&gt; directories = FileFilterUtils.filterList(filesAndDirectories,
      *     FileFilterUtils.directoryFileFilter());
      * </pre>
+     *
      * @param filter the filter to apply to each files in the list.
-     * @param files the collection of files to apply the filter to.
-     * 
-     * @return a subset of <code>files</code> that is accepted by the 
-     *         file filter.
-     * @throws IllegalArgumentException if the filter is {@code null} 
-     *         or <code>files</code> contains a {@code null} value. 
+     * @param files  the collection of files to apply the filter to.
+     * @return a subset of <code>files</code> that is accepted by the
+     * file filter.
+     * @throws IllegalArgumentException if the filter is {@code null}
+     *                                  or <code>files</code> contains a {@code null} value.
      * @since 2.0
      */
     public static List<File> filterList(IOFileFilter filter, Iterable<File> files) {
@@ -154,27 +160,27 @@ public class FileFilterUtils {
 
     /**
      * <p>
-     * Applies an {@link IOFileFilter} to the provided {@link File} 
-     * objects. The resulting list is a subset of the original files that 
+     * Applies an {@link IOFileFilter} to the provided {@link File}
+     * objects. The resulting list is a subset of the original files that
      * matches the provided filter.
      * </p>
-     * 
+     * <p/>
      * <p>
      * The {@link List} returned by this method is not guaranteed to be thread safe.
      * </p>
-     * 
+     * <p/>
      * <pre>
      * List&lt;File&gt; filesAndDirectories = ...
      * List&lt;File&gt; directories = FileFilterUtils.filterList(filesAndDirectories,
      *     FileFilterUtils.directoryFileFilter());
      * </pre>
+     *
      * @param filter the filter to apply to each files in the list.
-     * @param files the collection of files to apply the filter to.
-     * 
-     * @return a subset of <code>files</code> that is accepted by the 
-     *         file filter.
-     * @throws IllegalArgumentException if the filter is {@code null} 
-     *         or <code>files</code> contains a {@code null} value. 
+     * @param files  the collection of files to apply the filter to.
+     * @return a subset of <code>files</code> that is accepted by the
+     * file filter.
+     * @throws IllegalArgumentException if the filter is {@code null}
+     *                                  or <code>files</code> contains a {@code null} value.
      * @since 2.0
      */
     public static List<File> filterList(IOFileFilter filter, File... files) {
@@ -184,28 +190,27 @@ public class FileFilterUtils {
 
     /**
      * <p>
-     * Applies an {@link IOFileFilter} to the provided {@link File} 
-     * objects. The resulting set is a subset of the original file list that 
+     * Applies an {@link IOFileFilter} to the provided {@link File}
+     * objects. The resulting set is a subset of the original file list that
      * matches the provided filter.
      * </p>
-     * 
+     * <p/>
      * <p>
      * The {@link Set} returned by this method is not guaranteed to be thread safe.
      * </p>
-     * 
+     * <p/>
      * <pre>
      * Set&lt;File&gt; allFiles = ...
      * Set&lt;File&gt; javaFiles = FileFilterUtils.filterSet(allFiles,
      *     FileFilterUtils.suffixFileFilter(".java"));
      * </pre>
+     *
      * @param filter the filter to apply to the set of files.
-     * @param files the collection of files to apply the filter to.
-     * 
-     * @return a subset of <code>files</code> that is accepted by the 
-     *         file filter.
-     * @throws IllegalArgumentException if the filter is {@code null} 
-     *         or <code>files</code> contains a {@code null} value. 
-     * 
+     * @param files  the collection of files to apply the filter to.
+     * @return a subset of <code>files</code> that is accepted by the
+     * file filter.
+     * @throws IllegalArgumentException if the filter is {@code null}
+     *                                  or <code>files</code> contains a {@code null} value.
      * @since 2.0
      */
     public static Set<File> filterSet(IOFileFilter filter, File... files) {
@@ -215,28 +220,27 @@ public class FileFilterUtils {
 
     /**
      * <p>
-     * Applies an {@link IOFileFilter} to the provided {@link File} 
-     * objects. The resulting set is a subset of the original file list that 
+     * Applies an {@link IOFileFilter} to the provided {@link File}
+     * objects. The resulting set is a subset of the original file list that
      * matches the provided filter.
      * </p>
-     * 
+     * <p/>
      * <p>
      * The {@link Set} returned by this method is not guaranteed to be thread safe.
      * </p>
-     * 
+     * <p/>
      * <pre>
      * Set&lt;File&gt; allFiles = ...
      * Set&lt;File&gt; javaFiles = FileFilterUtils.filterSet(allFiles,
      *     FileFilterUtils.suffixFileFilter(".java"));
      * </pre>
+     *
      * @param filter the filter to apply to the set of files.
-     * @param files the collection of files to apply the filter to.
-     * 
-     * @return a subset of <code>files</code> that is accepted by the 
-     *         file filter.
-     * @throws IllegalArgumentException if the filter is {@code null} 
-     *         or <code>files</code> contains a {@code null} value. 
-     * 
+     * @param files  the collection of files to apply the filter to.
+     * @return a subset of <code>files</code> that is accepted by the
+     * file filter.
+     * @throws IllegalArgumentException if the filter is {@code null}
+     *                                  or <code>files</code> contains a {@code null} value.
      * @since 2.0
      */
     public static Set<File> filterSet(IOFileFilter filter, Iterable<File> files) {
@@ -245,28 +249,28 @@ public class FileFilterUtils {
 
     /**
      * <p>
-     * Applies an {@link IOFileFilter} to the provided {@link File} 
-     * objects and appends the accepted files to the other supplied collection. 
+     * Applies an {@link IOFileFilter} to the provided {@link File}
+     * objects and appends the accepted files to the other supplied collection.
      * </p>
-     * 
+     * <p/>
      * <pre>
      * List&lt;File&gt; files = ...
      * List&lt;File&gt; directories = FileFilterUtils.filterList(files,
-     *     FileFilterUtils.sizeFileFilter(FileUtils.FIFTY_MB), 
+     *     FileFilterUtils.sizeFileFilter(FileUtils.FIFTY_MB),
      *         new ArrayList&lt;File&gt;());
      * </pre>
-     * @param filter the filter to apply to the collection of files.
-     * @param files the collection of files to apply the filter to.
+     *
+     * @param filter        the filter to apply to the collection of files.
+     * @param files         the collection of files to apply the filter to.
      * @param acceptedFiles the list of files to add accepted files to.
-     * 
-     * @param <T> the type of the file collection.
-     * @return a subset of <code>files</code> that is accepted by the 
-     *         file filter.
-     * @throws IllegalArgumentException if the filter is {@code null} 
-     *         or <code>files</code> contains a {@code null} value. 
+     * @param <T>           the type of the file collection.
+     * @return a subset of <code>files</code> that is accepted by the
+     * file filter.
+     * @throws IllegalArgumentException if the filter is {@code null}
+     *                                  or <code>files</code> contains a {@code null} value.
      */
     private static <T extends Collection<File>> T filter(IOFileFilter filter,
-            Iterable<File> files, T acceptedFiles) {
+                                                         Iterable<File> files, T acceptedFiles) {
         if (filter == null) {
             throw new IllegalArgumentException("file filter is null");
         }
@@ -285,8 +289,8 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that returns true if the filename starts with the specified text.
-     * 
-     * @param prefix  the filename prefix
+     *
+     * @param prefix the filename prefix
      * @return a prefix checking filter
      * @see PrefixFileFilter
      */
@@ -296,9 +300,9 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that returns true if the filename starts with the specified text.
-     * 
-     * @param prefix  the filename prefix
-     * @param caseSensitivity  how to handle case sensitivity, null means case-sensitive
+     *
+     * @param prefix          the filename prefix
+     * @param caseSensitivity how to handle case sensitivity, null means case-sensitive
      * @return a prefix checking filter
      * @see PrefixFileFilter
      * @since 2.0
@@ -309,8 +313,8 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that returns true if the filename ends with the specified text.
-     * 
-     * @param suffix  the filename suffix
+     *
+     * @param suffix the filename suffix
      * @return a suffix checking filter
      * @see SuffixFileFilter
      */
@@ -320,9 +324,9 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that returns true if the filename ends with the specified text.
-     * 
-     * @param suffix  the filename suffix
-     * @param caseSensitivity  how to handle case sensitivity, null means case-sensitive
+     *
+     * @param suffix          the filename suffix
+     * @param caseSensitivity how to handle case sensitivity, null means case-sensitive
      * @return a suffix checking filter
      * @see SuffixFileFilter
      * @since 2.0
@@ -333,8 +337,8 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that returns true if the filename matches the specified text.
-     * 
-     * @param name  the filename
+     *
+     * @param name the filename
      * @return a name checking filter
      * @see NameFileFilter
      */
@@ -344,9 +348,9 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that returns true if the filename matches the specified text.
-     * 
-     * @param name  the filename
-     * @param caseSensitivity  how to handle case sensitivity, null means case-sensitive
+     *
+     * @param name            the filename
+     * @param caseSensitivity how to handle case sensitivity, null means case-sensitive
      * @return a name checking filter
      * @see NameFileFilter
      * @since 2.0
@@ -355,9 +359,11 @@ public class FileFilterUtils {
         return new NameFileFilter(name, caseSensitivity);
     }
 
+    //-----------------------------------------------------------------------
+
     /**
      * Returns a filter that checks if the file is a directory.
-     * 
+     *
      * @return file filter that accepts only directories and not files
      * @see DirectoryFileFilter#DIRECTORY
      */
@@ -367,7 +373,7 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that checks if the file is a file (and not a directory).
-     * 
+     *
      * @return file filter that accepts only files and not directories
      * @see FileFileFilter#FILE
      */
@@ -375,12 +381,11 @@ public class FileFilterUtils {
         return FileFileFilter.FILE;
     }
 
-    //-----------------------------------------------------------------------
     /**
      * Returns a filter that ANDs the two specified filters.
-     * 
-     * @param filter1  the first filter
-     * @param filter2  the second filter
+     *
+     * @param filter1 the first filter
+     * @param filter2 the second filter
      * @return a filter that ANDs the two specified filters
      * @see #and(IOFileFilter...)
      * @see AndFileFilter
@@ -393,9 +398,9 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that ORs the two specified filters.
-     * 
-     * @param filter1  the first filter
-     * @param filter2  the second filter
+     *
+     * @param filter1 the first filter
+     * @param filter2 the second filter
      * @return a filter that ORs the two specified filters
      * @see #or(IOFileFilter...)
      * @see OrFileFilter
@@ -408,12 +413,11 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that ANDs the specified filters.
-     * 
+     *
      * @param filters the IOFileFilters that will be ANDed together.
      * @return a filter that ANDs the specified filters
-     * 
-     * @throws IllegalArgumentException if the filters are null or contain a 
-     *         null value.
+     * @throws IllegalArgumentException if the filters are null or contain a
+     *                                  null value.
      * @see AndFileFilter
      * @since 2.0
      */
@@ -423,12 +427,11 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that ORs the specified filters.
-     * 
+     *
      * @param filters the IOFileFilters that will be ORed together.
      * @return a filter that ORs the specified filters
-     * 
-     * @throws IllegalArgumentException if the filters are null or contain a 
-     *         null value.
+     * @throws IllegalArgumentException if the filters are null or contain a
+     *                                  null value.
      * @see OrFileFilter
      * @since 2.0
      */
@@ -436,13 +439,15 @@ public class FileFilterUtils {
         return new OrFileFilter(toList(filters));
     }
 
+    //-----------------------------------------------------------------------
+
     /**
      * Create a List of file filters.
      *
      * @param filters The file filters
      * @return The list of file filters
-     * @throws IllegalArgumentException if the filters are null or contain a 
-     *         null value.
+     * @throws IllegalArgumentException if the filters are null or contain a
+     *                                  null value.
      * @since 2.0
      */
     public static List<IOFileFilter> toList(IOFileFilter... filters) {
@@ -461,8 +466,8 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that NOTs the specified filter.
-     * 
-     * @param filter  the filter to invert
+     *
+     * @param filter the filter to invert
      * @return a filter that NOTs the specified filter
      * @see NotFileFilter
      */
@@ -471,9 +476,10 @@ public class FileFilterUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a filter that always returns true.
-     * 
+     *
      * @return a true filter
      * @see TrueFileFilter#TRUE
      */
@@ -483,20 +489,21 @@ public class FileFilterUtils {
 
     /**
      * Returns a filter that always returns false.
-     * 
+     *
      * @return a false filter
      * @see FalseFileFilter#FALSE
      */
     public static IOFileFilter falseFileFilter() {
         return FalseFileFilter.FALSE;
     }
-    
+
     //-----------------------------------------------------------------------
+
     /**
      * Returns an <code>IOFileFilter</code> that wraps the
      * <code>FileFilter</code> instance.
-     * 
-     * @param filter  the filter to be wrapped
+     *
+     * @param filter the filter to be wrapped
      * @return a new filter that implements IOFileFilter
      * @see DelegateFileFilter
      */
@@ -507,8 +514,8 @@ public class FileFilterUtils {
     /**
      * Returns an <code>IOFileFilter</code> that wraps the
      * <code>FilenameFilter</code> instance.
-     * 
-     * @param filter  the filter to be wrapped
+     *
+     * @param filter the filter to be wrapped
      * @return a new filter that implements IOFileFilter
      * @see DelegateFileFilter
      */
@@ -516,12 +523,11 @@ public class FileFilterUtils {
         return new DelegateFileFilter(filter);
     }
 
-    //-----------------------------------------------------------------------
     /**
      * Returns a filter that returns true if the file was last modified after
      * the specified cutoff time.
      *
-     * @param cutoff  the time threshold
+     * @param cutoff the time threshold
      * @return an appropriately configured age file filter
      * @see AgeFileFilter
      * @since 1.2
@@ -533,8 +539,8 @@ public class FileFilterUtils {
     /**
      * Returns a filter that filters files based on a cutoff time.
      *
-     * @param cutoff  the time threshold
-     * @param acceptOlder  if true, older files get accepted, if false, newer
+     * @param cutoff      the time threshold
+     * @param acceptOlder if true, older files get accepted, if false, newer
      * @return an appropriately configured age file filter
      * @see AgeFileFilter
      * @since 1.2
@@ -547,7 +553,7 @@ public class FileFilterUtils {
      * Returns a filter that returns true if the file was last modified after
      * the specified cutoff date.
      *
-     * @param cutoffDate  the time threshold
+     * @param cutoffDate the time threshold
      * @return an appropriately configured age file filter
      * @see AgeFileFilter
      * @since 1.2
@@ -560,7 +566,7 @@ public class FileFilterUtils {
      * Returns a filter that filters files based on a cutoff date.
      *
      * @param cutoffDate  the time threshold
-     * @param acceptOlder  if true, older files get accepted, if false, newer
+     * @param acceptOlder if true, older files get accepted, if false, newer
      * @return an appropriately configured age file filter
      * @see AgeFileFilter
      * @since 1.2
@@ -569,12 +575,14 @@ public class FileFilterUtils {
         return new AgeFileFilter(cutoffDate, acceptOlder);
     }
 
+    //-----------------------------------------------------------------------
+
     /**
      * Returns a filter that returns true if the file was last modified after
      * the specified reference file.
      *
-     * @param cutoffReference  the file whose last modification
-     *        time is usesd as the threshold age of the files
+     * @param cutoffReference the file whose last modification
+     *                        time is usesd as the threshold age of the files
      * @return an appropriately configured age file filter
      * @see AgeFileFilter
      * @since 1.2
@@ -586,9 +594,9 @@ public class FileFilterUtils {
     /**
      * Returns a filter that filters files based on a cutoff reference file.
      *
-     * @param cutoffReference  the file whose last modification
-     *        time is usesd as the threshold age of the files
-     * @param acceptOlder  if true, older files get accepted, if false, newer
+     * @param cutoffReference the file whose last modification
+     *                        time is usesd as the threshold age of the files
+     * @param acceptOlder     if true, older files get accepted, if false, newer
      * @return an appropriately configured age file filter
      * @see AgeFileFilter
      * @since 1.2
@@ -597,11 +605,10 @@ public class FileFilterUtils {
         return new AgeFileFilter(cutoffReference, acceptOlder);
     }
 
-    //-----------------------------------------------------------------------
     /**
      * Returns a filter that returns true if the file is bigger than a certain size.
      *
-     * @param threshold  the file size threshold
+     * @param threshold the file size threshold
      * @return an appropriately configured SizeFileFilter
      * @see SizeFileFilter
      * @since 1.2
@@ -613,8 +620,8 @@ public class FileFilterUtils {
     /**
      * Returns a filter that filters based on file size.
      *
-     * @param threshold  the file size threshold
-     * @param acceptLarger  if true, larger files get accepted, if false, smaller
+     * @param threshold    the file size threshold
+     * @param acceptLarger if true, larger files get accepted, if false, smaller
      * @return an appropriately configured SizeFileFilter
      * @see SizeFileFilter
      * @since 1.2
@@ -633,85 +640,77 @@ public class FileFilterUtils {
      * @see SizeFileFilter
      * @since 1.3
      */
-    public static IOFileFilter sizeRangeFileFilter(long minSizeInclusive, long maxSizeInclusive ) {
+    public static IOFileFilter sizeRangeFileFilter(long minSizeInclusive, long maxSizeInclusive) {
         IOFileFilter minimumFilter = new SizeFileFilter(minSizeInclusive, true);
         IOFileFilter maximumFilter = new SizeFileFilter(maxSizeInclusive + 1L, false);
         return new AndFileFilter(minimumFilter, maximumFilter);
     }
-    
+
     /**
      * Returns a filter that accepts files that begin with the provided magic
      * number.
-     * 
-     * @param magicNumber the magic number (byte sequence) to match at the 
-     *        beginning of each file.
-     * 
+     *
+     * @param magicNumber the magic number (byte sequence) to match at the
+     *                    beginning of each file.
      * @return an IOFileFilter that accepts files beginning with the provided
-     *         magic number.
-     *         
-     * @throws IllegalArgumentException if <code>magicNumber</code> is 
-     *         {@code null} or the empty String.
+     * magic number.
+     * @throws IllegalArgumentException if <code>magicNumber</code> is
+     *                                  {@code null} or the empty String.
      * @see MagicNumberFileFilter
      * @since 2.0
      */
     public static IOFileFilter magicNumberFileFilter(String magicNumber) {
         return new MagicNumberFileFilter(magicNumber);
     }
-    
+
     /**
      * Returns a filter that accepts files that contains the provided magic
      * number at a specified offset within the file.
-     * 
-     * @param magicNumber the magic number (byte sequence) to match at the 
-     *        provided offset in each file.
-     * @param offset the offset within the files to look for the magic number.
-     * 
+     *
+     * @param magicNumber the magic number (byte sequence) to match at the
+     *                    provided offset in each file.
+     * @param offset      the offset within the files to look for the magic number.
      * @return an IOFileFilter that accepts files containing the magic number
-     *         at the specified offset.
-     *         
-     * @throws IllegalArgumentException if <code>magicNumber</code> is 
-     *         {@code null} or the empty String, or if offset is a 
-     *         negative number.
+     * at the specified offset.
+     * @throws IllegalArgumentException if <code>magicNumber</code> is
+     *                                  {@code null} or the empty String, or if offset is a
+     *                                  negative number.
      * @see MagicNumberFileFilter
      * @since 2.0
      */
     public static IOFileFilter magicNumberFileFilter(String magicNumber, long offset) {
         return new MagicNumberFileFilter(magicNumber, offset);
     }
-    
+
     /**
      * Returns a filter that accepts files that begin with the provided magic
      * number.
-     * 
-     * @param magicNumber the magic number (byte sequence) to match at the 
-     *        beginning of each file.
-     * 
+     *
+     * @param magicNumber the magic number (byte sequence) to match at the
+     *                    beginning of each file.
      * @return an IOFileFilter that accepts files beginning with the provided
-     *         magic number.
-     *         
-     * @throws IllegalArgumentException if <code>magicNumber</code> is 
-     *         {@code null} or is of length zero.
+     * magic number.
+     * @throws IllegalArgumentException if <code>magicNumber</code> is
+     *                                  {@code null} or is of length zero.
      * @see MagicNumberFileFilter
      * @since 2.0
      */
     public static IOFileFilter magicNumberFileFilter(byte[] magicNumber) {
         return new MagicNumberFileFilter(magicNumber);
     }
-    
+
     /**
      * Returns a filter that accepts files that contains the provided magic
      * number at a specified offset within the file.
-     * 
-     * @param magicNumber the magic number (byte sequence) to match at the 
-     *        provided offset in each file.
-     * @param offset the offset within the files to look for the magic number.
-     * 
+     *
+     * @param magicNumber the magic number (byte sequence) to match at the
+     *                    provided offset in each file.
+     * @param offset      the offset within the files to look for the magic number.
      * @return an IOFileFilter that accepts files containing the magic number
-     *         at the specified offset.
-     *         
-     * @throws IllegalArgumentException if <code>magicNumber</code> is 
-     *         {@code null}, or contains no bytes, or <code>offset</code> 
-     *         is a negative number.
+     * at the specified offset.
+     * @throws IllegalArgumentException if <code>magicNumber</code> is
+     *                                  {@code null}, or contains no bytes, or <code>offset</code>
+     *                                  is a negative number.
      * @see MagicNumberFileFilter
      * @since 2.0
      */
@@ -719,21 +718,12 @@ public class FileFilterUtils {
         return new MagicNumberFileFilter(magicNumber, offset);
     }
 
-    //-----------------------------------------------------------------------
-    /* Constructed on demand and then cached */
-    private static final IOFileFilter cvsFilter = notFileFilter(
-            and(directoryFileFilter(), nameFileFilter("CVS")));
-
-    /* Constructed on demand and then cached */
-    private static final IOFileFilter svnFilter = notFileFilter(
-            and(directoryFileFilter(), nameFileFilter(".svn")));
-
     /**
      * Decorates a filter to make it ignore CVS directories.
      * Passing in {@code null} will return a filter that accepts everything
      * except CVS directories.
-     * 
-     * @param filter  the filter to decorate, null means an unrestricted filter
+     *
+     * @param filter the filter to decorate, null means an unrestricted filter
      * @return the decorated filter, never null
      * @since 1.1 (method existed but had bug in 1.0)
      */
@@ -749,8 +739,8 @@ public class FileFilterUtils {
      * Decorates a filter to make it ignore SVN directories.
      * Passing in {@code null} will return a filter that accepts everything
      * except SVN directories.
-     * 
-     * @param filter  the filter to decorate, null means an unrestricted filter
+     *
+     * @param filter the filter to decorate, null means an unrestricted filter
      * @return the decorated filter, never null
      * @since 1.1
      */
@@ -763,10 +753,11 @@ public class FileFilterUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Decorates a filter so that it only applies to directories and not to files.
-     * 
-     * @param filter  the filter to decorate, null means an unrestricted filter
+     *
+     * @param filter the filter to decorate, null means an unrestricted filter
      * @return the decorated filter, never null
      * @see DirectoryFileFilter#DIRECTORY
      * @since 1.3
@@ -780,8 +771,8 @@ public class FileFilterUtils {
 
     /**
      * Decorates a filter so that it only applies to files and not to directories.
-     * 
-     * @param filter  the filter to decorate, null means an unrestricted filter
+     *
+     * @param filter the filter to decorate, null means an unrestricted filter
      * @return the decorated filter, never null
      * @see FileFileFilter#FILE
      * @since 1.3

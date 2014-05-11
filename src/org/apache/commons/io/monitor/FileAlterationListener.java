@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 package org.apache.commons.io.monitor;
+
 import java.io.File;
 
 /**
  * A listener that receives events of file system modifications.
- * <p>
+ * <p/>
  * Register {@link FileAlterationListener}s with a {@link FileAlterationObserver}.
- * 
- * @see FileAlterationObserver
+ *
  * @version $Id: FileAlterationListener.java 1304052 2012-03-22 20:55:29Z ggregory $
+ * @see FileAlterationObserver
  * @since 2.0
  */
 public interface FileAlterationListener {
@@ -37,42 +38,42 @@ public interface FileAlterationListener {
 
     /**
      * Directory created Event.
-     * 
+     *
      * @param directory The directory created
      */
     void onDirectoryCreate(final File directory);
 
     /**
      * Directory changed Event.
-     * 
+     *
      * @param directory The directory changed
      */
     void onDirectoryChange(final File directory);
 
     /**
      * Directory deleted Event.
-     * 
+     *
      * @param directory The directory deleted
      */
     void onDirectoryDelete(final File directory);
 
     /**
      * File created Event.
-     * 
+     *
      * @param file The file created
      */
     void onFileCreate(final File file);
 
     /**
      * File changed Event.
-     * 
+     *
      * @param file The file changed
      */
     void onFileChange(final File file);
 
     /**
      * File deleted Event.
-     * 
+     *
      * @param file The file deleted
      */
     void onFileDelete(final File file);

@@ -32,7 +32,7 @@ import java.nio.charset.CodingErrorAction;
  * stream to a {@link Writer}. The stream is transformed using a
  * {@link CharsetDecoder} object, guaranteeing that all charset
  * encodings supported by the JRE are handled correctly.
- * <p>
+ * <p/>
  * The output of the {@link CharsetDecoder} is buffered using a fixed size buffer.
  * This implies that the data is written to the underlying {@link Writer} in chunks
  * that are no larger than the size of this buffer. By default, the buffer is
@@ -43,7 +43,7 @@ import java.nio.charset.CodingErrorAction;
  * available data is written immediately to the underlying {@link Writer}, implying that
  * the current position of the {@link Writer} is correlated to the current position
  * of the {@link WriterOutputStream}.
- * <p>
+ * <p/>
  * {@link WriterOutputStream} implements the inverse transformation of {@link java.io.OutputStreamWriter};
  * in the following example, writing to <tt>out2</tt> would have the same result as writing to
  * <tt>out</tt> directly (provided that the byte sequence is legal with respect to the
@@ -57,17 +57,16 @@ import java.nio.charset.CodingErrorAction;
  * except that the control flow is reversed: both classes transform a byte stream
  * into a character stream, but {@link java.io.InputStreamReader} pulls data from the underlying stream,
  * while {@link WriterOutputStream} pushes it to the underlying stream.
- * <p>
+ *
  * Note that while there are use cases where there is no alternative to using
  * this class, very often the need to use this class is an indication of a flaw
  * in the design of the code. This class is typically used in situations where an existing
  * API only accepts an {@link OutputStream} object, but where the stream is known to represent
  * character data that must be decoded for further use.
- * <p>
+ *
  * Instances of {@link WriterOutputStream} are not thread safe.
- * 
+ *
  * @see org.apache.commons.io.input.ReaderInputStream
- * 
  * @since 2.0
  */
 public class WriterOutputStream extends OutputStream {
@@ -95,8 +94,8 @@ public class WriterOutputStream extends OutputStream {
      * Constructs a new {@link WriterOutputStream} with a default output buffer size of
      * 1024 characters. The output buffer will only be flushed when it overflows or when
      * {@link #flush()} or {@link #close()} is called.
-     * 
-     * @param writer the target {@link Writer}
+     *
+     * @param writer  the target {@link Writer}
      * @param decoder the charset decoder
      * @since 2.1
      */
@@ -106,10 +105,10 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * Constructs a new {@link WriterOutputStream}.
-     * 
-     * @param writer the target {@link Writer}
-     * @param decoder the charset decoder
-     * @param bufferSize the size of the output buffer in number of characters
+     *
+     * @param writer           the target {@link Writer}
+     * @param decoder          the charset decoder
+     * @param bufferSize       the size of the output buffer in number of characters
      * @param writeImmediately If <tt>true</tt> the output buffer will be flushed after each
      *                         write operation, i.e. all available data will be written to the
      *                         underlying {@link Writer} immediately. If <tt>false</tt>, the
@@ -126,10 +125,10 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * Constructs a new {@link WriterOutputStream}.
-     * 
-     * @param writer the target {@link Writer}
-     * @param charset the charset encoding
-     * @param bufferSize the size of the output buffer in number of characters
+     *
+     * @param writer           the target {@link Writer}
+     * @param charset          the charset encoding
+     * @param bufferSize       the size of the output buffer in number of characters
      * @param writeImmediately If <tt>true</tt> the output buffer will be flushed after each
      *                         write operation, i.e. all available data will be written to the
      *                         underlying {@link Writer} immediately. If <tt>false</tt>, the
@@ -138,20 +137,21 @@ public class WriterOutputStream extends OutputStream {
      */
     public WriterOutputStream(Writer writer, Charset charset, int bufferSize, boolean writeImmediately) {
         this(writer,
-             charset.newDecoder()
-                    .onMalformedInput(CodingErrorAction.REPLACE)
-                    .onUnmappableCharacter(CodingErrorAction.REPLACE)
-                    .replaceWith("?"),
-             bufferSize,
-             writeImmediately);
+                charset.newDecoder()
+                        .onMalformedInput(CodingErrorAction.REPLACE)
+                        .onUnmappableCharacter(CodingErrorAction.REPLACE)
+                        .replaceWith("?"),
+                bufferSize,
+                writeImmediately
+        );
     }
 
     /**
      * Constructs a new {@link WriterOutputStream} with a default output buffer size of
      * 1024 characters. The output buffer will only be flushed when it overflows or when
      * {@link #flush()} or {@link #close()} is called.
-     * 
-     * @param writer the target {@link Writer}
+     *
+     * @param writer  the target {@link Writer}
      * @param charset the charset encoding
      */
     public WriterOutputStream(Writer writer, Charset charset) {
@@ -160,10 +160,10 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * Constructs a new {@link WriterOutputStream}.
-     * 
-     * @param writer the target {@link Writer}
-     * @param charsetName the name of the charset encoding
-     * @param bufferSize the size of the output buffer in number of characters
+     *
+     * @param writer           the target {@link Writer}
+     * @param charsetName      the name of the charset encoding
+     * @param bufferSize       the size of the output buffer in number of characters
      * @param writeImmediately If <tt>true</tt> the output buffer will be flushed after each
      *                         write operation, i.e. all available data will be written to the
      *                         underlying {@link Writer} immediately. If <tt>false</tt>, the
@@ -178,8 +178,8 @@ public class WriterOutputStream extends OutputStream {
      * Constructs a new {@link WriterOutputStream} with a default output buffer size of
      * 1024 characters. The output buffer will only be flushed when it overflows or when
      * {@link #flush()} or {@link #close()} is called.
-     * 
-     * @param writer the target {@link Writer}
+     *
+     * @param writer      the target {@link Writer}
      * @param charsetName the name of the charset encoding
      */
     public WriterOutputStream(Writer writer, String charsetName) {
@@ -190,7 +190,7 @@ public class WriterOutputStream extends OutputStream {
      * Constructs a new {@link WriterOutputStream} that uses the default character encoding
      * and with a default output buffer size of 1024 characters. The output buffer will only
      * be flushed when it overflows or when {@link #flush()} or {@link #close()} is called.
-     * 
+     *
      * @param writer the target {@link Writer}
      */
     public WriterOutputStream(Writer writer) {
@@ -199,8 +199,8 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * Write bytes from the specified byte array to the stream.
-     * 
-     * @param b the byte array containing the bytes to write
+     *
+     * @param b   the byte array containing the bytes to write
      * @param off the start offset in the byte array
      * @param len the number of bytes to write
      * @throws IOException if an I/O error occurs
@@ -221,7 +221,7 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * Write bytes from the specified byte array to the stream.
-     * 
+     *
      * @param b the byte array containing the bytes to write
      * @throws IOException if an I/O error occurs
      */
@@ -232,19 +232,20 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * Write a single byte to the stream.
-     * 
+     *
      * @param b the byte to write
      * @throws IOException if an I/O error occurs
      */
     @Override
     public void write(int b) throws IOException {
-        write(new byte[] { (byte)b }, 0, 1);
+        write(new byte[]{(byte) b}, 0, 1);
     }
 
     /**
      * Flush the stream. Any remaining content accumulated in the output buffer
      * will be written to the underlying {@link Writer}. After that
-     * {@link Writer#flush()} will be called. 
+     * {@link Writer#flush()} will be called.
+     *
      * @throws IOException if an I/O error occurs
      */
     @Override
@@ -256,7 +257,8 @@ public class WriterOutputStream extends OutputStream {
     /**
      * Close the stream. Any remaining content accumulated in the output buffer
      * will be written to the underlying {@link Writer}. After that
-     * {@link Writer#close()} will be called. 
+     * {@link Writer#close()} will be called.
+     *
      * @throws IOException if an I/O error occurs
      */
     @Override
@@ -268,7 +270,7 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * Decode the contents of the input ByteBuffer into a CharBuffer.
-     * 
+     *
      * @param endOfInput indicates end of input
      * @throws IOException if an I/O error occurs
      */
@@ -294,7 +296,7 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * Flush the output.
-     * 
+     *
      * @throws IOException if an I/O error occurs
      */
     private void flushOutput() throws IOException {

@@ -16,60 +16,74 @@
  */
 package org.apache.commons.io.comparator;
 
+import org.apache.commons.io.IOCase;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.apache.commons.io.IOCase;
-
 /**
  * Compare the <b>names</b> of two files for order (see {@link File#getName()}).
- * <p>
+ * <p/>
  * This comparator can be used to sort lists or arrays of files
  * by their name either in a case-sensitive, case-insensitive or
  * system dependant case sensitive way. A number of singleton instances
  * are provided for the various case sensitivity options (using {@link IOCase})
  * and the reverse of those options.
- * <p>
+ * <p/>
  * Example of a <i>case-sensitive</i> file name sort using the
  * {@link #NAME_COMPARATOR} singleton instance:
  * <pre>
  *       List&lt;File&gt; list = ...
  *       NameFileComparator.NAME_COMPARATOR.sort(list);
  * </pre>
- * <p>
+ * <p/>
  * Example of a <i>reverse case-insensitive</i> file name sort using the
  * {@link #NAME_INSENSITIVE_REVERSE} singleton instance:
  * <pre>
  *       File[] array = ...
  *       NameFileComparator.NAME_INSENSITIVE_REVERSE.sort(array);
  * </pre>
- * <p>
+ * <p/>
  *
  * @version $Id: NameFileComparator.java 1304052 2012-03-22 20:55:29Z ggregory $
  * @since 1.4
  */
 public class NameFileComparator extends AbstractFileComparator implements Serializable {
 
-    /** Case-sensitive name comparator instance (see {@link IOCase#SENSITIVE}) */
+    /**
+     * Case-sensitive name comparator instance (see {@link IOCase#SENSITIVE})
+     */
     public static final Comparator<File> NAME_COMPARATOR = new NameFileComparator();
 
-    /** Reverse case-sensitive name comparator instance (see {@link IOCase#SENSITIVE}) */
+    /**
+     * Reverse case-sensitive name comparator instance (see {@link IOCase#SENSITIVE})
+     */
     public static final Comparator<File> NAME_REVERSE = new ReverseComparator(NAME_COMPARATOR);
 
-    /** Case-insensitive name comparator instance (see {@link IOCase#INSENSITIVE}) */
+    /**
+     * Case-insensitive name comparator instance (see {@link IOCase#INSENSITIVE})
+     */
     public static final Comparator<File> NAME_INSENSITIVE_COMPARATOR = new NameFileComparator(IOCase.INSENSITIVE);
 
-    /** Reverse case-insensitive name comparator instance (see {@link IOCase#INSENSITIVE}) */
+    /**
+     * Reverse case-insensitive name comparator instance (see {@link IOCase#INSENSITIVE})
+     */
     public static final Comparator<File> NAME_INSENSITIVE_REVERSE = new ReverseComparator(NAME_INSENSITIVE_COMPARATOR);
 
-    /** System sensitive name comparator instance (see {@link IOCase#SYSTEM}) */
+    /**
+     * System sensitive name comparator instance (see {@link IOCase#SYSTEM})
+     */
     public static final Comparator<File> NAME_SYSTEM_COMPARATOR = new NameFileComparator(IOCase.SYSTEM);
 
-    /** Reverse system sensitive name comparator instance (see {@link IOCase#SYSTEM}) */
+    /**
+     * Reverse system sensitive name comparator instance (see {@link IOCase#SYSTEM})
+     */
     public static final Comparator<File> NAME_SYSTEM_REVERSE = new ReverseComparator(NAME_SYSTEM_COMPARATOR);
 
-    /** Whether the comparison is case sensitive. */
+    /**
+     * Whether the comparison is case sensitive.
+     */
     private final IOCase caseSensitivity;
 
     /**
@@ -82,7 +96,7 @@ public class NameFileComparator extends AbstractFileComparator implements Serial
     /**
      * Construct a file name comparator instance with the specified case-sensitivity.
      *
-     * @param caseSensitivity  how to handle case sensitivity, null means case-sensitive
+     * @param caseSensitivity how to handle case sensitivity, null means case-sensitive
      */
     public NameFileComparator(IOCase caseSensitivity) {
         this.caseSensitivity = caseSensitivity == null ? IOCase.SENSITIVE : caseSensitivity;
@@ -90,7 +104,7 @@ public class NameFileComparator extends AbstractFileComparator implements Serial
 
     /**
      * Compare the names of two files with the specified case sensitivity.
-     * 
+     *
      * @param file1 The first file to compare
      * @param file2 The second file to compare
      * @return a negative value if the first file's name

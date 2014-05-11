@@ -16,33 +16,33 @@
  */
 package org.apache.commons.io.comparator;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.apache.commons.io.FileUtils;
-
 /**
  * Compare the <b>length/size</b> of two files for order (see
  * {@link File#length()} and {@link FileUtils#sizeOfDirectory(File)}).
- * <p>
+ * <p/>
  * This comparator can be used to sort lists or arrays of files
  * by their length/size.
- * <p>
+ * <p/>
  * Example of sorting a list of files using the
  * {@link #SIZE_COMPARATOR} singleton instance:
  * <pre>
  *       List&lt;File&gt; list = ...
  *       SizeFileComparator.SIZE_COMPARATOR.sort(list);
  * </pre>
- * <p>
+ * <p/>
  * Example of doing a <i>reverse</i> sort of an array of files using the
  * {@link #SIZE_REVERSE} singleton instance:
  * <pre>
  *       File[] array = ...
  *       SizeFileComparator.SIZE_REVERSE.sort(array);
  * </pre>
- * <p>
+ * <p/>
  * <strong>N.B.</strong> Directories are treated as <b>zero size</b> unless
  * <code>sumDirectoryContents</code> is {@code true}.
  *
@@ -51,10 +51,14 @@ import org.apache.commons.io.FileUtils;
  */
 public class SizeFileComparator extends AbstractFileComparator implements Serializable {
 
-    /** Size comparator instance - directories are treated as zero size */
+    /**
+     * Size comparator instance - directories are treated as zero size
+     */
     public static final Comparator<File> SIZE_COMPARATOR = new SizeFileComparator();
 
-    /** Reverse size comparator instance - directories are treated as zero size */
+    /**
+     * Reverse size comparator instance - directories are treated as zero size
+     */
     public static final Comparator<File> SIZE_REVERSE = new ReverseComparator(SIZE_COMPARATOR);
 
     /**
@@ -69,7 +73,9 @@ public class SizeFileComparator extends AbstractFileComparator implements Serial
      */
     public static final Comparator<File> SIZE_SUMDIR_REVERSE = new ReverseComparator(SIZE_SUMDIR_COMPARATOR);
 
-    /** Whether the sum of the directory's contents should be calculated. */
+    /**
+     * Whether the sum of the directory's contents should be calculated.
+     */
     private final boolean sumDirectoryContents;
 
     /**
@@ -82,13 +88,13 @@ public class SizeFileComparator extends AbstractFileComparator implements Serial
     /**
      * Construct a file size comparator instance specifying whether the size of
      * the directory contents should be aggregated.
-     * <p>
+     * <p/>
      * If the <code>sumDirectoryContents</code> is {@code true} The size of
      * directories is calculated using  {@link FileUtils#sizeOfDirectory(File)}.
      *
      * @param sumDirectoryContents {@code true} if the sum of the directoryies contents
-     *  should be calculated, otherwise {@code false} if directories should be treated
-     *  as size zero (see {@link FileUtils#sizeOfDirectory(File)}).
+     *                             should be calculated, otherwise {@code false} if directories should be treated
+     *                             as size zero (see {@link FileUtils#sizeOfDirectory(File)}).
      */
     public SizeFileComparator(boolean sumDirectoryContents) {
         this.sumDirectoryContents = sumDirectoryContents;
@@ -96,14 +102,13 @@ public class SizeFileComparator extends AbstractFileComparator implements Serial
 
     /**
      * Compare the length of two files.
-     * 
+     *
      * @param file1 The first file to compare
      * @param file2 The second file to compare
      * @return a negative value if the first file's length
      * is less than the second, zero if the lengths are the
      * same and a positive value if the first files length
      * is greater than the second file.
-     * 
      */
     public int compare(File file1, File file2) {
         long size1 = 0;

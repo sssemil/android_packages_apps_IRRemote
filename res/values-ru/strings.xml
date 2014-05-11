@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ChanelMn">Канал -</string>
-    <string name="ChanelPl">Канал +</string>
-    <string name="Down">Вниз</string>
-    <string name="Enter">Ввести</string>
-    <string name="Left">Влево</string>
-    <string name="Right">Вправо</string>
     <string name="Send_signal">Покинуть режим записи</string>
-    <string name="Up">Вверх</string>
-    <string name="VolMn">Зв. -</string>
-    <string name="VolPl">Зв. +</string>
     <string name="Write_signal">Перейти в режим записи</string>
     <string name="action_settings">Настройки</string>
     <string name="add">Добавить</string>
     <string name="add_brnd">Добавить новое устройство</string>
-    <string name="app_name">Sony IR Remote</string>
+    <string name="app_name">IR Remote</string>
     <string name="brand">Бренд(пр. Sony)</string>
     <string name="brand_prompt">Выберите бренд устройства</string>
     <string name="go_back">Назад в главное меню</string>

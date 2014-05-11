@@ -23,19 +23,20 @@ import java.io.Serializable;
  * {@link FileEntry} represents the state of a file or directory, capturing
  * the following {@link File} attributes at a point in time.
  * <ul>
- *   <li>File Name (see {@link File#getName()})</li>
- *   <li>Exists - whether the file exists or not (see {@link File#exists()})</li>
- *   <li>Directory - whether the file is a directory or not (see {@link File#isDirectory()})</li>
- *   <li>Last Modified Date/Time (see {@link File#lastModified()})</li>
- *   <li>Length (see {@link File#length()}) - directories treated as zero</li>
- *   <li>Children - contents of a directory (see {@link File#listFiles(java.io.FileFilter)})</li>
+ * <li>File Name (see {@link File#getName()})</li>
+ * <li>Exists - whether the file exists or not (see {@link File#exists()})</li>
+ * <li>Directory - whether the file is a directory or not (see {@link File#isDirectory()})</li>
+ * <li>Last Modified Date/Time (see {@link File#lastModified()})</li>
+ * <li>Length (see {@link File#length()}) - directories treated as zero</li>
+ * <li>Children - contents of a directory (see {@link File#listFiles(java.io.FileFilter)})</li>
  * </ul>
- * <p>
+ * <p/>
  * <h3>Custom Implementations</h3>
  * If the state of additional {@link File} attributes is required then create a custom
  * {@link FileEntry} with properties for those attributes. Override the
  * {@link #newChildInstance(File)} to return a new instance of the appropriate type.
  * You may also want to override the {@link #refresh(File)} method.
+ *
  * @see FileAlterationObserver
  * @since 2.0
  */
@@ -44,8 +45,8 @@ public class FileEntry implements Serializable {
     static final FileEntry[] EMPTY_ENTRIES = new FileEntry[0];
 
     private final FileEntry parent;
-    private FileEntry[] children;
     private final File file;
+    private FileEntry[] children;
     private String name;
     private boolean exists;
     private boolean directory;
@@ -58,14 +59,14 @@ public class FileEntry implements Serializable {
      * @param file The file being monitored
      */
     public FileEntry(File file) {
-        this((FileEntry)null, file);
+        this((FileEntry) null, file);
     }
 
     /**
      * Construct a new monitor for a specified {@link File}.
      *
      * @param parent The parent
-     * @param file The file being monitored
+     * @param file   The file being monitored
      */
     public FileEntry(FileEntry parent, File file) {
         if (file == null) {
@@ -79,11 +80,11 @@ public class FileEntry implements Serializable {
     /**
      * Refresh the attributes from the {@link File}, indicating
      * whether the file has changed.
-     * <p>
+     * <p/>
      * This implementation refreshes the <code>name</code>, <code>exists</code>,
      * <code>directory</code>, <code>lastModified</code> and <code>length</code>
      * properties.
-     * <p>
+     * <p/>
      * The <code>exists</code>, <code>directory</code>, <code>lastModified</code>
      * and <code>length</code> properties are compared for changes
      *
@@ -93,17 +94,17 @@ public class FileEntry implements Serializable {
     public boolean refresh(File file) {
 
         // cache original values
-        boolean origExists       = exists;
-        long    origLastModified = lastModified;
-        boolean origDirectory    = directory;
-        long    origLength       = length;
+        boolean origExists = exists;
+        long origLastModified = lastModified;
+        boolean origDirectory = directory;
+        long origLength = length;
 
         // refresh the values
-        name         = file.getName();
-        exists       = file.exists();
-        directory    = exists ? file.isDirectory() : false;
+        name = file.getName();
+        exists = file.exists();
+        directory = exists ? file.isDirectory() : false;
         lastModified = exists ? file.lastModified() : 0;
-        length       = exists && !directory ? file.length() : 0;
+        length = exists && !directory ? file.length() : 0;
 
         // Return if there are changes
         return exists != origExists ||
@@ -114,7 +115,7 @@ public class FileEntry implements Serializable {
 
     /**
      * Create a new child instance.
-     * <p>
+     * <p/>
      * Custom implementations should override this method to return
      * a new instance of the appropriate type.
      *

@@ -20,39 +20,41 @@ import java.io.Serializable;
 
 /**
  * Byte Order Mark (BOM) representation - see {@link org.apache.commons.io.input.BOMInputStream}.
- * 
+ *
+ * @version $Id: ByteOrderMark.java 1347571 2012-06-07 11:13:53Z sebb $
  * @see org.apache.commons.io.input.BOMInputStream
  * @see <a href="http://en.wikipedia.org/wiki/Byte_order_mark">Wikipedia: Byte Order Mark</a>
  * @see <a href="http://www.w3.org/TR/2006/REC-xml-20060816/#sec-guessing">W3C: Autodetection of Character Encodings
- *      (Non-Normative)</a>
- * @version $Id: ByteOrderMark.java 1347571 2012-06-07 11:13:53Z sebb $
+ * (Non-Normative)</a>
  * @since 2.0
  */
 public class ByteOrderMark implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    /** UTF-8 BOM */
-    public static final ByteOrderMark UTF_8    = new ByteOrderMark("UTF-8",    0xEF, 0xBB, 0xBF);
-    
-    /** UTF-16BE BOM (Big-Endian) */
+    /**
+     * UTF-8 BOM
+     */
+    public static final ByteOrderMark UTF_8 = new ByteOrderMark("UTF-8", 0xEF, 0xBB, 0xBF);
+    /**
+     * UTF-16BE BOM (Big-Endian)
+     */
     public static final ByteOrderMark UTF_16BE = new ByteOrderMark("UTF-16BE", 0xFE, 0xFF);
-    
-    /** UTF-16LE BOM (Little-Endian) */
+    /**
+     * UTF-16LE BOM (Little-Endian)
+     */
     public static final ByteOrderMark UTF_16LE = new ByteOrderMark("UTF-16LE", 0xFF, 0xFE);
-
-    /** 
+    /**
      * UTF-32BE BOM (Big-Endian)
-     * @since 2.2 
+     *
+     * @since 2.2
      */
     public static final ByteOrderMark UTF_32BE = new ByteOrderMark("UTF-32BE", 0x00, 0x00, 0xFE, 0xFF);
-    
-    /** 
+    /**
      * UTF-32LE BOM (Little-Endian)
-     * @since 2.2 
+     *
+     * @since 2.2
      */
     public static final ByteOrderMark UTF_32LE = new ByteOrderMark("UTF-32LE", 0xFF, 0xFE, 0x00, 0x00);
-    
+    private static final long serialVersionUID = 1L;
     private final String charsetName;
     private final int[] bytes;
 
@@ -60,11 +62,11 @@ public class ByteOrderMark implements Serializable {
      * Construct a new BOM.
      *
      * @param charsetName The name of the charset the BOM represents
-     * @param bytes The BOM's bytes
+     * @param bytes       The BOM's bytes
      * @throws IllegalArgumentException if the charsetName is null or
-     * zero length
+     *                                  zero length
      * @throws IllegalArgumentException if the bytes are null or zero
-     * length
+     *                                  length
      */
     public ByteOrderMark(String charsetName, int... bytes) {
         if (charsetName == null || charsetName.length() == 0) {
@@ -114,7 +116,7 @@ public class ByteOrderMark implements Serializable {
     public byte[] getBytes() {
         byte[] copy = new byte[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
-            copy[i] = (byte)bytes[i];
+            copy[i] = (byte) bytes[i];
         }
         return copy;
     }
@@ -131,7 +133,7 @@ public class ByteOrderMark implements Serializable {
         if (!(obj instanceof ByteOrderMark)) {
             return false;
         }
-        ByteOrderMark bom = (ByteOrderMark)obj;
+        ByteOrderMark bom = (ByteOrderMark) obj;
         if (bytes.length != bom.length()) {
             return false;
         }

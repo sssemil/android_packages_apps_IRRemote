@@ -25,7 +25,7 @@ import java.io.InputStream;
  * Not even a reference to the underlying stream is kept after it has been
  * closed, so any allocated in-memory buffers can be freed even if the
  * client application still keeps a reference to the proxy stream.
- * <p>
+ * <p/>
  * This class is typically used to release any resources related to an open
  * stream as soon as possible even if the client application (by not explicitly
  * closing the stream when no longer needed) or the underlying stream (by not
@@ -48,10 +48,10 @@ public class AutoCloseInputStream extends ProxyInputStream {
     /**
      * Closes the underlying input stream and replaces the reference to it
      * with a {@link ClosedInputStream} instance.
-     * <p>
+     * <p/>
      * This method is automatically called by the read methods when the end
      * of input has been reached.
-     * <p>
+     * <p/>
      * Note that it is safe to call this method any number of times. The original
      * underlying input stream is closed and discarded only once when this
      * method is first called.
@@ -82,6 +82,7 @@ public class AutoCloseInputStream extends ProxyInputStream {
      * Ensures that the stream is closed before it gets garbage-collected.
      * As mentioned in {@link #close()}, this is a no-op if the stream has
      * already been closed.
+     *
      * @throws Throwable if an error occurs
      */
     @Override

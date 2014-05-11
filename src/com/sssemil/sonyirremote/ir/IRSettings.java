@@ -11,7 +11,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
+import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
@@ -59,7 +59,7 @@ public class IRSettings extends PreferenceActivity {
     public String http_path_last_download1;
     public String http_path_last_download2;
     public ArrayList<String> ar = new ArrayList<String>();
-    public String irpath = "/data/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
+    public String irpath = Environment.getDataDirectory() + "/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
     public String last_ver = "zirt";
     public String cur_ver;
     ProgressDialog mProgressDialog;
@@ -70,9 +70,7 @@ public class IRSettings extends PreferenceActivity {
     String item = "null";
     EditText brandN, itemN;
     Spinner spinner;
-    boolean changed = false;
     String saved_theme, new_theme;
-    long lastPress;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -157,8 +155,7 @@ public class IRSettings extends PreferenceActivity {
         String s1 = normalisedVersion(v1);
         String s2 = normalisedVersion(v2);
         int cmp = s1.compareTo(s2);
-        String cmpStr = cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
-        return cmpStr;
+        return cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
     }
 
     public void doOnDown(final String content) {
@@ -210,7 +207,7 @@ public class IRSettings extends PreferenceActivity {
                         }
                     });
 // execute this when the downloader must be fired
-                    final DownloadTask downloadTask = new DownloadTask(context);
+                    final DownloadTask downloadTask = new DownloadTask();
                     try {
                         downloadTask.execute(lastWord).get();
                     } catch (InterruptedException e) {
@@ -307,239 +304,241 @@ public class IRSettings extends PreferenceActivity {
         String key = preference.getKey();
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
         final AlertDialog.Builder adb2 = new AlertDialog.Builder(this);
-        if (key.equals("aboutPref")) {
-            adb.setTitle(getString(R.string.about));
-            PackageInfo pInfo = null;
-            String version = "-.-.-";
-            try {
-                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-            version = pInfo.versionName;
-            adb.setMessage(getResources().getString(R.string.license1) + " v" + version + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
-            adb.setPositiveButton(getString(R.string.pos_ans), null);
-            AlertDialog dialog = adb.show();
+        if (key != null) {
+            if (key.equals("aboutPref")) {
+                adb.setTitle(getString(R.string.about));
+                PackageInfo pInfo = null;
+                String version = "-.-.-";
+                try {
+                    pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+                version = pInfo.versionName;
+                adb.setMessage(getResources().getString(R.string.license1) + " v" + version + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
+                adb.setPositiveButton(getString(R.string.pos_ans), null);
+                AlertDialog dialog = adb.show();
 
-            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-            messageView.setGravity(Gravity.CENTER);
-        } else if (key.equals("addBtn")) {
+                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                messageView.setGravity(Gravity.CENTER);
+            } else if (key.equals("addBtn")) {
 
-            LayoutInflater li = LayoutInflater.from(thisS);
-            final View promptsView = li.inflate(R.layout.add_device_menu, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                    thisS);
-            alertDialogBuilder.setTitle(getString(R.string.add_new_device));
-            alertDialogBuilder
-                    .setCancelable(false)
-                    .setPositiveButton(getString(R.string.pos_ans),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    onAddDeviceClick(promptsView);
+                LayoutInflater li = LayoutInflater.from(thisS);
+                final View promptsView = li.inflate(R.layout.add_device_menu, null);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        thisS);
+                alertDialogBuilder.setTitle(getString(R.string.add_new_device));
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton(getString(R.string.pos_ans),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        onAddDeviceClick(promptsView);
+                                    }
                                 }
-                            }
-                    )
-                    .setNegativeButton(getString(R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
+                        )
+                        .setNegativeButton(getString(R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
                                 }
-                            }
-                    );
-            alertDialogBuilder.setView(promptsView);
-            alertDialogBuilder.show();
-        } else if (key.equals("downBtn")) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage(getString(R.string.gtlst));
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgressDialog.show();
+                        );
+                alertDialogBuilder.setView(promptsView);
+                alertDialogBuilder.show();
+            } else if (key.equals("downBtn")) {
+                mProgressDialog = new ProgressDialog(this);
+                mProgressDialog.setMessage(getString(R.string.gtlst));
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                mProgressDialog.show();
 
-            new Thread(new Runnable() {
-                public void run() {
-                    final GetAwItems getAwItems1 = new GetAwItems(thisS);
-                    try {
-                        getAwItems1.execute().get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
+                new Thread(new Runnable() {
+                    public void run() {
+                        final GetAwItems getAwItems1 = new GetAwItems();
+                        try {
+                            getAwItems1.execute().get();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                        adb.setTitle(getString(R.string.downloadT));
+                        String[] types = new String[ar.size()];
+                        types = ar.toArray(types);
+                        adb.setItems(types, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                mProgressDialog.cancel();
+                                Log.i("pr", ar.get(which));
+                                doOnDown(ar.get(which));
+                            }
+
+                        });
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressDialog.cancel();
+                                adb.show();
+                            }
+                        });
                     }
-                    adb.setTitle(getString(R.string.downloadT));
+                }).start();
+            } else if (key.equals("rmBtn")) {
+                try {
+                    adb.setTitle(getString(R.string.remove));
+                    ar.clear();
+                    for (File localFile1 : new File(irpath).listFiles()) {
+                        if (localFile1.isDirectory()) {
+                            if (!ar.contains(localFile1.getName())) {
+                                ar.add(localFile1.getName());
+                            }
+                        }
+                    }
                     String[] types = new String[ar.size()];
                     types = ar.toArray(types);
                     adb.setItems(types, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            final int selected = which;
                             dialog.dismiss();
-                            mProgressDialog.cancel();
-                            Log.i("pr", ar.get(which));
-                            doOnDown(ar.get(which));
-                        }
-
-                    });
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressDialog.cancel();
-                            adb.show();
-                        }
-                    });
-                }
-            }).start();
-        } else if (key.equals("rmBtn")) {
-            try {
-                adb.setTitle(getString(R.string.remove));
-                ar.clear();
-                for (File localFile1 : new File(irpath).listFiles()) {
-                    if (localFile1.isDirectory()) {
-                        if (!ar.contains(localFile1.getName())) {
-                            ar.add(localFile1.getName());
-                        }
-                    }
-                }
-                String[] types = new String[ar.size()];
-                types = ar.toArray(types);
-                adb.setItems(types, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        final int selected = which;
-                        dialog.dismiss();
-                        final AlertDialog.Builder adb = new AlertDialog.Builder(thisS);
-                        adb.setTitle(getString(R.string.warning));
-                        adb.setMessage(getString(R.string.are_u_s_del));
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
-                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                item = ar.get(selected);
-                                File dir = new File(irpath + item);
-                                try {
-                                    FileUtils.deleteDirectory(dir);
-                                } catch (IOException ex) {
-                                    ex.printStackTrace();
-                                    adb.setTitle(getString(R.string.error));
-                                    adb.setMessage(getString(R.string.failed_del_fl_io));
-                                    adb.setIcon(android.R.drawable.ic_dialog_alert);
-                                    adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                        }
-                                    });
-                                    adb.show();
-                                }
-                                adb2.setTitle(getString(R.string.done));
-                                adb2.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
-                                adb2.setPositiveButton(getString(R.string.pos_ans), null);
-                                adb2.show();
-                            }
-                        });
-
-                        adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        });
-                        adb.show();
-                    }
-                });
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adb.show();
-                    }
-                });
-            } catch (NullPointerException ex) {
-                ex.printStackTrace();
-                adb.setTitle(getString(R.string.error));
-                adb.setMessage(getString(R.string.you_need_to_select));
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
-                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                adb.show();
-            }
-        } else if (key.equals("checkUpd")) {
-            update();
-        } else if (key.equals("sbmtBug")) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sssemil/android_packages_apps_SonyIRRemote/issues"));
-            startActivity(browserIntent);
-        } else if (key.equals("sbmtDev")) {
-            LayoutInflater li = LayoutInflater.from(thisS);
-            final View promptsView = li.inflate(R.layout.sbmt_device_menu, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                    thisS);
-            alertDialogBuilder.setTitle(getString(R.string.select_dev));
-            alertDialogBuilder
-                    .setCancelable(false)
-                    .setPositiveButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
+                            final AlertDialog.Builder adb = new AlertDialog.Builder(thisS);
+                            adb.setTitle(getString(R.string.warning));
+                            adb.setMessage(getString(R.string.are_u_s_del));
+                            adb.setIcon(android.R.drawable.ic_dialog_alert);
+                            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    item = ar.get(selected);
+                                    File dir = new File(irpath + item);
                                     try {
-                                        spinner = (Spinner) promptsView.findViewById(R.id.spinner);
-                                        item = spinner.getSelectedItem().toString();
-                                        Compress c = new Compress(irpath + item, "/sdcard/" + item + ".zip");
-                                        c.zip();
-                                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                                        emailIntent.setType("application/zip");
-                                        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"suleymanovemil8@gmail.com"});
-                                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "New IR device");
-                                        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, item);
-                                        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/" + item + ".zip"));
-                                        startActivity(Intent.createChooser(emailIntent, "Send by mail..."));
-                                    } catch (NullPointerException ex) {
-                                        AlertDialog.Builder adb = new AlertDialog.Builder(thisS);
+                                        FileUtils.deleteDirectory(dir);
+                                    } catch (IOException ex) {
+                                        ex.printStackTrace();
                                         adb.setTitle(getString(R.string.error));
-                                        adb.setMessage(getString(R.string.you_need_to_select));
+                                        adb.setMessage(getString(R.string.failed_del_fl_io));
                                         adb.setIcon(android.R.drawable.ic_dialog_alert);
                                         adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
-
                                             }
                                         });
                                         adb.show();
                                     }
+                                    adb2.setTitle(getString(R.string.done));
+                                    adb2.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
+                                    adb2.setPositiveButton(getString(R.string.pos_ans), null);
+                                    adb2.show();
+                                }
+                            });
+
+                            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
 
                                 }
-                            }
-                    )
-                    .setNegativeButton(getString(R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
+                            });
+                            adb.show();
+                        }
+                    });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adb.show();
+                        }
+                    });
+                } catch (NullPointerException ex) {
+                    ex.printStackTrace();
+                    adb.setTitle(getString(R.string.error));
+                    adb.setMessage(getString(R.string.you_need_to_select));
+                    adb.setIcon(android.R.drawable.ic_dialog_alert);
+                    adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    adb.show();
+                }
+            } else if (key.equals("checkUpd")) {
+                update();
+            } else if (key.equals("sbmtBug")) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sssemil/android_packages_apps_SonyIRRemote/issues"));
+                startActivity(browserIntent);
+            } else if (key.equals("sbmtDev")) {
+                LayoutInflater li = LayoutInflater.from(thisS);
+                final View promptsView = li.inflate(R.layout.sbmt_device_menu, null);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        thisS);
+                alertDialogBuilder.setTitle(getString(R.string.select_dev));
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        try {
+                                            spinner = (Spinner) promptsView.findViewById(R.id.spinner);
+                                            item = spinner.getSelectedItem().toString();
+                                            Compress c = new Compress(irpath + item, Environment.getExternalStorageDirectory() + item + ".zip");
+                                            c.zip();
+                                            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                                            emailIntent.setType("application/zip");
+                                            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"suleymanovemil8@gmail.com"});
+                                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "New IR device");
+                                            emailIntent.putExtra(Intent.EXTRA_TEXT, item);
+                                            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/" + item + ".zip"));
+                                            startActivity(Intent.createChooser(emailIntent, "Send by mail..."));
+                                        } catch (NullPointerException ex) {
+                                            AlertDialog.Builder adb = new AlertDialog.Builder(thisS);
+                                            adb.setTitle(getString(R.string.error));
+                                            adb.setMessage(getString(R.string.you_need_to_select));
+                                            adb.setIcon(android.R.drawable.ic_dialog_alert);
+                                            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                }
+                                            });
+                                            adb.show();
+                                        }
+
+                                    }
                                 }
-                            }
-                    );
-            alertDialogBuilder.setView(promptsView);
-            alertDialogBuilder.show();
+                        )
+                        .setNegativeButton(getString(R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                }
+                        );
+                alertDialogBuilder.setView(promptsView);
+                alertDialogBuilder.show();
 
-            spinner = ((Spinner) promptsView.findViewById(R.id.spinner));
-            ArrayList localArrayList1 = new ArrayList();
-            boolean edited = false;
+                spinner = ((Spinner) promptsView.findViewById(R.id.spinner));
+                ArrayList<String> localArrayList1 = new ArrayList<String>();
+                boolean edited = false;
 
-            for (File localFile1 : new File(irpath).listFiles()) {
-                if (localFile1.isDirectory()) {
-                    if (!localArrayList1.contains(localFile1.getName())) {
-                        localArrayList1.add(localFile1.getName());
-                        edited = true;
+                for (File localFile1 : new File(irpath).listFiles()) {
+                    if (localFile1.isDirectory()) {
+                        if (!localArrayList1.contains(localFile1.getName())) {
+                            localArrayList1.add(localFile1.getName());
+                            edited = true;
+                        }
+                    }
+
+                    if (edited) {
+                        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                                android.R.layout.simple_spinner_item, localArrayList1);
+                        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinner.setAdapter(dataAdapter);
                     }
                 }
-
-                if (edited) {
-                    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                            android.R.layout.simple_spinner_item, localArrayList1);
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinner.setAdapter(dataAdapter);
-                }
-            }
-        } else if (key.equals(("theme"))) {
-            SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
-            if (settings.contains("theme")) {
-                if (settings.getString("theme", null).equals("1")) {
-                    super.setTheme(R.style.Holo);
-                } else if (settings.getString("theme", null).equals("2")) {
-                    super.setTheme(R.style.Holo_Light_DarkActionBar);
-                } else if (settings.getString("theme", null).equals("3")) {
-                    super.setTheme(R.style.Theme_Holo_Light);
+            } else if (key.equals(("theme"))) {
+                SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+                if (settings.contains("theme")) {
+                    if (settings.getString("theme", null).equals("1")) {
+                        super.setTheme(R.style.Holo);
+                    } else if (settings.getString("theme", null).equals("2")) {
+                        super.setTheme(R.style.Holo_Light_DarkActionBar);
+                    } else if (settings.getString("theme", null).equals("3")) {
+                        super.setTheme(R.style.Theme_Holo_Light);
+                    }
                 }
             }
         }
@@ -547,7 +546,7 @@ public class IRSettings extends PreferenceActivity {
     }
 
     public void update() {
-        final GetLastVer getLastVer1 = new GetLastVer(this);
+        final GetLastVer getLastVer1 = new GetLastVer();
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(getString(R.string.checking));
@@ -568,7 +567,7 @@ public class IRSettings extends PreferenceActivity {
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
-                if (last_ver == "zirt") {
+                if (last_ver.equals("zirt")) {
                     adb.setTitle(getString(R.string.update));
                     adb.setMessage(getString(R.string.ser3));
                     adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -593,16 +592,16 @@ public class IRSettings extends PreferenceActivity {
                 } else {
                     String result = compare(cur_ver, last_ver);
                     boolean doUpdate = false;
-                    if (result == ">") {
+                    if (result.equals(">")) {
                         doUpdate = false;
-                    } else if (result == "<") {
+                    } else if (result.equals("<")) {
                         doUpdate = true;
-                    } else if (result == "==") {
+                    } else if (result.equals("==")) {
                         doUpdate = false;
                     }
 
 
-                    if (doUpdate == true) {
+                    if (doUpdate) {
                         adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.new_version_available));
                         adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -621,7 +620,7 @@ public class IRSettings extends PreferenceActivity {
                                             }
                                         });
 
-                                        final DownloadApp downloadApp1 = new DownloadApp(thisS);
+                                        final DownloadApp downloadApp1 = new DownloadApp();
                                         try {
                                             downloadApp1.execute(http_path_last_download1 + last_ver + http_path_last_download2).get();
                                         } catch (InterruptedException e) {
@@ -646,7 +645,7 @@ public class IRSettings extends PreferenceActivity {
                                 adb.show();
                             }
                         });
-                    } else if (doUpdate == false) {
+                    } else if (!doUpdate) {
                         adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.already_new));
                         adb.setPositiveButton(getString(R.string.pos_ans), null);
@@ -663,25 +662,9 @@ public class IRSettings extends PreferenceActivity {
         }).start();
     }
 
-    /*public void onBackPressed() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastPress > 5000) {
-            Toast.makeText(getBaseContext(), getString(R.string.pr_bck_ag), Toast.LENGTH_LONG).show();
-            lastPress = currentTime;
-        } else {
-            IRCommon.getInstance().stop();
-            super.onBackPressed();
-        }
-        finish();
-    }*/
-
     class DownloadTask extends AsyncTask<String, Integer, String> {
 
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        public DownloadTask(Context context) {
-            this.context = context;
+        public DownloadTask() {
         }
 
         protected String doInBackground(String... sUrl) {
@@ -710,8 +693,8 @@ public class IRSettings extends PreferenceActivity {
 
                 // download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/" + fileName);
-                Log.v("DownloadTask", "output " + "/sdcard/" + fileName);
+                output = new FileOutputStream(Environment.getExternalStorageDirectory() + fileName);
+                Log.v("DownloadTask", "output " + Environment.getExternalStorageDirectory() + fileName);
 
                 byte data[] = new byte[4096];
                 long total = 0;
@@ -730,7 +713,7 @@ public class IRSettings extends PreferenceActivity {
                 }
                 Log.v("DownloadTask", "Done!");
                 //---------Unzip--------
-                String zipFile = "/sdcard/" + fileName;
+                String zipFile = Environment.getExternalStorageDirectory() + fileName;
                 String unzipLocation = irpath;
 
                 Decompress d = new Decompress(zipFile, unzipLocation);
@@ -759,11 +742,8 @@ public class IRSettings extends PreferenceActivity {
     class GetAwItems extends AsyncTask<String, Integer, String> {
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
 
-        public GetAwItems(Context context) {
-            this.context = context;
+        public GetAwItems() {
         }
 
         protected String doInBackground(String... sUrl) {
@@ -796,11 +776,7 @@ public class IRSettings extends PreferenceActivity {
 
     class DownloadApp extends AsyncTask<String, Integer, String> {
 
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
-
-        public DownloadApp(Context context) {
-            this.context = context;
+        public DownloadApp() {
         }
 
         protected String doInBackground(String... sUrl) {
@@ -827,8 +803,8 @@ public class IRSettings extends PreferenceActivity {
 
                 // download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream("/sdcard/upd.apk");
-                Log.v("DownloadApp", "output " + "/sdcard/upd.apk");
+                output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/upd.apk");
+                Log.v("DownloadApp", "output " + Environment.getExternalStorageDirectory() + "/upd.apk");
 
                 byte data[] = new byte[4096];
                 long total = 0;
@@ -848,7 +824,7 @@ public class IRSettings extends PreferenceActivity {
                 Log.v("DownloadApp", "Done!");
 
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File("/sdcard/upd.apk")), "application/vnd.android.package-archive");
+                intent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/upd.apk")), "application/vnd.android.package-archive");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             } catch (Exception e) {
@@ -873,11 +849,8 @@ public class IRSettings extends PreferenceActivity {
     class GetLastVer extends AsyncTask<String, Integer, String> {
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        private Context context;
-        private PowerManager.WakeLock mWakeLock;
 
-        public GetLastVer(Context context) {
-            this.context = context;
+        public GetLastVer() {
         }
 
         protected String doInBackground(String... sUrl) {

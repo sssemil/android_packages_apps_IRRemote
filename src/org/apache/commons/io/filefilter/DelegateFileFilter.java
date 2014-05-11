@@ -23,24 +23,27 @@ import java.io.Serializable;
 
 /**
  * This class turns a Java FileFilter or FilenameFilter into an IO FileFilter.
- * 
- * @since 1.0
+ *
  * @version $Id: DelegateFileFilter.java 1304052 2012-03-22 20:55:29Z ggregory $
- * 
  * @see FileFilterUtils#asFileFilter(FileFilter)
  * @see FileFilterUtils#asFileFilter(FilenameFilter)
+ * @since 1.0
  */
 public class DelegateFileFilter extends AbstractFileFilter implements Serializable {
 
-    /** The Filename filter */
+    /**
+     * The Filename filter
+     */
     private final FilenameFilter filenameFilter;
-    /** The File filter */
+    /**
+     * The File filter
+     */
     private final FileFilter fileFilter;
 
     /**
      * Constructs a delegate file filter around an existing FilenameFilter.
-     * 
-     * @param filter  the filter to decorate
+     *
+     * @param filter the filter to decorate
      */
     public DelegateFileFilter(FilenameFilter filter) {
         if (filter == null) {
@@ -52,8 +55,8 @@ public class DelegateFileFilter extends AbstractFileFilter implements Serializab
 
     /**
      * Constructs a delegate file filter around an existing FileFilter.
-     * 
-     * @param filter  the filter to decorate
+     *
+     * @param filter the filter to decorate
      */
     public DelegateFileFilter(FileFilter filter) {
         if (filter == null) {
@@ -65,8 +68,8 @@ public class DelegateFileFilter extends AbstractFileFilter implements Serializab
 
     /**
      * Checks the filter.
-     * 
-     * @param file  the file to check
+     *
+     * @param file the file to check
      * @return true if the filter matches
      */
     @Override
@@ -80,9 +83,9 @@ public class DelegateFileFilter extends AbstractFileFilter implements Serializab
 
     /**
      * Checks the filter.
-     * 
+     *
      * @param dir  the directory
-     * @param name  the filename in the directory
+     * @param name the filename in the directory
      * @return true if the filter matches
      */
     @Override
@@ -101,8 +104,8 @@ public class DelegateFileFilter extends AbstractFileFilter implements Serializab
      */
     @Override
     public String toString() {
-        String delegate = fileFilter != null ? fileFilter.toString() : filenameFilter.toString(); 
+        String delegate = fileFilter != null ? fileFilter.toString() : filenameFilter.toString();
         return super.toString() + "(" + delegate + ")";
     }
-    
+
 }

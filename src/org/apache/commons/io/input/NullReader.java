@@ -23,24 +23,24 @@ import java.io.Reader;
 /**
  * A functional, light weight {@link Reader} that emulates
  * a reader of a specified size.
- * <p>
+ * <p/>
  * This implementation provides a light weight
  * object for testing with an {@link Reader}
  * where the contents don't matter.
- * <p>
+ * <p/>
  * One use case would be for testing the handling of
  * large {@link Reader} as it can emulate that
  * scenario without the overhead of actually processing
  * large numbers of characters - significantly speeding up
  * test execution times.
- * <p>
+ * <p/>
  * This implementation returns a space from the method that
  * reads a character and leaves the array unchanged in the read
  * methods that are passed a character array.
  * If alternative data is required the <code>processChar()</code> and
  * <code>processChars()</code> methods can be implemented to generate
  * data, for example:
- *
+ * <p/>
  * <pre>
  *  public class TestReader extends NullReader {
  *      public TestReader(int size) {
@@ -57,18 +57,18 @@ import java.io.Reader;
  *  }
  * </pre>
  *
- * @since 1.3
  * @version $Id: NullReader.java 1307462 2012-03-30 15:13:11Z ggregory $
+ * @since 1.3
  */
 public class NullReader extends Reader {
 
     private final long size;
+    private final boolean throwEofException;
+    private final boolean markSupported;
     private long position;
     private long mark = -1;
     private long readlimit;
     private boolean eof;
-    private final boolean throwEofException;
-    private final boolean markSupported;
 
     /**
      * Create a {@link Reader} that emulates a specified size
@@ -77,24 +77,24 @@ public class NullReader extends Reader {
      * @param size The size of the reader to emulate.
      */
     public NullReader(long size) {
-       this(size, true, false);
+        this(size, true, false);
     }
 
     /**
      * Create a {@link Reader} that emulates a specified
      * size with option settings.
      *
-     * @param size The size of the reader to emulate.
-     * @param markSupported Whether this instance will support
-     * the <code>mark()</code> functionality.
+     * @param size              The size of the reader to emulate.
+     * @param markSupported     Whether this instance will support
+     *                          the <code>mark()</code> functionality.
      * @param throwEofException Whether this implementation
-     * will throw an {@link EOFException} or return -1 when the
-     * end of file is reached.
+     *                          will throw an {@link EOFException} or return -1 when the
+     *                          end of file is reached.
      */
     public NullReader(long size, boolean markSupported, boolean throwEofException) {
-       this.size = size;
-       this.markSupported = markSupported;
-       this.throwEofException = throwEofException;
+        this.size = size;
+        this.markSupported = markSupported;
+        this.throwEofException = throwEofException;
     }
 
     /**
@@ -132,7 +132,7 @@ public class NullReader extends Reader {
      * Mark the current position.
      *
      * @param readlimit The number of characters before this marked position
-     * is invalid.
+     *                  is invalid.
      * @throws UnsupportedOperationException if mark is not supported.
      */
     @Override
@@ -161,8 +161,8 @@ public class NullReader extends Reader {
      * or <code>-1</code> if the end of file has been reached and
      * <code>throwEofException</code> is set to {@code false}.
      * @throws EOFException if the end of file is reached and
-     * <code>throwEofException</code> is set to {@code true}.
-     * @throws IOException if trying to read past the end of file.
+     *                      <code>throwEofException</code> is set to {@code true}.
+     * @throws IOException  if trying to read past the end of file.
      */
     @Override
     public int read() throws IOException {
@@ -184,8 +184,8 @@ public class NullReader extends Reader {
      * if the end of file has been reached and
      * <code>throwEofException</code> is set to {@code false}.
      * @throws EOFException if the end of file is reached and
-     * <code>throwEofException</code> is set to {@code true}.
-     * @throws IOException if trying to read past the end of file.
+     *                      <code>throwEofException</code> is set to {@code true}.
+     * @throws IOException  if trying to read past the end of file.
      */
     @Override
     public int read(char[] chars) throws IOException {
@@ -195,15 +195,15 @@ public class NullReader extends Reader {
     /**
      * Read the specified number characters into an array.
      *
-     * @param chars The character array to read into.
+     * @param chars  The character array to read into.
      * @param offset The offset to start reading characters into.
      * @param length The number of characters to read.
      * @return The number of characters read or <code>-1</code>
      * if the end of file has been reached and
      * <code>throwEofException</code> is set to {@code false}.
      * @throws EOFException if the end of file is reached and
-     * <code>throwEofException</code> is set to {@code true}.
-     * @throws IOException if trying to read past the end of file.
+     *                      <code>throwEofException</code> is set to {@code true}.
+     * @throws IOException  if trying to read past the end of file.
      */
     @Override
     public int read(char[] chars, int offset, int length) throws IOException {
@@ -216,7 +216,7 @@ public class NullReader extends Reader {
         position += length;
         int returnLength = length;
         if (position > size) {
-            returnLength = length - (int)(position - size);
+            returnLength = length - (int) (position - size);
             position = size;
         }
         processChars(chars, offset, returnLength);
@@ -227,9 +227,9 @@ public class NullReader extends Reader {
      * Reset the stream to the point when mark was last called.
      *
      * @throws UnsupportedOperationException if mark is not supported.
-     * @throws IOException If no position has been marked
-     * or the read limit has been exceed since the last position was
-     * marked.
+     * @throws IOException                   If no position has been marked
+     *                                       or the read limit has been exceed since the last position was
+     *                                       marked.
      */
     @Override
     public synchronized void reset() throws IOException {
@@ -256,8 +256,8 @@ public class NullReader extends Reader {
      * if the end of file has been reached and
      * <code>throwEofException</code> is set to {@code false}.
      * @throws EOFException if the end of file is reached and
-     * <code>throwEofException</code> is set to {@code true}.
-     * @throws IOException if trying to read past the end of file.
+     *                      <code>throwEofException</code> is set to {@code true}.
+     * @throws IOException  if trying to read past the end of file.
      */
     @Override
     public long skip(long numberOfChars) throws IOException {
@@ -278,7 +278,7 @@ public class NullReader extends Reader {
 
     /**
      * Return a character value for the  <code>read()</code> method.
-     * <p>
+     * <p/>
      * This implementation returns zero.
      *
      * @return This implementation always returns zero.
@@ -291,10 +291,10 @@ public class NullReader extends Reader {
     /**
      * Process the characters for the <code>read(char[], offset, length)</code>
      * method.
-     * <p>
+     * <p/>
      * This implementation leaves the character array unchanged.
      *
-     * @param chars The character array
+     * @param chars  The character array
      * @param offset The offset to start at.
      * @param length The number of characters.
      */
@@ -308,7 +308,7 @@ public class NullReader extends Reader {
      * @return <code>-1</code> if <code>throwEofException</code> is
      * set to {@code false}
      * @throws EOFException if <code>throwEofException</code> is set
-     * to {@code true}.
+     *                      to {@code true}.
      */
     private int doEndOfFile() throws EOFException {
         eof = true;

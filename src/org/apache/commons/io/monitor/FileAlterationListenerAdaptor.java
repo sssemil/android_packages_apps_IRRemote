@@ -20,9 +20,9 @@ import java.io.File;
 
 /**
  * Convenience {@link FileAlterationListener} implementation that does nothing.
- * 
- * @see FileAlterationObserver
+ *
  * @version $Id: FileAlterationListenerAdaptor.java 1304062 2012-03-22 21:10:46Z sebb $
+ * @see FileAlterationObserver
  * @since 2.0
  */
 public class FileAlterationListenerAdaptor implements FileAlterationListener {
@@ -37,7 +37,7 @@ public class FileAlterationListenerAdaptor implements FileAlterationListener {
 
     /**
      * Directory created Event.
-     * 
+     *
      * @param directory The directory created (ignored)
      */
     public void onDirectoryCreate(final File directory) {
@@ -45,7 +45,7 @@ public class FileAlterationListenerAdaptor implements FileAlterationListener {
 
     /**
      * Directory changed Event.
-     * 
+     *
      * @param directory The directory changed (ignored)
      */
     public void onDirectoryChange(final File directory) {
@@ -53,7 +53,7 @@ public class FileAlterationListenerAdaptor implements FileAlterationListener {
 
     /**
      * Directory deleted Event.
-     * 
+     *
      * @param directory The directory deleted (ignored)
      */
     public void onDirectoryDelete(final File directory) {
@@ -61,7 +61,7 @@ public class FileAlterationListenerAdaptor implements FileAlterationListener {
 
     /**
      * File created Event.
-     * 
+     *
      * @param file The file created (ignored)
      */
     public void onFileCreate(final File file) {
@@ -69,7 +69,7 @@ public class FileAlterationListenerAdaptor implements FileAlterationListener {
 
     /**
      * File changed Event.
-     * 
+     *
      * @param file The file changed (ignored)
      */
     public void onFileChange(final File file) {
@@ -77,7 +77,7 @@ public class FileAlterationListenerAdaptor implements FileAlterationListener {
 
     /**
      * File deleted Event.
-     * 
+     *
      * @param file The file deleted (ignored)
      */
     public void onFileDelete(final File file) {

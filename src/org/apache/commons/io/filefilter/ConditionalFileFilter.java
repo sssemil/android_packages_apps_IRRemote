@@ -21,8 +21,8 @@ import java.util.List;
 /**
  * Defines operations for conditional file filters.
  *
- * @since 1.1
  * @version $Id: ConditionalFileFilter.java 1307462 2012-03-30 15:13:11Z ggregory $
+ * @since 1.1
  */
 public interface ConditionalFileFilter {
 
@@ -44,6 +44,15 @@ public interface ConditionalFileFilter {
     List<IOFileFilter> getFileFilters();
 
     /**
+     * Sets the list of file filters, replacing any previously configured
+     * file filters on this filter.
+     *
+     * @param fileFilters the list of filters
+     * @since 1.1
+     */
+    void setFileFilters(List<IOFileFilter> fileFilters);
+
+    /**
      * Removes the specified file filter.
      *
      * @param ioFileFilter filter to be removed
@@ -52,14 +61,5 @@ public interface ConditionalFileFilter {
      * @since 1.1
      */
     boolean removeFileFilter(IOFileFilter ioFileFilter);
-
-    /**
-     * Sets the list of file filters, replacing any previously configured
-     * file filters on this filter.
-     *
-     * @param fileFilters the list of filters
-     * @since 1.1
-     */
-    void setFileFilters(List<IOFileFilter> fileFilters);
 
 }

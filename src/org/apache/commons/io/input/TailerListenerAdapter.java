@@ -27,6 +27,7 @@ public class TailerListenerAdapter implements TailerListener {
     /**
      * The tailer will call this method during construction,
      * giving the listener a method of stopping the tailer.
+     *
      * @param tailer the tailer.
      */
     public void init(Tailer tailer) {
@@ -40,7 +41,7 @@ public class TailerListenerAdapter implements TailerListener {
 
     /**
      * Called if a file rotation is detected.
-     *
+     * <p/>
      * This method is called before the file is reopened, and fileNotFound may
      * be called if the new file has not yet been created.
      */
@@ -49,6 +50,7 @@ public class TailerListenerAdapter implements TailerListener {
 
     /**
      * Handles a line from a Tailer.
+     *
      * @param line the line.
      */
     public void handle(String line) {
@@ -56,6 +58,7 @@ public class TailerListenerAdapter implements TailerListener {
 
     /**
      * Handles an Exception .
+     *
      * @param ex the exception.
      */
     public void handle(Exception ex) {

@@ -29,15 +29,17 @@ import java.util.List;
  * Checking of the file filter list stops when the first filter returns
  * {@code true}.
  *
- * @since 1.0
  * @version $Id: OrFileFilter.java 1307462 2012-03-30 15:13:11Z ggregory $
  * @see FileFilterUtils#or(IOFileFilter...)
+ * @since 1.0
  */
 public class OrFileFilter
         extends AbstractFileFilter
         implements ConditionalFileFilter, Serializable {
 
-    /** The list of file filters. */
+    /**
+     * The list of file filters.
+     */
     private final List<IOFileFilter> fileFilters;
 
     /**
@@ -53,7 +55,7 @@ public class OrFileFilter
      * Constructs a new instance of <code>OrFileFilter</code>
      * with the specified filters.
      *
-     * @param fileFilters  the file filters for this filter, copied, null ignored
+     * @param fileFilters the file filters for this filter, copied, null ignored
      * @since 1.1
      */
     public OrFileFilter(final List<IOFileFilter> fileFilters) {
@@ -66,9 +68,9 @@ public class OrFileFilter
 
     /**
      * Constructs a new file filter that ORs the result of two other filters.
-     * 
-     * @param filter1  the first filter, must not be null
-     * @param filter2  the second filter, must not be null
+     *
+     * @param filter1 the first filter, must not be null
+     * @param filter2 the second filter, must not be null
      * @throws IllegalArgumentException if either filter is null
      */
     public OrFileFilter(IOFileFilter filter1, IOFileFilter filter2) {
@@ -97,16 +99,16 @@ public class OrFileFilter
     /**
      * {@inheritDoc}
      */
-    public boolean removeFileFilter(IOFileFilter ioFileFilter) {
-        return this.fileFilters.remove(ioFileFilter);
+    public void setFileFilters(final List<IOFileFilter> fileFilters) {
+        this.fileFilters.clear();
+        this.fileFilters.addAll(fileFilters);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setFileFilters(final List<IOFileFilter> fileFilters) {
-        this.fileFilters.clear();
-        this.fileFilters.addAll(fileFilters);
+    public boolean removeFileFilter(IOFileFilter ioFileFilter) {
+        return this.fileFilters.remove(ioFileFilter);
     }
 
     /**

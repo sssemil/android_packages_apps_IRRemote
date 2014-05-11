@@ -22,7 +22,7 @@ import java.io.InputStream;
 /**
  * Broken input stream. This stream always throws an {@link IOException} from
  * all the {@link InputStream} methods where the exception is declared.
- * <p>
+ * <p/>
  * This class is mostly useful for testing error handling in code that uses an
  * input stream.
  *

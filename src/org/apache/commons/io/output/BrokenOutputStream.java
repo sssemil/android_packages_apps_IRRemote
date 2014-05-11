@@ -22,7 +22,7 @@ import java.io.OutputStream;
 /**
  * Broken output stream. This stream always throws an {@link IOException} from
  * all {@link OutputStream} methods.
- * <p>
+ * <p/>
  * This class is mostly useful for testing error handling in code that uses an
  * output stream.
  *

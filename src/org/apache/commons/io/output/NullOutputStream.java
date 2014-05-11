@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 package org.apache.commons.io.output;
- 
+
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
  * This OutputStream writes all data to the famous <b>/dev/null</b>.
- * <p>
+ * <p/>
  * This output stream has no destination (file/socket etc.) and all
  * bytes written to it are ignored and lost.
- * 
+ *
  * @version $Id: NullOutputStream.java 1302056 2012-03-18 03:03:38Z ggregory $
  */
 public class NullOutputStream extends OutputStream {
-    
+
     /**
      * A singleton.
      */
@@ -36,7 +36,8 @@ public class NullOutputStream extends OutputStream {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
-     * @param b The bytes to write
+     *
+     * @param b   The bytes to write
      * @param off The start offset
      * @param len The number of bytes to write
      */
@@ -47,6 +48,7 @@ public class NullOutputStream extends OutputStream {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param b The byte to write
      */
     @Override
@@ -56,6 +58,7 @@ public class NullOutputStream extends OutputStream {
 
     /**
      * Does nothing - output to <code>/dev/null</code>.
+     *
      * @param b The bytes to write
      * @throws IOException never
      */

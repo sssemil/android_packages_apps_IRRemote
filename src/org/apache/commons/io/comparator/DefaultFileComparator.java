@@ -22,39 +22,43 @@ import java.util.Comparator;
 
 /**
  * Compare two files using the <b>default</b> {@link File#compareTo(File)} method.
- * <p>
+ * <p/>
  * This comparator can be used to sort lists or arrays of files
  * by using the default file comparison.
- * <p>
+ * <p/>
  * Example of sorting a list of files using the
  * {@link #DEFAULT_COMPARATOR} singleton instance:
  * <pre>
  *       List&lt;File&gt; list = ...
  *       DefaultFileComparator.DEFAULT_COMPARATOR.sort(list);
  * </pre>
- * <p>
+ * <p/>
  * Example of doing a <i>reverse</i> sort of an array of files using the
  * {@link #DEFAULT_REVERSE} singleton instance:
  * <pre>
  *       File[] array = ...
  *       DefaultFileComparator.DEFAULT_REVERSE.sort(array);
  * </pre>
- * <p>
+ * <p/>
  *
  * @version $Id: DefaultFileComparator.java 1304052 2012-03-22 20:55:29Z ggregory $
  * @since 1.4
  */
 public class DefaultFileComparator extends AbstractFileComparator implements Serializable {
 
-    /** Singleton default comparator instance */
+    /**
+     * Singleton default comparator instance
+     */
     public static final Comparator<File> DEFAULT_COMPARATOR = new DefaultFileComparator();
 
-    /** Singleton reverse default comparator instance */
+    /**
+     * Singleton reverse default comparator instance
+     */
     public static final Comparator<File> DEFAULT_REVERSE = new ReverseComparator(DEFAULT_COMPARATOR);
 
     /**
      * Compare the two files using the {@link File#compareTo(File)} method.
-     * 
+     *
      * @param file1 The first file to compare
      * @param file2 The second file to compare
      * @return the result of calling file1's

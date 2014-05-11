@@ -21,10 +21,10 @@ import java.io.Serializable;
 
 /**
  * This filter accepts <code>File</code>s that are files (not directories).
- * <p>
+ * <p/>
  * For example, here is how to print out a list of the real files
  * within the current directory:
- *
+ * <p/>
  * <pre>
  * File dir = new File(".");
  * String[] files = dir.list( FileFileFilter.FILE );
@@ -33,13 +33,15 @@ import java.io.Serializable;
  * }
  * </pre>
  *
- * @since 1.3
  * @version $Id: FileFileFilter.java 1304052 2012-03-22 20:55:29Z ggregory $
  * @see FileFilterUtils#fileFileFilter()
+ * @since 1.3
  */
 public class FileFileFilter extends AbstractFileFilter implements Serializable {
 
-    /** Singleton instance of file filter */
+    /**
+     * Singleton instance of file filter
+     */
     public static final IOFileFilter FILE = new FileFileFilter();
 
     /**
@@ -51,7 +53,7 @@ public class FileFileFilter extends AbstractFileFilter implements Serializable {
     /**
      * Checks to see if the file is a file.
      *
-     * @param file  the File to check
+     * @param file the File to check
      * @return true if the file is a file
      */
     @Override

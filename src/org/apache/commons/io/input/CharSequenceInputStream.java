@@ -30,7 +30,7 @@ import java.nio.charset.CodingErrorAction;
 /**
  * {@link InputStream} implementation that can read from String, StringBuffer,
  * StringBuilder or CharBuffer.
- * <p>
+ * <p/>
  * <strong>Note:</strong> Supports {@link #mark(int)} and {@link #reset()}.
  *
  * @since 2.2
@@ -42,19 +42,19 @@ public class CharSequenceInputStream extends InputStream {
     private final ByteBuffer bbuf;
 
     private int mark;
-    
+
     /**
      * Constructor.
-     * 
-     * @param s the input character sequence
-     * @param charset the character set name to use
+     *
+     * @param s          the input character sequence
+     * @param charset    the character set name to use
      * @param bufferSize the buffer size to use.
      */
     public CharSequenceInputStream(final CharSequence s, final Charset charset, int bufferSize) {
         super();
         this.encoder = charset.newEncoder()
-            .onMalformedInput(CodingErrorAction.REPLACE)
-            .onUnmappableCharacter(CodingErrorAction.REPLACE);
+                .onMalformedInput(CodingErrorAction.REPLACE)
+                .onUnmappableCharacter(CodingErrorAction.REPLACE);
         this.bbuf = ByteBuffer.allocate(bufferSize);
         this.bbuf.flip();
         this.cbuf = CharBuffer.wrap(s);
@@ -63,9 +63,9 @@ public class CharSequenceInputStream extends InputStream {
 
     /**
      * Constructor, calls {@link #CharSequenceInputStream(CharSequence, Charset, int)}.
-     * 
-     * @param s the input character sequence
-     * @param charset the character set name to use
+     *
+     * @param s          the input character sequence
+     * @param charset    the character set name to use
      * @param bufferSize the buffer size to use.
      */
     public CharSequenceInputStream(final CharSequence s, final String charset, int bufferSize) {
@@ -75,8 +75,8 @@ public class CharSequenceInputStream extends InputStream {
     /**
      * Constructor, calls {@link #CharSequenceInputStream(CharSequence, Charset, int)}
      * with a buffer size of 2048.
-     * 
-     * @param s the input character sequence
+     *
+     * @param s       the input character sequence
      * @param charset the character set name to use
      */
     public CharSequenceInputStream(final CharSequence s, final Charset charset) {
@@ -86,8 +86,8 @@ public class CharSequenceInputStream extends InputStream {
     /**
      * Constructor, calls {@link #CharSequenceInputStream(CharSequence, String, int)}
      * with a buffer size of 2048.
-     * 
-     * @param s the input character sequence
+     *
+     * @param s       the input character sequence
      * @param charset the character set name to use
      */
     public CharSequenceInputStream(final CharSequence s, final String charset) {
@@ -96,9 +96,8 @@ public class CharSequenceInputStream extends InputStream {
 
     /**
      * Fills the byte output buffer from the input char buffer.
-     * 
-     * @throws CharacterCodingException
-     *             an error encoding data
+     *
+     * @throws CharacterCodingException an error encoding data
      */
     private void fillBuffer() throws CharacterCodingException {
         this.bbuf.compact();
@@ -108,7 +107,7 @@ public class CharSequenceInputStream extends InputStream {
         }
         this.bbuf.flip();
     }
-    
+
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         if (b == null) {
@@ -144,7 +143,7 @@ public class CharSequenceInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
-        for (;;) {
+        for (; ; ) {
             if (this.bbuf.hasRemaining()) {
                 return this.bbuf.get() & 0xFF;
             } else {
@@ -183,6 +182,7 @@ public class CharSequenceInputStream extends InputStream {
 
     /**
      * {@inheritDoc}
+     *
      * @param readlimit max read limit (ignored)
      */
     @Override
@@ -202,5 +202,5 @@ public class CharSequenceInputStream extends InputStream {
     public boolean markSupported() {
         return true;
     }
-    
+
 }

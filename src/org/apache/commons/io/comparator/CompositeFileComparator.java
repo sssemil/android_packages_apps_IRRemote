@@ -24,10 +24,10 @@ import java.util.List;
 
 /**
  * Compare two files using a set of delegate file {@link Comparator}.
- * <p>
+ * <p/>
  * This comparator can be used to sort lists or arrays of files
  * by combining a number other comparators.
- * <p>
+ * <p/>
  * Example of sorting a list of files by type (i.e. directory or file)
  * and then by name:
  * <pre>
@@ -82,7 +82,7 @@ public class CompositeFileComparator extends AbstractFileComparator implements S
 
     /**
      * Compare the two files using delegate comparators.
-     * 
+     *
      * @param file1 The first file to compare
      * @param file2 The second file to compare
      * @return the first non-zero result returned from

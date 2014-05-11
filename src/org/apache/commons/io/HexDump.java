@@ -21,15 +21,30 @@ import java.io.OutputStream;
 
 /**
  * Dumps data in hexadecimal format.
- * <p>
+ * <p/>
  * Provides a single function to take an array of bytes and display it
  * in hexadecimal form.
- * <p>
+ * <p/>
  * Origin of code: POI.
  *
  * @version $Id: HexDump.java 1302748 2012-03-20 01:35:32Z ggregory $
  */
 public class HexDump {
+
+    /**
+     * The line-separator (initializes to "line.separator" system property.
+     */
+    public static final String EOL =
+            System.getProperty("line.separator");
+    private static final char[] _hexcodes =
+            {
+                    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                    'A', 'B', 'C', 'D', 'E', 'F'
+            };
+    private static final int[] _shifts =
+            {
+                    28, 24, 20, 16, 12, 8, 4, 0
+            };
 
     /**
      * Instances should NOT be constructed in standard programming.
@@ -44,39 +59,39 @@ public class HexDump {
      * hexadecimal values of the next 16 bytes of data and the printable ASCII
      * characters (if any) that those bytes represent printed per each line
      * of output.
-     * <p>
+     * <p/>
      * The offset argument specifies the start offset of the data array
      * within a larger entity like a file or an incoming stream. For example,
      * if the data array contains the third kibibyte of a file, then the
      * offset argument should be set to 2048. The offset value printed
      * at the beginning of each line indicates where in that larger entity
      * the first byte on that line is located.
-     * <p>
+     * <p/>
      * All bytes between the given index (inclusive) and the end of the
-     * data array are dumped. 
+     * data array are dumped.
      *
-     * @param data  the byte array to be dumped
-     * @param offset  offset of the byte array within a larger entity
-     * @param stream  the OutputStream to which the data is to be
+     * @param data   the byte array to be dumped
+     * @param offset offset of the byte array within a larger entity
+     * @param stream the OutputStream to which the data is to be
      *               written
-     * @param index initial index into the byte array
-     *
-     * @throws IOException is thrown if anything goes wrong writing
-     *         the data to stream
+     * @param index  initial index into the byte array
+     * @throws IOException                    is thrown if anything goes wrong writing
+     *                                        the data to stream
      * @throws ArrayIndexOutOfBoundsException if the index is
-     *         outside the data array's bounds
-     * @throws IllegalArgumentException if the output stream is null
+     *                                        outside the data array's bounds
+     * @throws IllegalArgumentException       if the output stream is null
      */
 
     public static void dump(byte[] data, long offset,
                             OutputStream stream, int index)
             throws IOException, ArrayIndexOutOfBoundsException,
             IllegalArgumentException {
-        
+
         if (index < 0 || index >= data.length) {
             throw new ArrayIndexOutOfBoundsException(
                     "illegal index: " + index + " into array of length "
-                    + data.length);
+                            + data.length
+            );
         }
         if (stream == null) {
             throw new IllegalArgumentException("cannot write to nullstream");
@@ -115,25 +130,10 @@ public class HexDump {
     }
 
     /**
-     * The line-separator (initializes to "line.separator" system property.
-     */
-    public static final String EOL =
-            System.getProperty("line.separator");
-    private static final char[] _hexcodes =
-            {
-                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                'A', 'B', 'C', 'D', 'E', 'F'
-            };
-    private static final int[] _shifts =
-            {
-                28, 24, 20, 16, 12, 8, 4, 0
-            };
-
-    /**
      * Dump a long value into a StringBuilder.
      *
      * @param _lbuffer the StringBuilder to dump the value in
-     * @param value  the long value to be dumped
+     * @param value    the long value to be dumped
      * @return StringBuilder containing the dumped value.
      */
     private static StringBuilder dump(StringBuilder _lbuffer, long value) {
@@ -148,7 +148,7 @@ public class HexDump {
      * Dump a byte value into a StringBuilder.
      *
      * @param _cbuffer the StringBuilder to dump the value in
-     * @param value  the byte value to be dumped
+     * @param value    the byte value to be dumped
      * @return StringBuilder containing the dumped value.
      */
     private static StringBuilder dump(StringBuilder _cbuffer, byte value) {

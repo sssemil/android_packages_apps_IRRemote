@@ -21,10 +21,10 @@ import java.io.Serializable;
 
 /**
  * This filter accepts <code>File</code>s that are directories.
- * <p>
- * For example, here is how to print out a list of the 
+ * <p/>
+ * For example, here is how to print out a list of the
  * current directory's subdirectories:
- *
+ * <p/>
  * <pre>
  * File dir = new File(".");
  * String[] files = dir.list( DirectoryFileFilter.INSTANCE );
@@ -33,15 +33,15 @@ import java.io.Serializable;
  * }
  * </pre>
  *
- * @since 1.0
  * @version $Id: DirectoryFileFilter.java 1304052 2012-03-22 20:55:29Z ggregory $
- *
  * @see FileFilterUtils#directoryFileFilter()
+ * @since 1.0
  */
 public class DirectoryFileFilter extends AbstractFileFilter implements Serializable {
 
     /**
      * Singleton instance of directory filter.
+     *
      * @since 1.3
      */
     public static final IOFileFilter DIRECTORY = new DirectoryFileFilter();
@@ -62,7 +62,7 @@ public class DirectoryFileFilter extends AbstractFileFilter implements Serializa
     /**
      * Checks to see if the file is a directory.
      *
-     * @param file  the File to check
+     * @param file the File to check
      * @return true if the file is a directory
      */
     @Override

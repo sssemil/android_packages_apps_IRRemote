@@ -22,10 +22,10 @@ import java.io.Serializable;
 /**
  * Filters files based on size, can filter either smaller files or
  * files equal to or larger than a given threshold.
- * <p>
+ * <p/>
  * For example, to print all files and directories in the
  * current directory whose size is greater than 1 MB:
- *
+ * <p/>
  * <pre>
  * File dir = new File(".");
  * String[] files = dir.list( new SizeFileFilter(1024 * 1024) );
@@ -35,23 +35,27 @@ import java.io.Serializable;
  * </pre>
  *
  * @version $Id: SizeFileFilter.java 1304052 2012-03-22 20:55:29Z ggregory $
- * @since 1.2
  * @see FileFilterUtils#sizeFileFilter(long)
  * @see FileFilterUtils#sizeFileFilter(long, boolean)
  * @see FileFilterUtils#sizeRangeFileFilter(long, long)
+ * @since 1.2
  */
 public class SizeFileFilter extends AbstractFileFilter implements Serializable {
 
-    /** The size threshold. */
+    /**
+     * The size threshold.
+     */
     private final long size;
-    /** Whether the files accepted will be larger or smaller. */
+    /**
+     * Whether the files accepted will be larger or smaller.
+     */
     private final boolean acceptLarger;
 
     /**
-     * Constructs a new size file filter for files equal to or 
+     * Constructs a new size file filter for files equal to or
      * larger than a certain size.
      *
-     * @param size  the threshold size of the files
+     * @param size the threshold size of the files
      * @throws IllegalArgumentException if the size is negative
      */
     public SizeFileFilter(long size) {
@@ -62,9 +66,9 @@ public class SizeFileFilter extends AbstractFileFilter implements Serializable {
      * Constructs a new size file filter for files based on a certain size
      * threshold.
      *
-     * @param size  the threshold size of the files
-     * @param acceptLarger  if true, files equal to or larger are accepted,
-     * otherwise smaller ones (but not equal to)
+     * @param size         the threshold size of the files
+     * @param acceptLarger if true, files equal to or larger are accepted,
+     *                     otherwise smaller ones (but not equal to)
      * @throws IllegalArgumentException if the size is negative
      */
     public SizeFileFilter(long size, boolean acceptLarger) {
@@ -76,15 +80,16 @@ public class SizeFileFilter extends AbstractFileFilter implements Serializable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Checks to see if the size of the file is favorable.
-     * <p>
+     * <p/>
      * If size equals threshold and smaller files are required,
      * file <b>IS NOT</b> selected.
      * If size equals threshold and larger files are required,
      * file <b>IS</b> selected.
      *
-     * @param file  the File to check
+     * @param file the File to check
      * @return true if the filename matches
      */
     @Override

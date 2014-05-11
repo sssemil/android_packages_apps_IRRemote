@@ -22,22 +22,22 @@ import java.io.Reader;
 import java.nio.CharBuffer;
 
 /**
- * A Proxy stream which acts as expected, that is it passes the method 
- * calls on to the proxied stream and doesn't change which methods are 
- * being called. 
- * <p>
+ * A Proxy stream which acts as expected, that is it passes the method
+ * calls on to the proxied stream and doesn't change which methods are
+ * being called.
+ * <p/>
  * It is an alternative base class to FilterReader
- * to increase reusability, because FilterReader changes the 
+ * to increase reusability, because FilterReader changes the
  * methods being called, such as read(char[]) to read(char[], int, int).
- * 
+ *
  * @version $Id: ProxyReader.java 1304052 2012-03-22 20:55:29Z ggregory $
  */
 public abstract class ProxyReader extends FilterReader {
 
     /**
      * Constructs a new ProxyReader.
-     * 
-     * @param proxy  the Reader to delegate to
+     *
+     * @param proxy the Reader to delegate to
      */
     public ProxyReader(Reader proxy) {
         super(proxy);
@@ -46,6 +46,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>read()</code> method.
+     *
      * @return the character read or -1 if the end of stream
      * @throws IOException if an I/O error occurs
      */
@@ -64,6 +65,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>read(char[])</code> method.
+     *
      * @param chr the buffer to read the characters into
      * @return the number of characters read or -1 if the end of stream
      * @throws IOException if an I/O error occurs
@@ -83,8 +85,9 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>read(char[], int, int)</code> method.
+     *
      * @param chr the buffer to read the characters into
-     * @param st The start offset
+     * @param st  The start offset
      * @param len The number of bytes to read
      * @return the number of characters read or -1 if the end of stream
      * @throws IOException if an I/O error occurs
@@ -104,6 +107,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>read(CharBuffer)</code> method.
+     *
      * @param target the char buffer to read the characters into
      * @return the number of characters read or -1 if the end of stream
      * @throws IOException if an I/O error occurs
@@ -124,6 +128,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>skip(long)</code> method.
+     *
      * @param ln the number of bytes to skip
      * @return the number of bytes to skipped or -1 if the end of stream
      * @throws IOException if an I/O error occurs
@@ -140,6 +145,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>ready()</code> method.
+     *
      * @return true if the stream is ready to be read
      * @throws IOException if an I/O error occurs
      */
@@ -155,6 +161,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>close()</code> method.
+     *
      * @throws IOException if an I/O error occurs
      */
     @Override
@@ -168,6 +175,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>mark(int)</code> method.
+     *
      * @param idx read ahead limit
      * @throws IOException if an I/O error occurs
      */
@@ -182,6 +190,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>reset()</code> method.
+     *
      * @throws IOException if an I/O error occurs
      */
     @Override
@@ -195,6 +204,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Invokes the delegate's <code>markSupported()</code> method.
+     *
      * @return true if mark is supported, otherwise false
      */
     @Override
@@ -207,18 +217,18 @@ public abstract class ProxyReader extends FilterReader {
      * of chars that the caller wanted to read (1 for the {@link #read()}
      * method, buffer length for {@link #read(char[])}, etc.) is given as
      * an argument.
-     * <p>
+     * <p/>
      * Subclasses can override this method to add common pre-processing
      * functionality without having to override all the read methods.
      * The default implementation does nothing.
-     * <p>
+     * <p/>
      * Note this method is <em>not</em> called from {@link #skip(long)} or
      * {@link #reset()}. You need to explicitly override those methods if
      * you want to add pre-processing steps also to them.
      *
-     * @since 2.0
      * @param n number of chars that the caller asked to be read
      * @throws IOException if the pre-processing fails
+     * @since 2.0
      */
     protected void beforeRead(int n) throws IOException {
     }
@@ -227,27 +237,28 @@ public abstract class ProxyReader extends FilterReader {
      * Invoked by the read methods after the proxied call has returned
      * successfully. The number of chars returned to the caller (or -1 if
      * the end of stream was reached) is given as an argument.
-     * <p>
+     * <p/>
      * Subclasses can override this method to add common post-processing
      * functionality without having to override all the read methods.
      * The default implementation does nothing.
-     * <p>
+     * <p/>
      * Note this method is <em>not</em> called from {@link #skip(long)} or
      * {@link #reset()}. You need to explicitly override those methods if
      * you want to add post-processing steps also to them.
      *
-     * @since 2.0
      * @param n number of chars read, or -1 if the end of stream was reached
      * @throws IOException if the post-processing fails
+     * @since 2.0
      */
     protected void afterRead(int n) throws IOException {
     }
 
     /**
      * Handle any IOExceptions thrown.
-     * <p>
+     * <p/>
      * This method provides a point to implement custom exception
      * handling. The default behaviour is to re-throw the exception.
+     *
      * @param e The IOException thrown
      * @throws IOException if an I/O error occurs
      * @since 2.0

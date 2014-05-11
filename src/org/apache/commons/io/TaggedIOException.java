@@ -32,15 +32,30 @@ public class TaggedIOException extends IOExceptionWithCause {
      * Generated serial version UID.
      */
     private static final long serialVersionUID = -6994123481142850163L;
+    /**
+     * The tag of this exception.
+     */
+    private final Serializable tag;
+
+    /**
+     * Creates a tagged wrapper for the given exception.
+     *
+     * @param original the exception to be tagged
+     * @param tag      tag of this exception
+     */
+    public TaggedIOException(IOException original, Serializable tag) {
+        super(original.getMessage(), original);
+        this.tag = tag;
+    }
 
     /**
      * Checks whether the given throwable is tagged with the given tag.
-     * <p>
+     * <p/>
      * This check can only succeed if the throwable is a
      * {@link TaggedIOException} and the tag is {@link Serializable}, but
      * the argument types are intentionally more generic to make it easier
      * to use this method without type casts.
-     * <p>
+     * <p/>
      * A typical use for this method is in a <code>catch</code> block to
      * determine how a caught exception should be handled:
      * <pre>
@@ -57,14 +72,14 @@ public class TaggedIOException extends IOExceptionWithCause {
      * </pre>
      *
      * @param throwable The Throwable object to check
-     * @param tag tag object
+     * @param tag       tag object
      * @return {@code true} if the throwable has the specified tag,
      * otherwise {@code false}
      */
     public static boolean isTaggedWith(Throwable throwable, Object tag) {
         return tag != null
-            && throwable instanceof TaggedIOException
-            && tag.equals(((TaggedIOException) throwable).tag);
+                && throwable instanceof TaggedIOException
+                && tag.equals(((TaggedIOException) throwable).tag);
     }
 
     /**
@@ -72,7 +87,7 @@ public class TaggedIOException extends IOExceptionWithCause {
      * a {@link TaggedIOException} decorator the given tag. Does nothing
      * if the given throwable is of a different type or if it is tagged
      * with some other tag.
-     * <p>
+     * <p/>
      * This method is typically used in a <code>catch</code> block to
      * selectively rethrow tagged exceptions.
      * <pre>
@@ -86,7 +101,7 @@ public class TaggedIOException extends IOExceptionWithCause {
      * </pre>
      *
      * @param throwable an exception
-     * @param tag tag object
+     * @param tag       tag object
      * @throws IOException original exception from the tagged decorator, if any
      */
     public static void throwCauseIfTaggedWith(Throwable throwable, Object tag)
@@ -94,22 +109,6 @@ public class TaggedIOException extends IOExceptionWithCause {
         if (isTaggedWith(throwable, tag)) {
             throw ((TaggedIOException) throwable).getCause();
         }
-    }
-
-    /**
-     * The tag of this exception.
-     */
-    private final Serializable tag;
-
-    /**
-     * Creates a tagged wrapper for the given exception.
-     *
-     * @param original the exception to be tagged
-     * @param tag tag of this exception
-     */
-    public TaggedIOException(IOException original, Serializable tag) {
-        super(original.getMessage(), original);
-        this.tag = tag;
     }
 
     /**

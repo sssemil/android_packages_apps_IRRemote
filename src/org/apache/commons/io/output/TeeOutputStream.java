@@ -20,20 +20,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Classic splitter of OutputStream. Named after the unix 'tee' 
- * command. It allows a stream to be branched off so there 
+ * Classic splitter of OutputStream. Named after the unix 'tee'
+ * command. It allows a stream to be branched off so there
  * are now two streams.
  *
  * @version $Id: TeeOutputStream.java 1302056 2012-03-18 03:03:38Z ggregory $
  */
 public class TeeOutputStream extends ProxyOutputStream {
 
-    /** the second OutputStream to write to */
+    /**
+     * the second OutputStream to write to
+     */
     protected OutputStream branch;
 
     /**
      * Constructs a TeeOutputStream.
-     * @param out the main OutputStream
+     *
+     * @param out    the main OutputStream
      * @param branch the second OutputStream
      */
     public TeeOutputStream(OutputStream out, OutputStream branch) {
@@ -43,6 +46,7 @@ public class TeeOutputStream extends ProxyOutputStream {
 
     /**
      * Write the bytes to both streams.
+     *
      * @param b the bytes to write
      * @throws IOException if an I/O error occurs
      */
@@ -54,7 +58,8 @@ public class TeeOutputStream extends ProxyOutputStream {
 
     /**
      * Write the specified bytes to both streams.
-     * @param b the bytes to write
+     *
+     * @param b   the bytes to write
      * @param off The start offset
      * @param len The number of bytes to write
      * @throws IOException if an I/O error occurs
@@ -67,6 +72,7 @@ public class TeeOutputStream extends ProxyOutputStream {
 
     /**
      * Write a byte to both streams.
+     *
      * @param b the byte to write
      * @throws IOException if an I/O error occurs
      */
@@ -78,6 +84,7 @@ public class TeeOutputStream extends ProxyOutputStream {
 
     /**
      * Flushes both streams.
+     *
      * @throws IOException if an I/O error occurs
      */
     @Override
@@ -88,14 +95,13 @@ public class TeeOutputStream extends ProxyOutputStream {
 
     /**
      * Closes both output streams.
-     * 
+     * <p/>
      * If closing the main output stream throws an exception, attempt to close the branch output stream.
-     * 
+     * <p/>
      * If closing the main and branch output streams both throw exceptions, which exceptions is thrown by this method is
      * currently unspecified and subject to change.
-     * 
-     * @throws IOException
-     *             if an I/O error occurs
+     *
+     * @throws IOException if an I/O error occurs
      */
     @Override
     public void close() throws IOException {
