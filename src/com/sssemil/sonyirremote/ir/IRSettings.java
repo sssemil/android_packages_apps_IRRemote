@@ -28,7 +28,7 @@ import android.widget.TextView;
 import com.sssemil.sonyirremote.ir.Zip.Compress;
 import com.sssemil.sonyirremote.ir.Zip.Decompress;
 
-import org.apache.commons.io.FileUtils;
+//import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -299,6 +299,46 @@ public class IRSettings extends PreferenceActivity {
         }
     }
 
+    public static void delete(File file)
+            throws IOException {
+
+        if (file.isDirectory()) {
+
+            //directory is empty, then delete it
+            if (file.list().length == 0) {
+
+                file.delete();
+                System.out.println("Directory is deleted : "
+                        + file.getAbsolutePath());
+
+            } else {
+
+                //list all the directory contents
+                String files[] = file.list();
+
+                for (String temp : files) {
+                    //construct the file structure
+                    File fileDelete = new File(file, temp);
+
+                    //recursive delete
+                    delete(fileDelete);
+                }
+
+                //check the directory again, if empty then delete it
+                if (file.list().length == 0) {
+                    file.delete();
+                    System.out.println("Directory is deleted : "
+                            + file.getAbsolutePath());
+                }
+            }
+
+        } else {
+            //if file, then delete it
+            file.delete();
+            System.out.println("File is deleted : " + file.getAbsolutePath());
+        }
+    }
+
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
                                          final Preference preference) {
         String key = preference.getKey();
@@ -412,7 +452,7 @@ public class IRSettings extends PreferenceActivity {
                                     item = ar.get(selected);
                                     File dir = new File(irpath + item);
                                     try {
-                                        FileUtils.deleteDirectory(dir);
+                                        delete(dir);
                                     } catch (IOException ex) {
                                         ex.printStackTrace();
                                         adb.setTitle(getString(R.string.error));
@@ -475,7 +515,7 @@ public class IRSettings extends PreferenceActivity {
                                         try {
                                             spinner = (Spinner) promptsView.findViewById(R.id.spinner);
                                             item = spinner.getSelectedItem().toString();
-                                            Compress c = new Compress(irpath + item, Environment.getExternalStorageDirectory() + item + ".zip");
+                                            Compress c = new Compress(irpath + item, Environment.getExternalStorageDirectory() +  "/" + item + ".zip");
                                             c.zip();
                                             Intent emailIntent = new Intent(Intent.ACTION_SEND);
                                             emailIntent.setType("application/zip");
@@ -693,8 +733,8 @@ public class IRSettings extends PreferenceActivity {
 
                 // download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream(Environment.getExternalStorageDirectory() + fileName);
-                Log.v("DownloadTask", "output " + Environment.getExternalStorageDirectory() + fileName);
+                output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + fileName);
+                Log.v("DownloadTask", "output " + Environment.getExternalStorageDirectory() + "/" + fileName);
 
                 byte data[] = new byte[4096];
                 long total = 0;
@@ -713,7 +753,7 @@ public class IRSettings extends PreferenceActivity {
                 }
                 Log.v("DownloadTask", "Done!");
                 //---------Unzip--------
-                String zipFile = Environment.getExternalStorageDirectory() + fileName;
+                String zipFile = Environment.getExternalStorageDirectory() +  "/" + fileName;
                 String unzipLocation = irpath;
 
                 Decompress d = new Decompress(zipFile, unzipLocation);
