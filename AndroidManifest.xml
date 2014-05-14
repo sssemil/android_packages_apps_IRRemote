@@ -28,6 +28,10 @@
         <activity
             android:name=".IRSettings"
             android:label="@string/action_settings" />
+
+        <activity
+            android:name=".IRAbout"
+            android:label="@string/about" />
     </application>
 
 </manifest>

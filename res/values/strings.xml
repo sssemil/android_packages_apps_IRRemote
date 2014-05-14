@@ -127,4 +127,5 @@ Do you want to continue?</string>
 
 Select Start and press the button you want the app to learn."</string>
     <string name="start">Start</string>
+    <string name="ver">Version</string>
 </resources>

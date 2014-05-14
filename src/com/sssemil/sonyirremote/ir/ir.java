@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +25,6 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -279,6 +277,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -321,6 +326,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -363,6 +375,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -405,6 +424,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -447,6 +473,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -489,6 +522,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -531,6 +571,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -573,6 +620,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -615,6 +669,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -657,6 +718,13 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    IRCommon.getInstance().restart();
+                                }
+                            };
+                            t.start();
                         }
                         return true;
                     }
@@ -942,29 +1010,16 @@ public class ir extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            //setContentView(R.layout.settings_ir);
             main = false;
             Intent intent = new Intent(ir.this,
                     IRSettings.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_about) {
-            adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.about));
-            PackageInfo pInfo = null;
-            String version = "-.-.-";
-            try {
-                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-            version = pInfo.versionName;
-            adb.setMessage(getResources().getString(R.string.license1) + " v" + version + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
-            adb.setPositiveButton(getString(R.string.pos_ans), null);
-            AlertDialog dialog = adb.show();
-
-            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-            messageView.setGravity(Gravity.CENTER);
+            main = false;
+            Intent intent = new Intent(ir.this,
+                    IRAbout.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -1,4 +1,4 @@
-package com.sssemil.sonyirremote.ir.Zip;
+package com.sssemil.sonyirremote.ir.Utils;
 
 import android.util.Log;
 

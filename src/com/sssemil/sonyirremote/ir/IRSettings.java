@@ -16,19 +16,16 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.sssemil.sonyirremote.ir.Zip.Compress;
-import com.sssemil.sonyirremote.ir.Zip.Decompress;
+import com.sssemil.sonyirremote.ir.Utils.Compress;
+import com.sssemil.sonyirremote.ir.Utils.Decompress;
 
-//import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -47,6 +44,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
+
+//import org.apache.commons.io.FileUtils;
 
 /**
  * Copyright (c) 2014 Emil Suleymanov
@@ -83,6 +82,46 @@ public class IRSettings extends PreferenceActivity {
             sb.append(String.format("%" + maxWidth + 's', s));
         }
         return sb.toString();
+    }
+
+    public static void delete(File file)
+            throws IOException {
+
+        if (file.isDirectory()) {
+
+            //directory is empty, then delete it
+            if (file.list().length == 0) {
+
+                file.delete();
+                System.out.println("Directory is deleted : "
+                        + file.getAbsolutePath());
+
+            } else {
+
+                //list all the directory contents
+                String files[] = file.list();
+
+                for (String temp : files) {
+                    //construct the file structure
+                    File fileDelete = new File(file, temp);
+
+                    //recursive delete
+                    delete(fileDelete);
+                }
+
+                //check the directory again, if empty then delete it
+                if (file.list().length == 0) {
+                    file.delete();
+                    System.out.println("Directory is deleted : "
+                            + file.getAbsolutePath());
+                }
+            }
+
+        } else {
+            //if file, then delete it
+            file.delete();
+            System.out.println("File is deleted : " + file.getAbsolutePath());
+        }
     }
 
     @Override
@@ -299,46 +338,6 @@ public class IRSettings extends PreferenceActivity {
         }
     }
 
-    public static void delete(File file)
-            throws IOException {
-
-        if (file.isDirectory()) {
-
-            //directory is empty, then delete it
-            if (file.list().length == 0) {
-
-                file.delete();
-                System.out.println("Directory is deleted : "
-                        + file.getAbsolutePath());
-
-            } else {
-
-                //list all the directory contents
-                String files[] = file.list();
-
-                for (String temp : files) {
-                    //construct the file structure
-                    File fileDelete = new File(file, temp);
-
-                    //recursive delete
-                    delete(fileDelete);
-                }
-
-                //check the directory again, if empty then delete it
-                if (file.list().length == 0) {
-                    file.delete();
-                    System.out.println("Directory is deleted : "
-                            + file.getAbsolutePath());
-                }
-            }
-
-        } else {
-            //if file, then delete it
-            file.delete();
-            System.out.println("File is deleted : " + file.getAbsolutePath());
-        }
-    }
-
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
                                          final Preference preference) {
         String key = preference.getKey();
@@ -346,21 +345,9 @@ public class IRSettings extends PreferenceActivity {
         final AlertDialog.Builder adb2 = new AlertDialog.Builder(this);
         if (key != null) {
             if (key.equals("aboutPref")) {
-                adb.setTitle(getString(R.string.about));
-                PackageInfo pInfo = null;
-                String version = "-.-.-";
-                try {
-                    pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-                version = pInfo.versionName;
-                adb.setMessage(getResources().getString(R.string.license1) + " v" + version + "\n" + getResources().getString(R.string.license2) + "\n" + getResources().getString(R.string.license3) + "\n" + getResources().getString(R.string.license4));
-                adb.setPositiveButton(getString(R.string.pos_ans), null);
-                AlertDialog dialog = adb.show();
-
-                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-                messageView.setGravity(Gravity.CENTER);
+                Intent intent = new Intent(this,
+                        IRAbout.class);
+                startActivity(intent);
             } else if (key.equals("addBtn")) {
 
                 LayoutInflater li = LayoutInflater.from(thisS);
@@ -515,7 +502,7 @@ public class IRSettings extends PreferenceActivity {
                                         try {
                                             spinner = (Spinner) promptsView.findViewById(R.id.spinner);
                                             item = spinner.getSelectedItem().toString();
-                                            Compress c = new Compress(irpath + item, Environment.getExternalStorageDirectory() +  "/" + item + ".zip");
+                                            Compress c = new Compress(irpath + item, Environment.getExternalStorageDirectory() + "/" + item + ".zip");
                                             c.zip();
                                             Intent emailIntent = new Intent(Intent.ACTION_SEND);
                                             emailIntent.setType("application/zip");
@@ -753,7 +740,7 @@ public class IRSettings extends PreferenceActivity {
                 }
                 Log.v("DownloadTask", "Done!");
                 //---------Unzip--------
-                String zipFile = Environment.getExternalStorageDirectory() +  "/" + fileName;
+                String zipFile = Environment.getExternalStorageDirectory() + "/" + fileName;
                 String unzipLocation = irpath;
 
                 Decompress d = new Decompress(zipFile, unzipLocation);
