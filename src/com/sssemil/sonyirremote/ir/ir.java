@@ -74,6 +74,7 @@ public class ir extends Activity {
     boolean result = false;
     Context thisS = this;
     AlertDialog.Builder adb;
+    boolean dorestart = false;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -166,7 +167,7 @@ public class ir extends Activity {
                             if (spinner.getSelectedItem().toString() != null) {
                                 item = spinner.getSelectedItem().toString();
                             } else {
-                                item = "sony-tv";
+                                item = "Sony-TV";
                             }
                             f = new File(irpath + item + "/disable.ini");
                             if (f.exists()) {
@@ -238,6 +239,10 @@ public class ir extends Activity {
                             e.printStackTrace();
                         }
                     }
+                    if (dorestart) {
+                        IRCommon.getInstance().restart();
+                        dorestart = false;
+                    }
                 }
             }
         };
@@ -253,7 +258,7 @@ public class ir extends Activity {
                         if (event.getAction() == MotionEvent.ACTION_DOWN) {
                             button.setPressed(true);
                             v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
-                            if (prepBISpinner()) ;
+                            if(prepBISpinner());
                             {
                                 result = false;
                                 if (!wrt) {
@@ -277,13 +282,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -326,13 +324,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -375,13 +366,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -424,13 +408,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -473,13 +450,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -522,13 +492,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -571,13 +534,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -620,13 +576,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -669,13 +618,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -718,13 +660,6 @@ public class ir extends Activity {
                             }
                         } else if (event.getAction() == MotionEvent.ACTION_UP) {
                             button.setPressed(false);
-                            Thread t = new Thread() {
-                                @Override
-                                public void run() {
-                                    IRCommon.getInstance().restart();
-                                }
-                            };
-                            t.start();
                         }
                         return true;
                     }
@@ -960,6 +895,7 @@ public class ir extends Activity {
             public void run() {
                 state = IRCommon.getInstance().send(filename);
                 if (state < 0) {
+                    dorestart = true;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
