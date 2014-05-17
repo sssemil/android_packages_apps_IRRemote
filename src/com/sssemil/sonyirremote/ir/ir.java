@@ -258,7 +258,7 @@ public class ir extends Activity {
                         if (event.getAction() == MotionEvent.ACTION_DOWN) {
                             button.setPressed(true);
                             v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
-                            if(prepBISpinner());
+                            if (prepBISpinner()) ;
                             {
                                 result = false;
                                 if (!wrt) {

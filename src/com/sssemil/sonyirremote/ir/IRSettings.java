@@ -45,8 +45,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
-//import org.apache.commons.io.FileUtils;
-
 /**
  * Copyright (c) 2014 Emil Suleymanov
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
@@ -209,7 +207,6 @@ public class IRSettings extends PreferenceActivity {
                 mProgressDialog.show();
             }
         });
-        final Context context = this;
         new Thread(new Runnable() {
             public void run() {
                 cont = false;
@@ -245,7 +242,12 @@ public class IRSettings extends PreferenceActivity {
                             mProgressDialog.show();
                         }
                     });
-// execute this when the downloader must be fired
+                    try {
+                        File df = new File(irpath + lastWord.substring(lastWord.lastIndexOf("/") + 1).substring(0, lastWord.substring(lastWord.lastIndexOf("/") + 1).length() - 4));
+                        delete(df);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     final DownloadTask downloadTask = new DownloadTask();
                     try {
                         downloadTask.execute(lastWord).get();
@@ -281,7 +283,7 @@ public class IRSettings extends PreferenceActivity {
                     } else {
                         adb.setTitle(getString(R.string.downloadT));
                         adb.setMessage(getString(R.string.done));
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
+                        adb.setIcon(android.R.drawable.ic_dialog_info);
                         adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                             }
