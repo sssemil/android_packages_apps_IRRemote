@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
 public class ir extends Activity {
 
     public static final String PREFS_NAME = "SIRR";
-    public String irpath = Environment.getDataDirectory() + "/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
+    public String irpath = Environment.getExternalStorageDirectory() + "/irremote_keys/";//place to store commands
     public String http_path_root2;
     public String http_path_last_download1;
     public String http_path_last_download2;
@@ -74,7 +74,7 @@ public class ir extends Activity {
     boolean result = false;
     Context thisS = this;
     AlertDialog.Builder adb;
-    boolean dorestart = false;
+    boolean do_restart = false;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -210,7 +210,7 @@ public class ir extends Activity {
                                     reader.close();
                                     is.close();
                                 } catch (Exception e) {
-                                    e.printStackTrace();
+                                    //e.printStackTrace();
                                 }
                             } else if (!f.exists()) {
                                 for (int i = 3; i < 33; i++) {
@@ -224,7 +224,7 @@ public class ir extends Activity {
                                             try {
                                                 button.setEnabled(true);
                                             } catch (Exception ex) {
-                                                ex.printStackTrace();
+                                                //ex.printStackTrace();
                                             }
                                         }
                                     });
@@ -233,15 +233,15 @@ public class ir extends Activity {
                             try {
                                 Thread.sleep(500);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                //e.printStackTrace();
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
                     }
-                    if (dorestart) {
+                    if (do_restart) {
                         IRCommon.getInstance().restart();
-                        dorestart = false;
+                        do_restart = false;
                     }
                 }
             }
@@ -895,7 +895,7 @@ public class ir extends Activity {
             public void run() {
                 state = IRCommon.getInstance().send(filename);
                 if (state < 0) {
-                    dorestart = true;
+                    do_restart = true;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -1383,6 +1383,78 @@ public class ir extends Activity {
                 sendKeyBool(irpath + item + "/play.bin");
             } else if (wrt) {
                 learnKeyBool(irpath + item + "/play.bin");
+            }
+        }
+    }
+
+    public void onStopClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                sendKeyBool(irpath + item + "/stop.bin");
+            } else if (wrt) {
+                learnKeyBool(irpath + item + "/stop.bin");
+            }
+        }
+    }
+
+    public void onSrClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                sendKeyBool(irpath + item + "/sr.bin");
+            } else if (wrt) {
+                learnKeyBool(irpath + item + "/sr.bin");
+            }
+        }
+    }
+
+    public void onQClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                sendKeyBool(irpath + item + "/q.bin");
+            } else if (wrt) {
+                learnKeyBool(irpath + item + "/q.bin");
+            }
+        }
+    }
+
+    public void onExitClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                sendKeyBool(irpath + item + "/exit.bin");
+            } else if (wrt) {
+                learnKeyBool(irpath + item + "/exit.bin");
+            }
+        }
+    }
+
+    public void onAudioClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                sendKeyBool(irpath + item + "/audio.bin");
+            } else if (wrt) {
+                learnKeyBool(irpath + item + "/audio.bin");
+            }
+        }
+    }
+
+    public void onTVRADIOClick(View view) {
+        if (prepBISpinner()) ;
+        {
+            result = false;
+            if (!wrt) {
+                sendKeyBool(irpath + item + "/tvr.bin");
+            } else if (wrt) {
+                learnKeyBool(irpath + item + "/tvr.bin");
             }
         }
     }

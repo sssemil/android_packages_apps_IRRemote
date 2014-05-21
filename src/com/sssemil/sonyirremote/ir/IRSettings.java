@@ -56,7 +56,7 @@ public class IRSettings extends PreferenceActivity {
     public String http_path_last_download1;
     public String http_path_last_download2;
     public ArrayList<String> ar = new ArrayList<String>();
-    public String irpath = Environment.getDataDirectory() + "/data/com.sssemil.sonyirremote.ir/ir/";//place to store commands
+    public String irpath = Environment.getExternalStorageDirectory() + "/irremote_keys/";//place to store commands
     public String last_ver = "zirt";
     public String cur_ver;
     ProgressDialog mProgressDialog;

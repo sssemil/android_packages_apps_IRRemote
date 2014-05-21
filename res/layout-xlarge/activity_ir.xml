@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button29"
+            android:layout_toRightOf="@+id/button33"
             android:onClick="onPlayClick"
             android:text="@string/pl" />
 
@@ -76,12 +76,22 @@
             android:layout_toRightOf="@+id/button30"
             android:text="@string/wf" />
 
+        <Button
+            android:id="@+id/button33"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/button29"
+            android:onClick="onStopClick"
+            android:text="@string/stop" />
+
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/tvL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:layout_below="@+id/spinner"
         android:orientation="vertical"
         android:visibility="visible">

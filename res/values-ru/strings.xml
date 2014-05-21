@@ -98,4 +98,6 @@
 
     <string name="start">Начать</string>
     <string name="ver">Версия</string>
+    <string name="tvradio">ТВ/РАДИО</string>
+    <string name="audio">Звук</string>
 </resources>

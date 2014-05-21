@@ -100,4 +100,6 @@ Wollen Sie fortfahren?</string>
 Wählen Sie „Start“ und drücken Sie auf die Taste, die von der App gelernt werden soll."</string>
     <string name="start">Start</string>
     <string name="ver">Version</string>
+    <string name="tvradio">TV/RADIO</string>
+    <string name="audio">Audio</string>
 </resources>

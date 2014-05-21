@@ -54,8 +54,8 @@
             android:id="@+id/button30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button31"
+            android:layout_below="@+id/button31"
+            android:layout_toLeftOf="@+id/button32"
             android:onClick="onPauseClick"
             android:text="@string/p" />
 
@@ -73,8 +73,79 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button30"
+            android:layout_toRightOf="@+id/button31"
             android:text="@string/wf" />
+
+        <Button
+            android:id="@+id/button33"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/button31"
+            android:layout_toRightOf="@+id/button30"
+            android:onClick="onStopClick"
+            android:text="@string/stop" />
+
+        <Button
+            android:id="@+id/button34"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/button30"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/button29"
+            android:layout_toLeftOf="@+id/button30"
+            android:onClick="onSrClick"
+            android:text="@string/sr"
+            android:textColor="#ffff0400"
+            android:textSize="26dp" />
+
+        <Button
+            android:id="@+id/button35"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/button36"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/button30"
+            android:layout_toLeftOf="@+id/button36"
+            android:onClick="onQClick"
+            android:text="@string/que"
+            android:textSize="25dp" />
+
+        <Button
+            android:id="@+id/button36"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/button30"
+            android:layout_toLeftOf="@+id/button33"
+            android:onClick="onExitClick"
+            android:text="@string/exit"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/button37"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/button36"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/button36"
+            android:layout_below="@+id/button35"
+            android:onClick="onTVRADIOClick"
+            android:text="@string/tvradio" />
+
+        <Button
+            android:id="@+id/button38"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/button33"
+            android:layout_alignRight="@+id/button33"
+            android:layout_below="@+id/button33"
+            android:layout_toRightOf="@+id/button37"
+            android:onClick="onAudioClick"
+            android:text="@string/audio"
+            android:textSize="15dp" />
 
     </RelativeLayout>
 
@@ -82,6 +153,7 @@
         android:id="@+id/tvL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:layout_below="@+id/spinner"
         android:orientation="vertical"
         android:visibility="visible">

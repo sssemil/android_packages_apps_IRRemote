@@ -28,6 +28,9 @@
     <string name="p" translatable="false">ll</string>
     <string name="pl" translatable="false">►</string>
     <string name="wf" translatable="false">↠</string>
+    <string name="stop" translatable="false">■</string>
+    <string name="sr" translatable="false">●</string>
+    <string name="que" translatable="false">\?</string>
 
     <string name="Send_signal">Leave Write mode</string>
     <string name="Write_signal">Switch to Write mode</string>
@@ -128,4 +131,6 @@ Do you want to continue?</string>
 Select Start and press the button you want the app to learn."</string>
     <string name="start">Start</string>
     <string name="ver">Version</string>
+    <string name="tvradio">TV/RADIO</string>
+    <string name="audio">Audio</string>
 </resources>

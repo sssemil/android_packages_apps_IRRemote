@@ -41,5 +41,7 @@
 Başla seçin və proqramlar öyrənmək istədiyiniz düyməsini basın.</string>
     <string name="start">Başla</string>
     <string name="ver">Versiya</string>
+    <string name="tvradio">TV/RADIO</string>
+    <string name="audio">Səs</string>
 
 </resources>
