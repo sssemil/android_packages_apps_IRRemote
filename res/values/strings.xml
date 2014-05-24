@@ -133,4 +133,6 @@ Select Start and press the button you want the app to learn."</string>
     <string name="ver">Version</string>
     <string name="tvradio">TV/RADIO</string>
     <string name="audio">Audio</string>
+    <string name="no_root">Looks like you don`t have root permissions! This app will not work!</string>
+    <string name="bad_perm">Looks like you have wrong file permissions. Fix them?</string>
 </resources>

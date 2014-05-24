@@ -102,4 +102,6 @@ Wählen Sie „Start“ und drücken Sie auf die Taste, die von der App gelernt 
     <string name="ver">Version</string>
     <string name="tvradio">TV/RADIO</string>
     <string name="audio">Audio</string>
+    <string name="no_root">Sieht aus wie Sie nicht über Root-Rechte! Diese App wird nicht funktionieren!</string>
+    <string name="bad_perm">Sieht aus wie Sie falsche Datei Berechtigungen verfügen. Fix ihnen?</string>
 </resources>

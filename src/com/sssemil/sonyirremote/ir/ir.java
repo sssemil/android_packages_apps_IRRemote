@@ -76,6 +76,73 @@ public class ir extends Activity {
     AlertDialog.Builder adb;
     boolean do_restart = false;
 
+    public void fixPermissionsForIr() {
+        File enable = new File("/sys/devices/platform/ir_remote_control/enable");
+        File device = new File("/dev/ttyHSL2");
+        final String[] enablePermissions = {"su", "-c", "chmod 222 ", enable.getPath()};
+        final String[] devicePermissions = {"su", "-c", "chmod 666 ", device.getPath()};
+        boolean do_fix = false;
+        boolean found = false;
+
+        if (!device.canRead() || !device.canWrite() || !enable.canWrite()) {
+        do_fix = true;
+        try {
+            Runtime.getRuntime().exec("su");
+        } catch (IOException ex) {
+            found = false;
+        }
+
+        if (!found) {
+            adb = new AlertDialog.Builder(this);
+            adb.setTitle(getString(R.string.warning));
+            adb.setMessage(getString(R.string.no_root));
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adb.show();
+                }
+            });
+        }
+        }
+
+        if (do_fix) {
+            adb = new AlertDialog.Builder(this);
+            adb.setTitle(getString(R.string.warning));
+            adb.setMessage(getString(R.string.bad_perm));
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        Runtime.getRuntime().exec(enablePermissions);
+                        Runtime.getRuntime().exec(devicePermissions);
+                        IRCommon.getInstance().start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    IRCommon.getInstance().restart();
+                }
+            });
+
+            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adb.show();
+                }
+            });
+        }
+    }
+
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
     }
@@ -134,6 +201,12 @@ public class ir extends Activity {
             }
         }
         setContentView(R.layout.activity_ir);
+        Thread ft = new Thread() {
+            public void run() {
+                fixPermissionsForIr();
+            }
+        };
+        ft.start();
         spinner = ((Spinner) findViewById(R.id.spinner));
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
@@ -775,7 +848,7 @@ public class ir extends Activity {
     public void startLearning(final String filename) {
         File to = new File(filename);
         if (to.exists()) {
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.warning));
             adb.setMessage(getString(R.string.alredy_exists));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -790,7 +863,12 @@ public class ir extends Activity {
 
                 }
             });
-            adb.show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adb.show();
+                }
+            });
         } else {
             learnAction(filename);
         }
@@ -830,7 +908,7 @@ public class ir extends Activity {
         spinner = ((Spinner) findViewById(R.id.spinner));
         if (spinner.getSelectedItem() != null) {
             if (!to.exists()) {
-                final AlertDialog.Builder adb = new AlertDialog.Builder(this);
+                adb = new AlertDialog.Builder(this);
                 adb.setTitle(getString(R.string.warning));
                 adb.setMessage(getString(R.string.not_exists));
                 adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -855,7 +933,7 @@ public class ir extends Activity {
                 sendAction(filename);
             }
         } else {
-            final AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -1025,7 +1103,7 @@ public class ir extends Activity {
             item = spinner.getSelectedItem().toString();
             result = true;
         } catch (NullPointerException ex) {
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -1468,7 +1546,7 @@ public class ir extends Activity {
 
     public void update(final boolean silent) {
         final GetLastVer getLastVer1 = new GetLastVer();
-        final AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb = new AlertDialog.Builder(this);
         if (!silent) {
             mProgressDialog = new ProgressDialog(ir.this);
             mProgressDialog.setMessage(getString(R.string.checking));

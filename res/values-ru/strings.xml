@@ -100,4 +100,6 @@
     <string name="ver">Версия</string>
     <string name="tvradio">ТВ/РАДИО</string>
     <string name="audio">Звук</string>
+    <string name="no_root">Похоже, что у вас нет прав суперпользователя! Эта программа не будет работать!</string>
+    <string name="bad_perm">Похоже, что права у ваших файлов выставлены не верно! Исправить?</string>
 </resources>

@@ -43,5 +43,7 @@ Başla seçin və proqramlar öyrənmək istədiyiniz düyməsini basın.</strin
     <string name="ver">Versiya</string>
     <string name="tvradio">TV/RADIO</string>
     <string name="audio">Səs</string>
+    <string name="no_root">Sizdə root yoxdu! Bu progamm işlemiyecey!</string>
+    <string name="bad_perm">Sizin fayilarivinizin icazələri düzgün deyil! Düzəldim onu?</string>
 
 </resources>

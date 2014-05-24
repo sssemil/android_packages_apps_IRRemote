@@ -787,11 +787,9 @@ public class IRSettings extends PreferenceActivity {
 
                 BufferedReader r = new BufferedReader(new InputStreamReader(is));
 
-                StringBuilder total = new StringBuilder();
                 String line;
                 ar.clear();
                 while ((line = r.readLine()) != null) {
-                    total.append(line + "\n");
                     ar.add(line);
                 }
                 Log.i("line", String.valueOf(ar.size()));
