@@ -150,6 +150,7 @@ public class IRSettings extends PreferenceActivity {
                 super.setTheme(R.style.Theme_Holo_Light);
             }
         }
+        super.setTheme(R.style.Holo);//TODO fix theme in settings
         Thread thread = new Thread() {
             public void run() {
                 while (true) {
