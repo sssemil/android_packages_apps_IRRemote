@@ -830,9 +830,14 @@ public class ir extends Activity {
             editor.commit();
         }
 
-        boolean checUpd;
-        checUpd = settings2.contains("checkUpd") && settings2.getBoolean("checkUpd", true);
-        if (checUpd) {
+        boolean checkUpd;
+        if (!settings2.contains("autoUpd")) {
+            checkUpd = false;
+        } else {
+            checkUpd = settings2.getBoolean("autoUpd", true);
+        }
+        Log.i("Update", String.valueOf(checkUpd));
+        if (checkUpd) {
             update(true);
         }
     }
@@ -1602,7 +1607,7 @@ public class ir extends Activity {
                     } else if (result.equals("==")) {
                         doUpdate = false;
                     }
-
+                    Log.i("Update", String.valueOf(doUpdate));
 
                     if (doUpdate) {
                         adb.setTitle(getString(R.string.update));
