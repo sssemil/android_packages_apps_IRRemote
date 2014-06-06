@@ -104,4 +104,5 @@ Wählen Sie „Start“ und drücken Sie auf die Taste, die von der App gelernt 
     <string name="audio">Audio</string>
     <string name="no_root">Sieht aus wie Sie nicht über Root-Rechte! Diese App wird nicht funktionieren!</string>
     <string name="bad_perm">Sieht aus wie Sie falsche Datei Berechtigungen verfügen. Fix ihnen?</string>
+    <string name="done_setting">Fertig, neues Gerät!</string>
 </resources>

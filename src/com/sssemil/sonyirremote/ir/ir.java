@@ -76,6 +76,19 @@ public class ir extends Activity {
     AlertDialog.Builder adb;
     boolean do_restart = false;
 
+    public static String normalisedVersion(String version) {
+        return normalisedVersion(version, ".", 4);
+    }
+
+    public static String normalisedVersion(String version, String sep, int maxWidth) {
+        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
+        StringBuilder sb = new StringBuilder();
+        for (String s : split) {
+            sb.append(String.format("%" + maxWidth + 's', s));
+        }
+        return sb.toString();
+    }
+
     public void fixPermissionsForIr() {
         File enable = new File("/sys/devices/platform/ir_remote_control/enable");
         File device = new File("/dev/ttyHSL2");
@@ -85,30 +98,30 @@ public class ir extends Activity {
         boolean found = false;
 
         if (!device.canRead() || !device.canWrite() || !enable.canWrite()) {
-        do_fix = true;
-        try {
-            Runtime.getRuntime().exec("su");
-        } catch (IOException ex) {
-            found = false;
-        }
+            do_fix = true;
+            try {
+                Runtime.getRuntime().exec("su");
+            } catch (IOException ex) {
+                found = false;
+            }
 
-        if (!found) {
-            adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.warning));
-            adb.setMessage(getString(R.string.no_root));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            });
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adb.show();
-                }
-            });
-        }
+            if (!found) {
+                adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.warning));
+                adb.setMessage(getString(R.string.no_root));
+                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adb.show();
+                    }
+                });
+            }
         }
 
         if (do_fix) {
@@ -141,19 +154,6 @@ public class ir extends Activity {
                 }
             });
         }
-    }
-
-    public static String normalisedVersion(String version) {
-        return normalisedVersion(version, ".", 4);
-    }
-
-    public static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
-        }
-        return sb.toString();
     }
 
     @Override
@@ -320,6 +320,48 @@ public class ir extends Activity {
             }
         };
         thread.start();
+
+        Thread btn = new Thread() {
+            @Override
+            public void run() {
+                final Button button = (Button) findViewById(R.id.button);
+                button.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            button.setPressed(true);
+                            v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                            if (prepBISpinner()) ;
+                            {
+                                result = false;
+                                if (!wrt) {
+                                    Thread t = new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                while (button.isPressed()) {
+                                                    sendKeyBool(irpath + item + "/power.bin");
+                                                    sleep(400);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    t.start();
+                                } else if (wrt) {
+                                    learnKeyBool(irpath + item + "/power.bin");
+                                }
+                            }
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                            button.setPressed(false);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+        btn.start();
 
         Thread btn3 = new Thread() {
             @Override
@@ -1122,7 +1164,7 @@ public class ir extends Activity {
         return result;
     }
 
-    public void onPowerClick(final View view) {
+    /*public void onPowerClick(final View view) {
         if (prepBISpinner()) ;
         {
             result = false;
@@ -1132,7 +1174,7 @@ public class ir extends Activity {
                 learnKeyBool(irpath + item + "/power.bin");
             }
         }
-    }
+    }*/
 
     public void onChanelPlClick(View view) {
         if (prepBISpinner()) ;

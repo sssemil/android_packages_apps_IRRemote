@@ -5,6 +5,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -13,6 +14,7 @@ import java.util.zip.ZipInputStream;
  */
 
 public class Decompress {
+    public String ar = "";
     private String _zipFile;
     private String _location;
 
@@ -23,7 +25,7 @@ public class Decompress {
         _dirChecker("");
     }
 
-    public void unzip() {
+    public String unzip() {
         Log.v("Decompress", "Starting... ");
         try {
             FileInputStream fin = new FileInputStream(_zipFile);
@@ -31,6 +33,7 @@ public class Decompress {
             ZipEntry ze = null;
             while ((ze = zin.getNextEntry()) != null) {
                 Log.v("Decompress", "Unzipping " + ze.getName());
+                ar = ar + "Unzipping " + ze.getName() + "\n";
 
                 if (ze.isDirectory()) {
                     _dirChecker(ze.getName());
@@ -47,8 +50,10 @@ public class Decompress {
             }
             zin.close();
             Log.v("Decompress", "Done! ");
+            return ar;
         } catch (Exception e) {
             Log.e("Decompress", "unzip", e);
+            return null;
         }
     }
 

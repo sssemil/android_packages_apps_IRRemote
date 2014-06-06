@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sssemil.sonyirremote.ir"
     android:versionCode="1"
-    android:versionName="1.6.8">
+    android:versionName="1.6.8.2">
 
     <uses-sdk
-        android:minSdkVersion="19"
+        android:minSdkVersion="11"
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -34,7 +34,7 @@
         <activity
             android:name=".IRAbout"
             android:label="@string/about"
-            android:theme="@style/Holo"/>
+            android:theme="@style/Holo" />
     </application>
 
 </manifest>

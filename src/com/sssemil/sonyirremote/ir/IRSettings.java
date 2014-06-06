@@ -21,7 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.sssemil.sonyirremote.ir.Utils.Compress;
 import com.sssemil.sonyirremote.ir.Utils.Decompress;
@@ -56,10 +58,12 @@ public class IRSettings extends PreferenceActivity {
     public String http_path_last_download1;
     public String http_path_last_download2;
     public ArrayList<String> ar = new ArrayList<String>();
+    public String ar2;
     public String irpath = Environment.getExternalStorageDirectory() + "/irremote_keys/";//place to store commands
     public String last_ver = "zirt";
     public String cur_ver;
     ProgressDialog mProgressDialog;
+    AlertDialog.Builder adb;
     String resp = "ko";
     String lastWord;
     Context thisS = this;
@@ -68,6 +72,7 @@ public class IRSettings extends PreferenceActivity {
     EditText brandN, itemN;
     Spinner spinner;
     String saved_theme, new_theme;
+    ArrayAdapter<String> arrayAdapter;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -131,6 +136,7 @@ public class IRSettings extends PreferenceActivity {
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
         thisS = this;
+        adb = new AlertDialog.Builder(this);
         PackageInfo pInfo = null;
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -197,7 +203,7 @@ public class IRSettings extends PreferenceActivity {
     }
 
     public void doOnDown(final String content) {
-        final AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb = new AlertDialog.Builder(this);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(getString(R.string.checking));
         mProgressDialog.setIndeterminate(true);
@@ -216,7 +222,6 @@ public class IRSettings extends PreferenceActivity {
                     cont = true;
                 } catch (NullPointerException ex) {
                     cont = false;
-                    //AlertDialog.Builder adb = new AlertDialog.Builder(this);
                     adb.setTitle(getString(R.string.error));
                     adb.setMessage(getString(R.string.you_need_to_select));
                     adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -281,14 +286,24 @@ public class IRSettings extends PreferenceActivity {
                                 adb.show();
                             }
                         });
-                    } else {
+                    } else {//TODO add ar2
+                        LayoutInflater li = LayoutInflater.from(thisS);
+                        final View promptsView = li.inflate(R.layout.done_menu, null);
+                        TextView tw = (TextView) promptsView.findViewById(R.id.textView2);
+                        tw.setText(ar2);
+                        adb = new AlertDialog.Builder(thisS);
                         adb.setTitle(getString(R.string.downloadT));
-                        adb.setMessage(getString(R.string.done));
                         adb.setIcon(android.R.drawable.ic_dialog_info);
-                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
+                        adb
+                                .setCancelable(false)
+                                .setPositiveButton(getString(R.string.pos_ans),
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                //onAddDeviceClick(promptsView);
+                                            }
+                                        }
+                                );
+                        adb.setView(promptsView);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -317,7 +332,7 @@ public class IRSettings extends PreferenceActivity {
                         localFile2.mkdirs();
                     }
                 }
-                AlertDialog.Builder adb = new AlertDialog.Builder(this);
+                adb = new AlertDialog.Builder(this);
                 adb.setTitle(getString(R.string.done));
                 adb.setMessage(getString(R.string.new_item) + " " + brandN.getText().toString() + "-" + itemN.getText().toString() + " " + getString(R.string.crt_slf));
                 adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
@@ -329,7 +344,7 @@ public class IRSettings extends PreferenceActivity {
                 throw new NullPointerException();
             }
         } catch (NullPointerException ex) {
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -344,8 +359,7 @@ public class IRSettings extends PreferenceActivity {
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
                                          final Preference preference) {
         String key = preference.getKey();
-        final AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        final AlertDialog.Builder adb2 = new AlertDialog.Builder(this);
+        adb = new AlertDialog.Builder(this);
         if (key != null) {
             if (key.equals("aboutPref")) {
                 Intent intent = new Intent(this,
@@ -355,10 +369,9 @@ public class IRSettings extends PreferenceActivity {
 
                 LayoutInflater li = LayoutInflater.from(thisS);
                 final View promptsView = li.inflate(R.layout.add_device_menu, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                        thisS);
-                alertDialogBuilder.setTitle(getString(R.string.add_new_device));
-                alertDialogBuilder
+                adb = new AlertDialog.Builder(thisS);
+                adb.setTitle(getString(R.string.add_new_device));
+                adb
                         .setCancelable(false)
                         .setPositiveButton(getString(R.string.pos_ans),
                                 new DialogInterface.OnClickListener() {
@@ -374,8 +387,8 @@ public class IRSettings extends PreferenceActivity {
                                     }
                                 }
                         );
-                alertDialogBuilder.setView(promptsView);
-                alertDialogBuilder.show();
+                adb.setView(promptsView);
+                adb.show();
             } else if (key.equals("downBtn")) {
                 mProgressDialog = new ProgressDialog(this);
                 mProgressDialog.setMessage(getString(R.string.gtlst));
@@ -433,7 +446,7 @@ public class IRSettings extends PreferenceActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             final int selected = which;
                             dialog.dismiss();
-                            final AlertDialog.Builder adb = new AlertDialog.Builder(thisS);
+                            adb = new AlertDialog.Builder(thisS);
                             adb.setTitle(getString(R.string.warning));
                             adb.setMessage(getString(R.string.are_u_s_del));
                             adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -454,10 +467,11 @@ public class IRSettings extends PreferenceActivity {
                                         });
                                         adb.show();
                                     }
-                                    adb2.setTitle(getString(R.string.done));
-                                    adb2.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
-                                    adb2.setPositiveButton(getString(R.string.pos_ans), null);
-                                    adb2.show();
+                                    adb = new AlertDialog.Builder(thisS);
+                                    adb.setTitle(getString(R.string.done));
+                                    adb.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
+                                    adb.setPositiveButton(getString(R.string.pos_ans), null);
+                                    adb.show();
                                 }
                             });
 
@@ -515,7 +529,7 @@ public class IRSettings extends PreferenceActivity {
                                             emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/" + item + ".zip"));
                                             startActivity(Intent.createChooser(emailIntent, "Send by mail..."));
                                         } catch (NullPointerException ex) {
-                                            AlertDialog.Builder adb = new AlertDialog.Builder(thisS);
+                                            adb = new AlertDialog.Builder(thisS);
                                             adb.setTitle(getString(R.string.error));
                                             adb.setMessage(getString(R.string.you_need_to_select));
                                             adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -747,7 +761,7 @@ public class IRSettings extends PreferenceActivity {
                 String unzipLocation = irpath;
 
                 Decompress d = new Decompress(zipFile, unzipLocation);
-                d.unzip();
+                ar2 = d.unzip();
                 //----------------------
                 resp = "ok";
                 return "ok";
