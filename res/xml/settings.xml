@@ -14,6 +14,15 @@
             android:summary="@string/rmdflD"
             android:title="@string/rmdfl" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Control">
+        <ListPreference
+            android:defaultValue="None"
+            android:entries="@array/listUsages"
+            android:entryValues="@array/listValues"
+            android:key="volkey"
+            android:summary="@string/vol_key_usage"
+            android:title="@string/vol_key_usageD" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/updateT">
         <CheckBoxPreference
             android:defaultValue="false"

@@ -72,7 +72,16 @@ public class IRSettings extends PreferenceActivity {
     EditText brandN, itemN;
     Spinner spinner;
     String saved_theme, new_theme;
-    ArrayAdapter<String> arrayAdapter;
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(IRSettings.this,
+                IRMain.class);
+        intent.putExtra("restart", "1");
+        startActivity(intent);
+        finish();
+    }
+
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);

@@ -3,7 +3,6 @@ package com.sssemil.sonyirremote.ir;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +26,8 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.sssemil.sonyirremote.ir.Utils.OnSwipeTouchListener;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -54,7 +56,7 @@ import java.util.regex.Pattern;
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  */
 
-public class ir extends Activity {
+public class IRMain extends Activity {
 
     public static final String PREFS_NAME = "SIRR";
     public String irpath = Environment.getExternalStorageDirectory() + "/irremote_keys/";//place to store commands
@@ -72,124 +74,67 @@ public class ir extends Activity {
     ProgressDialog mProgressDialog;
     SharedPreferences settings;
     boolean result = false;
-    Context thisS = this;
     AlertDialog.Builder adb;
     boolean do_restart = false;
+    String volkey = "1";
+    String restart = "0";
 
-    public static String normalisedVersion(String version) {
-        return normalisedVersion(version, ".", 4);
-    }
-
-    public static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
-        }
-        return sb.toString();
-    }
-
-    public void fixPermissionsForIr() {
-        File enable = new File("/sys/devices/platform/ir_remote_control/enable");
-        File device = new File("/dev/ttyHSL2");
-        final String[] enablePermissions = {"su", "-c", "chmod 222 ", enable.getPath()};
-        final String[] devicePermissions = {"su", "-c", "chmod 666 ", device.getPath()};
-        boolean do_fix = false;
-        boolean found = false;
-
-        if (!device.canRead() || !device.canWrite() || !enable.canWrite()) {
-            do_fix = true;
-            try {
-                Runtime.getRuntime().exec("su");
-            } catch (IOException ex) {
-                found = false;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(!volkey.equals("1")) {
+            String file1 = "/volPl.bin", file2 = "/volMn.bin";
+            if(volkey.equals("3"))
+            {
+                file1 = "/chanelPl.bin";
+                file2 = "/chanelMn.bin";
             }
-
-            if (!found) {
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.warning));
-                adb.setMessage(getString(R.string.no_root));
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
-                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                });
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adb.show();
-                    }
-                });
+            if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)) {
+                sendKeyBool(irpath + item + file1);
+            } else if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+                sendKeyBool(irpath + item + file2);
             }
         }
-
-        if (do_fix) {
-            adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.warning));
-            adb.setMessage(getString(R.string.bad_perm));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        Runtime.getRuntime().exec(enablePermissions);
-                        Runtime.getRuntime().exec(devicePermissions);
-                        IRCommon.getInstance().start();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    IRCommon.getInstance().restart();
-                }
-            });
-
-            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            });
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adb.show();
-                }
-            });
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            finish();
         }
+        return true;
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        new Thread(new Runnable() {
-            public void run() {
-                IRCommon.getInstance().stop();
-            }
-        }).start();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        new Thread(new Runnable() {
-            public void run() {
-                IRCommon.getInstance().start();
-            }
-        }).start();
-        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
-        if (settings.contains("theme")) {
-            if (settings.getString("theme", null).equals("1")) {
-                super.setTheme(R.style.Holo);
-            } else if (settings.getString("theme", null).equals("2")) {
-                super.setTheme(R.style.Holo_Light_DarkActionBar);
-            } else if (settings.getString("theme", null).equals("3")) {
-                super.setTheme(R.style.Theme_Holo_Light);
-            }
-        }
-        prepItemBrandArray();
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        return true;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras == null) {
+                restart = "0";
+            } else {
+                restart = extras.getString("name");
+            }
+        } else {
+            restart = (String) savedInstanceState.getSerializable("name");
+        }
+
+        if (restart == "1") {
+            Thread t = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        Intent i = getBaseContext().getPackageManager()
+                                .getLaunchIntentForPackage(getBaseContext().getPackageName());
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(i);
+                    } catch (NullPointerException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            };
+            t.start();
+        }
         settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (settings.contains("theme")) {
             if (settings.getString("theme", null).equals("1")) {
@@ -200,6 +145,11 @@ public class ir extends Activity {
                 super.setTheme(R.style.Theme_Holo_Light);
             }
         }
+
+        if (settings.contains("volkey")) {
+            volkey = settings.getString("volkey", null);
+        }
+
         setContentView(R.layout.activity_ir);
         Thread ft = new Thread() {
             public void run() {
@@ -788,7 +738,7 @@ public class ir extends Activity {
         final RelativeLayout dvd = (RelativeLayout) findViewById(R.id.dvdL);
         final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
         final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
-        tv.setOnTouchListener(new OnSwipeTouchListener(thisS) {
+        tv.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
             public void onSwipeLeft() {
                 dvd.setVisibility(View.VISIBLE);
                 tv.setVisibility(View.INVISIBLE);
@@ -808,7 +758,7 @@ public class ir extends Activity {
             }
         });
 
-        dvd.setOnTouchListener(new OnSwipeTouchListener(thisS) {
+        dvd.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
             public void onSwipeLeft() {
                 dvd.setVisibility(View.VISIBLE);
                 tv.setVisibility(View.INVISIBLE);
@@ -827,6 +777,117 @@ public class ir extends Activity {
                 return gestureDetector.onTouchEvent(event);
             }
         });
+    }
+
+    public static String normalisedVersion(String version) {
+        return normalisedVersion(version, ".", 4);
+    }
+
+    public static String normalisedVersion(String version, String sep, int maxWidth) {
+        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
+        StringBuilder sb = new StringBuilder();
+        for (String s : split) {
+            sb.append(String.format("%" + maxWidth + 's', s));
+        }
+        return sb.toString();
+    }
+
+    public void fixPermissionsForIr() {
+        File enable = new File("/sys/devices/platform/ir_remote_control/enable");
+        File device = new File("/dev/ttyHSL2");
+        final String[] enablePermissions = {"su", "-c", "chmod 222 ", enable.getPath()};
+        final String[] devicePermissions = {"su", "-c", "chmod 666 ", device.getPath()};
+        boolean do_fix = false;
+        boolean found = false;
+
+        if (!device.canRead() || !device.canWrite() || !enable.canWrite()) {
+            do_fix = true;
+            try {
+                Runtime.getRuntime().exec("su");
+            } catch (IOException ex) {
+                found = false;
+            }
+
+            if (!found) {
+                adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.warning));
+                adb.setMessage(getString(R.string.no_root));
+                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adb.show();
+                    }
+                });
+            }
+        }
+
+        if (do_fix) {
+            adb = new AlertDialog.Builder(this);
+            adb.setTitle(getString(R.string.warning));
+            adb.setMessage(getString(R.string.bad_perm));
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        Runtime.getRuntime().exec(enablePermissions);
+                        Runtime.getRuntime().exec(devicePermissions);
+                        IRCommon.getInstance().start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    IRCommon.getInstance().restart();
+                }
+            });
+
+            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adb.show();
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        new Thread(new Runnable() {
+            public void run() {
+                IRCommon.getInstance().stop();
+            }
+        }).start();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Thread(new Runnable() {
+            public void run() {
+                IRCommon.getInstance().start();
+            }
+        }).start();
+        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        if (settings.contains("theme")) {
+            if (settings.getString("theme", null).equals("1")) {
+                super.setTheme(R.style.Holo);
+            } else if (settings.getString("theme", null).equals("2")) {
+                super.setTheme(R.style.Holo_Light_DarkActionBar);
+            } else if (settings.getString("theme", null).equals("3")) {
+                super.setTheme(R.style.Theme_Holo_Light);
+            }
+        }
+        prepItemBrandArray();
     }
 
     private void addUUID() {
@@ -922,7 +983,7 @@ public class ir extends Activity {
     }
 
     public void learnAction(final String filename) {
-        mProgressDialog = new ProgressDialog(ir.this);
+        mProgressDialog = new ProgressDialog(IRMain.this);
         mProgressDialog.setMessage(getString(R.string.waiting_for_signal));
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1072,13 +1133,14 @@ public class ir extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             main = false;
-            Intent intent = new Intent(ir.this,
+            Intent intent = new Intent(IRMain.this,
                     IRSettings.class);
             startActivity(intent);
+            finish();
             return true;
         } else if (id == R.id.action_about) {
             main = false;
-            Intent intent = new Intent(ir.this,
+            Intent intent = new Intent(IRMain.this,
                     IRAbout.class);
             startActivity(intent);
             return true;
@@ -1163,18 +1225,6 @@ public class ir extends Activity {
         }
         return result;
     }
-
-    /*public void onPowerClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (!wrt) {
-                sendKeyBool(irpath + item + "/power.bin");
-            } else if (wrt) {
-                learnKeyBool(irpath + item + "/power.bin");
-            }
-        }
-    }*/
 
     public void onChanelPlClick(View view) {
         if (prepBISpinner()) ;
@@ -1595,7 +1645,7 @@ public class ir extends Activity {
         final GetLastVer getLastVer1 = new GetLastVer();
         adb = new AlertDialog.Builder(this);
         if (!silent) {
-            mProgressDialog = new ProgressDialog(ir.this);
+            mProgressDialog = new ProgressDialog(IRMain.this);
             mProgressDialog.setMessage(getString(R.string.checking));
             mProgressDialog.setIndeterminate(true);
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1657,7 +1707,7 @@ public class ir extends Activity {
                         adb.setIcon(android.R.drawable.ic_dialog_alert);
                         adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                mProgressDialog = new ProgressDialog(ir.this);
+                                mProgressDialog = new ProgressDialog(IRMain.this);
                                 new Thread(new Runnable() {
                                     public void run() {
                                         mProgressDialog.setMessage(getString(R.string.downloading_new));

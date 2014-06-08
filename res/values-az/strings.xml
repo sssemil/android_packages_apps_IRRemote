@@ -46,5 +46,7 @@ Başla seçin və proqramlar öyrənmək istədiyiniz düyməsini basın.</strin
     <string name="no_root">Sizdə root yoxdu! Bu progamm işlemiyecey!</string>
     <string name="bad_perm">Sizin fayilarivinizin icazələri düzgün deyil! Düzəldim onu?</string>
     <string name="done_setting">Yeni cihaz yaradılması bitti!</string>
+    <string name="vol_key_usage">Səs düymələri istifadəsini seçin</string>
+    <string name="vol_key_usageD">Səs düymələrini elə istifadə edin</string>
 
 </resources>

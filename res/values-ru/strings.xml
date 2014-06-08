@@ -103,4 +103,6 @@
     <string name="no_root">Похоже, что у вас нет прав суперпользователя! Эта программа не будет работать!</string>
     <string name="bad_perm">Похоже, что права у ваших файлов выставлены не верно! Исправить?</string>
     <string name="done_setting">Новое устройство утановлено!</string>
+    <string name="vol_key_usage">Выберите применение кнопок звука</string>
+    <string name="vol_key_usageD">Использовать их как</string>
 </resources>

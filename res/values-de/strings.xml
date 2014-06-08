@@ -105,4 +105,6 @@ Wählen Sie „Start“ und drücken Sie auf die Taste, die von der App gelernt 
     <string name="no_root">Sieht aus wie Sie nicht über Root-Rechte! Diese App wird nicht funktionieren!</string>
     <string name="bad_perm">Sieht aus wie Sie falsche Datei Berechtigungen verfügen. Fix ihnen?</string>
     <string name="done_setting">Fertig, neues Gerät!</string>
+    <string name="vol_key_usage">Wählen Sie Lautstärketasten Nutzung</string>
+    <string name="vol_key_usageD">Verwenden Sie die Lautstärketasten als</string>
 </resources>

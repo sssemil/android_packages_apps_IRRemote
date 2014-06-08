@@ -1,4 +1,4 @@
-package com.sssemil.sonyirremote.ir;
+package com.sssemil.sonyirremote.ir.Utils;
 
 import android.content.Context;
 import android.view.GestureDetector;
