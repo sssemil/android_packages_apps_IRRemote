@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:weightSum="1">
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="367dp"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:gravity="center"
         android:text="@string/done_setting"
-        android:id="@+id/textView"
-        android:gravity="center" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/scrollView" >
+        android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/textView2"
             android:layout_width="368dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/textView2"
-            android:scrollbars = "vertical"/>
+            android:scrollbars="vertical"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </ScrollView>
 
 </LinearLayout>

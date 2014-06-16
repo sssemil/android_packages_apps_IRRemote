@@ -48,5 +48,7 @@ Başla seçin və proqramlar öyrənmək istədiyiniz düyməsini basın.</strin
     <string name="done_setting">Yeni cihaz yaradılması bitti!</string>
     <string name="vol_key_usage">Səs düymələri istifadəsini seçin</string>
     <string name="vol_key_usageD">Səs düymələrini elə istifadə edin</string>
+    <string name="alert_write_mode">YAZMA REJIMI!</string>
+    <string name="change_mode">Rejimi deyiş</string>
 
 </resources>

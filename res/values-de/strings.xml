@@ -107,4 +107,6 @@ Wählen Sie „Start“ und drücken Sie auf die Taste, die von der App gelernt 
     <string name="done_setting">Fertig, neues Gerät!</string>
     <string name="vol_key_usage">Wählen Sie Lautstärketasten Nutzung</string>
     <string name="vol_key_usageD">Verwenden Sie die Lautstärketasten als</string>
+    <string name="alert_write_mode">SCHREIBMODUS!</string>
+    <string name="change_mode">Änderungsmodus</string>
 </resources>

@@ -105,4 +105,6 @@
     <string name="done_setting">Новое устройство утановлено!</string>
     <string name="vol_key_usage">Выберите применение кнопок звука</string>
     <string name="vol_key_usageD">Использовать их как</string>
+    <string name="alert_write_mode">РЕЖИМ ЗАПИСИ!</string>
+    <string name="change_mode">Сменить режим</string>
 </resources>

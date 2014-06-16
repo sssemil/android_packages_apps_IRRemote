@@ -3,6 +3,12 @@
     tools:context="com.sssemil.sonyirremote.ir.ir">
 
     <item
+        android:id="@+id/action_mode"
+        android:orderInCategory="96"
+        android:showAsAction="never"
+        android:title="@string/change_mode" />
+
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="97"
         android:showAsAction="never"

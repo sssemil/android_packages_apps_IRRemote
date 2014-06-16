@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -72,16 +71,6 @@ public class IRSettings extends PreferenceActivity {
     EditText brandN, itemN;
     Spinner spinner;
     String saved_theme, new_theme;
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(IRSettings.this,
-                IRMain.class);
-        intent.putExtra("restart", "1");
-        startActivity(intent);
-        finish();
-    }
-
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -134,6 +123,15 @@ public class IRSettings extends PreferenceActivity {
             file.delete();
             System.out.println("File is deleted : " + file.getAbsolutePath());
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(IRSettings.this,
+                IRMain.class);
+        intent.putExtra("restart", "1");
+        startActivity(intent);
+        finish();
     }
 
     @Override

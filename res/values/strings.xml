@@ -138,4 +138,6 @@ Select Start and press the button you want the app to learn."</string>
     <string name="done_setting">Done setting up new device!</string>
     <string name="vol_key_usage">Choose volume keys usage</string>
     <string name="vol_key_usageD">Use volume keys as</string>
+    <string name="alert_write_mode">● WRITE MODE!</string>
+    <string name="change_mode">Change mode</string>
 </resources>

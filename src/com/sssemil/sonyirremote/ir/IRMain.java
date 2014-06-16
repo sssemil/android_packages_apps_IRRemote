@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sssemil.sonyirremote.ir.Utils.OnSwipeTouchListener;
@@ -69,22 +70,35 @@ public class IRMain extends Activity {
     public boolean wrt = false;
     public String last_ver = "zirt";
     public String cur_ver;
-    Spinner spinner;
+    public String restart = "0";
     boolean main = true;
-    ProgressDialog mProgressDialog;
-    SharedPreferences settings;
     boolean result = false;
-    AlertDialog.Builder adb;
     boolean do_restart = false;
-    String volkey = "1";
-    String restart = "0";
+    private Spinner spinner;
+    private ProgressDialog mProgressDialog;
+    private SharedPreferences settings;
+    private AlertDialog.Builder adb;
+    private String volkey = "1";
+    private TextView alert;
+
+    public static String normalisedVersion(String version) {
+        return normalisedVersion(version, ".", 4);
+    }
+
+    public static String normalisedVersion(String version, String sep, int maxWidth) {
+        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
+        StringBuilder sb = new StringBuilder();
+        for (String s : split) {
+            sb.append(String.format("%" + maxWidth + 's', s));
+        }
+        return sb.toString();
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(!volkey.equals("1")) {
+        if (!volkey.equals("1")) {
             String file1 = "/volPl.bin", file2 = "/volMn.bin";
-            if(volkey.equals("3"))
-            {
+            if (volkey.equals("3")) {
                 file1 = "/chanelPl.bin";
                 file2 = "/chanelMn.bin";
             }
@@ -161,6 +175,7 @@ public class IRMain extends Activity {
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
+        alert = (TextView) findViewById(R.id.alert);
         new Thread(new Runnable() {
             public void run() {
                 IRCommon.getInstance().start();
@@ -779,19 +794,6 @@ public class IRMain extends Activity {
         });
     }
 
-    public static String normalisedVersion(String version) {
-        return normalisedVersion(version, ".", 4);
-    }
-
-    public static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
-        }
-        return sb.toString();
-    }
-
     public void fixPermissionsForIr() {
         File enable = new File("/sys/devices/platform/ir_remote_control/enable");
         File device = new File("/dev/ttyHSL2");
@@ -1129,8 +1131,8 @@ public class IRMain extends Activity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+    public boolean onOptionsItemSelected(MenuItem menu_item) {
+        int id = menu_item.getItemId();
         if (id == R.id.action_settings) {
             main = false;
             Intent intent = new Intent(IRMain.this,
@@ -1144,66 +1146,60 @@ public class IRMain extends Activity {
                     IRAbout.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_mode) {
+            if (wrt) {
+                wrt = false;
+                alert.setVisibility(View.INVISIBLE);
+            } else if (!wrt) {
+                View promptsView = LayoutInflater.from(this).inflate(R.layout.wrt_mode, null);
+                adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.warning));
+                adb.setView(promptsView);
+                adb.setPositiveButton(getString(R.string.start), null);
+                adb
+                        .setCancelable(false)
+                        .setPositiveButton(getString(R.string.start),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        wrt = true;
+                                        new Thread(new Runnable() {
+                                            public void run() {
+                                                IRCommon.getInstance().restart();
+                                            }
+                                        }).start();
+                                        alert.setVisibility(View.VISIBLE);
+                                        alert.setTextColor(Color.RED);
+                                        alert.setTextColor(Color.RED);
+
+                                        File f = new File(irpath + item);
+                                        if (!f.isDirectory()) {
+                                            f.mkdirs();
+                                        }
+
+                                        File f2 = new File(irpath + brand);
+                                        if (!f2.isDirectory()) {
+                                            f2.mkdirs();
+                                        }
+                                    }
+                                }
+                        )
+                        .setNegativeButton(getString(R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                }
+                        );
+                AlertDialog alertDialog = adb.show();
+                alertDialog.getWindow().setLayout(1350, 1000);
+            }
+            return true;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(menu_item);
     }
 
     public void onWrtClick(View view) {
-        if (wrt) {
-            wrt = false;
-            final Button btntxt = (Button) findViewById(R.id.button2);
-            btntxt.setText(getResources().getString(R.string.Write_signal));
-            settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
-            if (settings.contains("theme")) {
-                if (settings.getString("theme", null).equals("1")) {
-                    btntxt.setTextColor(Color.WHITE);
-                } else {
-                    btntxt.setTextColor(Color.BLACK);
-                }
-            }
-        } else if (!wrt) {
-            final View promptsView = LayoutInflater.from(this).inflate(R.layout.wrt_mode, null);
-            adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.warning));
-            adb.setView(promptsView);
-            adb.setPositiveButton(getString(R.string.start), null);
-            adb
-                    .setCancelable(false)
-                    .setPositiveButton(getString(R.string.start),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    wrt = true;
-                                    new Thread(new Runnable() {
-                                        public void run() {
-                                            IRCommon.getInstance().restart();
-                                        }
-                                    }).start();
-                                    final Button btntxt = (Button) findViewById(R.id.button2);
-                                    btntxt.setText(getResources().getString(R.string.Send_signal));
-                                    btntxt.setTextColor(Color.RED);
 
-                                    File f = new File(irpath + item);
-                                    if (!f.isDirectory()) {
-                                        f.mkdirs();
-                                    }
-
-                                    File f2 = new File(irpath + brand);
-                                    if (!f2.isDirectory()) {
-                                        f2.mkdirs();
-                                    }
-                                }
-                            }
-                    )
-                    .setNegativeButton(getString(R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            }
-                    );
-            AlertDialog alertDialog = adb.show();
-            alertDialog.getWindow().setLayout(1350, 1000);
-        }
     }
 
     public boolean prepBISpinner() {

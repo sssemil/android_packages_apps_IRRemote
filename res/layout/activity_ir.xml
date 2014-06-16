@@ -24,9 +24,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:longClickable="false"
-        android:onClick="onPowerClick"
         android:text="@string/power_btn"
-        android:textSize="25dp" />
+        android:textSize="25sp" />
 
 
     <RelativeLayout
@@ -48,7 +47,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:text="@string/wb"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/button30"
@@ -97,7 +96,7 @@
             android:onClick="onSrClick"
             android:text="@string/sr"
             android:textColor="#ffff0400"
-            android:textSize="26dp" />
+            android:textSize="26sp" />
 
         <Button
             android:id="@+id/button35"
@@ -111,7 +110,7 @@
             android:layout_toLeftOf="@+id/button36"
             android:onClick="onQClick"
             android:text="@string/que"
-            android:textSize="25dp" />
+            android:textSize="25sp" />
 
         <Button
             android:id="@+id/button36"
@@ -121,7 +120,7 @@
             android:layout_toLeftOf="@+id/button33"
             android:onClick="onExitClick"
             android:text="@string/exit"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button37"
@@ -145,7 +144,7 @@
             android:layout_toRightOf="@+id/button37"
             android:onClick="onAudioClick"
             android:text="@string/audio"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
     </RelativeLayout>
 
@@ -159,17 +158,6 @@
         android:visibility="visible">
 
         <Button
-            android:id="@+id/button2"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/textView"
-            android:layout_alignParentBottom="true"
-            android:layout_alignStart="@+id/textView"
-            android:onClick="onWrtClick"
-            android:text="@string/Write_signal"
-            android:textSize="15dp" />
-
-        <Button
             android:id="@+id/button3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -178,7 +166,7 @@
             android:layout_toLeftOf="@+id/button5"
             android:onClick="onChanelPlClick"
             android:text="@string/plus"
-            android:textSize="25dp" />
+            android:textSize="25sp" />
 
         <Button
             android:id="@+id/button4"
@@ -200,7 +188,7 @@
             android:layout_alignParentRight="true"
             android:onClick="onVolumePlClick"
             android:text="@string/plus"
-            android:textSize="25dp" />
+            android:textSize="25sp" />
 
         <Button
             android:id="@+id/button6"
@@ -222,7 +210,7 @@
             android:layout_alignTop="@+id/button8"
             android:onClick="on1Click"
             android:text="@string/one"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button8"
@@ -233,7 +221,7 @@
             android:layout_toRightOf="@+id/button7"
             android:onClick="on2Click"
             android:text="@string/two"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button9"
@@ -245,7 +233,7 @@
             android:layout_alignTop="@+id/button22"
             android:onClick="on3Click"
             android:text="@string/tree"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button10"
@@ -257,7 +245,7 @@
             android:layout_below="@+id/button22"
             android:onClick="on4Click"
             android:text="@string/four"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button11"
@@ -268,7 +256,7 @@
             android:layout_toRightOf="@+id/button10"
             android:onClick="on5Click"
             android:text="@string/five"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button12"
@@ -280,7 +268,7 @@
             android:layout_alignTop="@+id/button11"
             android:onClick="on6Click"
             android:text="@string/six"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button13"
@@ -291,7 +279,7 @@
             android:layout_below="@+id/button10"
             android:onClick="on7Click"
             android:text="@string/seven"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button14"
@@ -301,7 +289,7 @@
             android:layout_toRightOf="@+id/button10"
             android:onClick="on8Click"
             android:text="@string/eight"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button15"
@@ -311,7 +299,7 @@
             android:layout_toRightOf="@+id/button11"
             android:onClick="on9Click"
             android:text="@string/nine"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button16"
@@ -321,7 +309,7 @@
             android:layout_toRightOf="@+id/button13"
             android:onClick="on0Click"
             android:text="@string/zero"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button17"
@@ -331,7 +319,7 @@
             android:layout_toRightOf="@+id/button21"
             android:onClick="onUpClick"
             android:text="@string/up"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button18"
@@ -342,7 +330,7 @@
             android:layout_toLeftOf="@+id/button20"
             android:onClick="onDownClick"
             android:text="@string/down"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button19"
@@ -352,7 +340,7 @@
             android:layout_toLeftOf="@+id/button20"
             android:onClick="onEnterClick"
             android:text="@string/ok_btn"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button20"
@@ -363,7 +351,7 @@
             android:layout_toRightOf="@+id/button17"
             android:onClick="onRightClick"
             android:text="@string/right"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button21"
@@ -374,7 +362,7 @@
             android:layout_toRightOf="@+id/button12"
             android:onClick="onLeftClick"
             android:text="@string/left"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button22"
@@ -386,7 +374,7 @@
             android:layout_toRightOf="@+id/button9"
             android:onClick="onMuteClick"
             android:text="@string/mute"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button23"
@@ -398,7 +386,7 @@
             android:layout_toRightOf="@+id/button17"
             android:onClick="onInputClick"
             android:text="@string/input"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button24"
@@ -412,7 +400,7 @@
             android:layout_below="@+id/button6"
             android:onClick="onHomeClick"
             android:text="@string/home"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/textView"
@@ -460,7 +448,7 @@
             android:layout_toRightOf="@+id/button20"
             android:onClick="onReturnClick"
             android:text="@string/returnbtn"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button27"
@@ -471,7 +459,7 @@
             android:layout_toRightOf="@+id/button20"
             android:onClick="onOptionsClick"
             android:text="@string/options"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/button28"
@@ -484,7 +472,7 @@
             android:layout_toLeftOf="@+id/button4"
             android:onClick="onGuideClick"
             android:text="@string/guide"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
     </RelativeLayout>
 
@@ -505,6 +493,16 @@
         android:layout_centerHorizontal="true"
         android:clickable="false"
         android:enabled="true" />
+
+    <TextView
+        android:id="@+id/alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/alert_write_mode"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="invisible" />
 
 
 </RelativeLayout>
