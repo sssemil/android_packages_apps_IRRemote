@@ -23,25 +23,34 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="367dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/done_setting"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <ScrollView
-        android:id="@+id/scrollView"
+    <RadioGroup
+        android:id="@+id/radioGroup1"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="368dp"
+        <RadioButton
+            android:id="@+id/send"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="vertical"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </ScrollView>
+            android:checked="false"
+            android:text="@string/send_mode_btn" />
 
+        <RadioButton
+            android:id="@+id/write"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/write_mode_btn" />
+
+        <RadioButton
+            android:id="@+id/rename"
+            android:layout_width="398dp"
+            android:layout_height="wrap_content"
+            android:text="@string/rename_mode_btn" />
+
+        <RadioButton
+            android:id="@+id/endis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/endis_mode_btn" />
+    </RadioGroup>
 </LinearLayout>

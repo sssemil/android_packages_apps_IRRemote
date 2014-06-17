@@ -1,4 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+     Copyright (c) 2014 Emil Suleymanov
+
+     This program is free software; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License
+     as published by the Free Software Foundation; either version 2
+     of the License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+     MA  02110-1301, USA.
+-->
 <resources>
     <string name="Send_signal">Lassen Schreibmodus</string>
     <string name="Write_signal">Rückkehr zum Schreibmodus</string>
@@ -14,8 +31,9 @@
     <string name="pwr_btn">Power ON/OFF</string>
     <string name="save">Sparen</string>
     <string name="about">Über</string>
+    <string name="open_source_license">Open-Source-Lizenze</string>
     <string name="license1">Copyright © 2014 Emil Suleymanov</string>
-    <string name="license2">Verteilt unter dem GNU GPL v2.</string>
+    <string name="license2">Verteilt unter dem GNU GPL v3.</string>
     <string name="license3">Der Quellcode ist verfügbar auf https://github.com/sssemil/android_packages_apps_IRRemote .</string>
     <string name="license4">Mit lib_sony_ir von BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
 
@@ -107,6 +125,13 @@ Wählen Sie „Start“ und drücken Sie auf die Taste, die von der App gelernt 
     <string name="done_setting">Fertig, neues Gerät!</string>
     <string name="vol_key_usage">Wählen Sie Lautstärketasten Nutzung</string>
     <string name="vol_key_usageD">Verwenden Sie die Lautstärketasten als</string>
-    <string name="alert_write_mode">SCHREIBMODUS!</string>
+    <string name="alert_write_mode">● SCHREIBMODUS!</string>
+    <string name="alert_rename_mode">● RENAME MODE!</string>
+    <string name="alert_endis_mode">● EN/DISABLE MODE!</string>
     <string name="change_mode">Änderungsmodus</string>
+    <string name="send_mode_btn">Send mode</string>
+    <string name="write_mode_btn">Write mode</string>
+    <string name="rename_mode_btn">Rename mode</string>
+    <string name="endis_mode_btn">En/Disable mode</string>
+    <string name="reset">Reset</string>
 </resources>

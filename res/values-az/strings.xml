@@ -1,5 +1,22 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?><!--
+     Copyright (c) 2014 Emil Suleymanov
 
+     This program is free software; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License
+     as published by the Free Software Foundation; either version 2
+     of the License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+     MA  02110-1301, USA.
+-->
+<resources>
     <string name="Send_signal">Yazma rejimini terk ed</string>
     <string name="Write_signal">Yazma rejiminə dahil ed</string>
     <string name="about">Haqqında</string>
@@ -48,7 +65,15 @@ Başla seçin və proqramlar öyrənmək istədiyiniz düyməsini basın.</strin
     <string name="done_setting">Yeni cihaz yaradılması bitti!</string>
     <string name="vol_key_usage">Səs düymələri istifadəsini seçin</string>
     <string name="vol_key_usageD">Səs düymələrini elə istifadə edin</string>
-    <string name="alert_write_mode">YAZMA REJIMI!</string>
+    <string name="alert_write_mode">● YAZMA REJIMI!</string>
+    <string name="alert_rename_mode">● RENAME MODE!</string>
+    <string name="alert_endis_mode">● EN/DISABLE MODE!</string>
     <string name="change_mode">Rejimi deyiş</string>
+    <string name="send_mode_btn">Send mode</string>
+    <string name="write_mode_btn">Write mode</string>
+    <string name="rename_mode_btn">Rename mode</string>
+    <string name="endis_mode_btn">En/Disable mode</string>
+    <string name="reset">Reset</string>
+    <string name="open_source_license">Açıq kodlu lisenziya</string>
 
 </resources>

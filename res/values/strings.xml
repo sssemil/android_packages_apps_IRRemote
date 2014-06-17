@@ -1,4 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+     Copyright (c) 2014 Emil Suleymanov
+
+     This program is free software; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License
+     as published by the Free Software Foundation; either version 2
+     of the License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+     MA  02110-1301, USA.
+-->
 <resources>
     <string name="one" translatable="false">1</string>
     <string name="two" translatable="false">2</string>
@@ -46,8 +63,9 @@
     <string name="pwr_btn">Power ON/OFF</string>
     <string name="save">Save</string>
     <string name="about">About</string>
+    <string name="open_source_license">Open source license</string>
     <string name="license1">Copyright © 2014 Emil Suleymanov</string>
-    <string name="license2">Distributed under the GNU GPL v2.</string>
+    <string name="license2">Distributed under the GNU GPL v3.</string>
     <string name="license3">Source code is available at https://github.com/sssemil/android_packages_apps_IRRemote .</string>
     <string name="license4">Using lib_sony_ir from BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
 
@@ -139,5 +157,12 @@ Select Start and press the button you want the app to learn."</string>
     <string name="vol_key_usage">Choose volume keys usage</string>
     <string name="vol_key_usageD">Use volume keys as</string>
     <string name="alert_write_mode">● WRITE MODE!</string>
+    <string name="alert_rename_mode">● RENAME MODE!</string>
+    <string name="alert_endis_mode">● EN/DISABLE MODE!</string>
     <string name="change_mode">Change mode</string>
+    <string name="send_mode_btn">Send mode</string>
+    <string name="write_mode_btn">Write mode</string>
+    <string name="rename_mode_btn">Rename mode</string>
+    <string name="endis_mode_btn">En/Disable mode</string>
+    <string name="reset">Reset</string>
 </resources>

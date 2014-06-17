@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2014 Emil Suleymanov
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA  02110-1301, USA.
+ */
 package com.sssemil.sonyirremote.ir;
 
 import android.app.AlertDialog;
@@ -45,11 +63,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
-
-/**
- * Copyright (c) 2014 Emil Suleymanov
- * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
- */
 
 public class IRSettings extends PreferenceActivity {
 
@@ -293,7 +306,7 @@ public class IRSettings extends PreferenceActivity {
                                 adb.show();
                             }
                         });
-                    } else {//TODO add ar2
+                    } else {
                         LayoutInflater li = LayoutInflater.from(thisS);
                         final View promptsView = li.inflate(R.layout.done_menu, null);
                         TextView tw = (TextView) promptsView.findViewById(R.id.textView2);
@@ -371,6 +384,10 @@ public class IRSettings extends PreferenceActivity {
             if (key.equals("aboutPref")) {
                 Intent intent = new Intent(this,
                         IRAbout.class);
+                startActivity(intent);
+            } else if (key.equals("open_sourcePref")) {
+                Intent intent = new Intent(this,
+                        IRLicense.class);
                 startActivity(intent);
             } else if (key.equals("addBtn")) {
 
