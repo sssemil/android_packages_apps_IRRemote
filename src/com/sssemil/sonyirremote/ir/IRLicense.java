@@ -29,15 +29,14 @@ import android.webkit.WebViewClient;
 
 public class IRLicense extends Activity {
 
-    String saved_theme;
-
     private final WebViewClient mClient = new WebViewClient() {
         public WebResourceResponse shouldInterceptRequest(WebView paramAnonymousWebView, String paramAnonymousString) {
             if ("camera:license".equals(paramAnonymousString))
-                return new WebResourceResponse("text/html", "utf8", IRLicense.this.getResources().openRawResource(R.raw.licenses));
+                return new WebResourceResponse("text/html", "utf8", IRLicense.this.getResources().openRawResource(R.raw.license));
             return null;
         }
     };
+    String saved_theme;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -99,18 +99,18 @@
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
+        android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/open_source_license"
-        android:id="@+id/textView6"
-        android:linksClickable="true"
+        android:layout_below="@+id/textView5"
+        android:layout_centerHorizontal="true"
+        android:autoLink="web"
+        android:clickable="true"
         android:enabled="true"
         android:gravity="center"
+        android:linksClickable="true"
         android:onClick="onLicenseClick"
-        android:clickable="true"
-        android:autoLink="web"
-        android:layout_below="@+id/textView5"
-        android:layout_centerHorizontal="true" />
+        android:text="@string/open_source_license"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

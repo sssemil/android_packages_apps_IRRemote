@@ -75,5 +75,6 @@ Başla seçin və proqramlar öyrənmək istədiyiniz düyməsini basın.</strin
     <string name="endis_mode_btn">En/Disable mode</string>
     <string name="reset">Reset</string>
     <string name="open_source_license">Açıq kodlu lisenziya</string>
+    <string name="pref_title_build_version">Buildın versiyası</string>
 
 </resources>

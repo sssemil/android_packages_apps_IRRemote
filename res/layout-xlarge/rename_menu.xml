@@ -25,22 +25,9 @@
         android:id="@id/editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/editText2"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignStart="@id/editText2"
-        android:layout_below="@id/editText2"
-        android:hint="@string/item"
-        android:inputType="text" />
-
-    <EditText
-        android:id="@id/editText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
-        android:hint="@string/brand"
         android:inputType="text" />
 </RelativeLayout>

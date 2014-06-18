@@ -27,11 +27,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,13 +43,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,7 +88,7 @@ public class IRMain extends Activity {
     public String http_path_last_download2;
     public int state = 0;
     public String brand;
-    public String item;
+    public String item = "Example-TV";
     public String current_mode = "send";
     public String last_ver = "zirt";
     public String cur_ver;
@@ -94,13 +99,18 @@ public class IRMain extends Activity {
     boolean main = true;
     boolean result = false;
     boolean do_restart = false;
+    EditText brandN, itemN;
     private String last_mode;
-    private Spinner spinner;
     private ProgressDialog mProgressDialog;
     private SharedPreferences settings;
     private AlertDialog.Builder adb;
     private String volkey = "1";
     private TextView alert;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    private int item_position;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -113,6 +123,142 @@ public class IRMain extends Activity {
             sb.append(String.format("%" + maxWidth + 's', s));
         }
         return sb.toString();
+    }
+
+    private void selectItem(int position, boolean long_click) {
+        if (mDrawerList.getCount() - 1 == position) {
+            if (!long_click) {
+                item = mDrawerList.getItemAtPosition(0).toString();
+                mDrawerList.setItemChecked(0, true);
+
+                LayoutInflater li = LayoutInflater.from(this);
+                final View promptsView = li.inflate(R.layout.add_device_menu, null);
+                adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.add_new_device));
+                adb
+                        .setCancelable(false)
+                        .setPositiveButton(getString(R.string.pos_ans),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        onAddDeviceClick(promptsView);
+                                    }
+                                }
+                        )
+                        .setNegativeButton(getString(R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                }
+                        );
+                adb.setView(promptsView);
+                adb.show();
+            }
+        } else {
+            item_position = position;
+
+            item = mDrawerList.getItemAtPosition(position).toString();
+
+            // update selected item and title, then close the drawer
+            mDrawerList.setItemChecked(position, true);
+            if (!long_click) {
+                mDrawerLayout.closeDrawer(mDrawerList);
+                getActionBar().setTitle(getString(R.string.app_name) + " - " + mDrawerList.getItemAtPosition(position).toString());
+            } else {
+                item_position = position;
+                //delete  mDrawerList.getItemAtPosition(position).toString()
+                adb = new AlertDialog.Builder(IRMain.this);
+                adb.setTitle(getString(R.string.warning));
+                adb.setMessage(getString(R.string.are_u_s_del));
+                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        item = mDrawerList.getItemAtPosition(item_position).toString();
+                        File dir = new File(irpath + item);
+                        try {
+                            IRCommon.delete(dir);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                            adb.setTitle(getString(R.string.error));
+                            adb.setMessage(getString(R.string.failed_del_fl_io));
+                            adb.setIcon(android.R.drawable.ic_dialog_alert);
+                            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+                            adb.show();
+                        }
+                        adb = new AlertDialog.Builder(IRMain.this);
+                        adb.setTitle(getString(R.string.done));
+                        adb.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
+                        adb.setPositiveButton(getString(R.string.pos_ans), null);
+                        adb.show();
+                        prepItemBrandArray();
+                    }
+                });
+
+                adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                adb.show();
+            }
+        }
+    }
+
+    public void onAddDeviceClick(View paramView) {
+        AlertDialog.Builder adb;
+        try {
+            itemN = (EditText) paramView
+                    .findViewById(R.id.editText);
+            brandN = (EditText) paramView
+                    .findViewById(R.id.editText2);
+            if (itemN.getText() != null || brandN.getText() != null) {
+                String all = brandN.getText().toString() + "-" + itemN.getText().toString();
+                if (!all.equals("-")) {
+                    File localFile2 = new File(irpath + brandN.getText().toString() + "-" + itemN.getText().toString());
+                    if (!localFile2.isDirectory()) {
+                        localFile2.mkdirs();
+                    }
+                }
+                adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.done));
+                adb.setMessage(getString(R.string.new_item) + " " + brandN.getText().toString() + "-" + itemN.getText().toString() + " " + getString(R.string.crt_slf));
+                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                adb.show();
+                prepItemBrandArray();
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException ex) {
+            adb = new AlertDialog.Builder(this);
+            adb.setTitle(getString(R.string.error));
+            adb.setMessage(getString(R.string.you_need_to_select));
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            adb.show();
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggls
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -192,7 +338,6 @@ public class IRMain extends Activity {
             }
         };
         ft.start();
-        spinner = ((Spinner) findViewById(R.id.spinner));
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
@@ -218,18 +363,17 @@ public class IRMain extends Activity {
             cur_ver = pInfo.versionName;
         }
         firstRunChecker();
+
+        if (savedInstanceState == null) {
+            selectItem(0, false);
+        }
+
         Thread thread = new Thread() {
             public void run() {
                 File f;
                 while (true) {
                     if (main) {
                         try {
-                            spinner = (Spinner) findViewById(R.id.spinner);
-                            if (spinner.getSelectedItem().toString() != null) {
-                                item = spinner.getSelectedItem().toString();
-                            } else {
-                                item = "Sony-TV";
-                            }
                             if (!current_mode.equals("endis")) {
                                 f = new File(irpath + item + "/disable.ini");
                                 if (f.exists()) {
@@ -473,7 +617,7 @@ public class IRMain extends Activity {
                     public boolean onLongClick(View v) {
                         button.setPressed(true);
                         v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
-                        if(prepBISpinner());
+                        if (prepBISpinner()) ;
                         {
                             result = false;
                             if (current_mode.equals("send")) {
@@ -826,50 +970,53 @@ public class IRMain extends Activity {
         };
         btn32.start();
 
+        if ((getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK) !=
+                Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            final RelativeLayout tv = (RelativeLayout) findViewById(R.id.tvL);
+            final RelativeLayout dvd = (RelativeLayout) findViewById(R.id.dvdL);
+            final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
+            final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
+            tv.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
+                public void onSwipeLeft() {
+                    dvd.setVisibility(View.VISIBLE);
+                    tv.setVisibility(View.INVISIBLE);
+                    r1.setChecked(false);
+                    r2.setChecked(true);
+                }
 
-        final RelativeLayout tv = (RelativeLayout) findViewById(R.id.tvL);
-        final RelativeLayout dvd = (RelativeLayout) findViewById(R.id.dvdL);
-        final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
-        final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
-        tv.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
-            public void onSwipeLeft() {
-                dvd.setVisibility(View.VISIBLE);
-                tv.setVisibility(View.INVISIBLE);
-                r1.setChecked(false);
-                r2.setChecked(true);
-            }
+                public void onSwipeRight() {
+                    dvd.setVisibility(View.INVISIBLE);
+                    tv.setVisibility(View.VISIBLE);
+                    r1.setChecked(true);
+                    r2.setChecked(false);
+                }
 
-            public void onSwipeRight() {
-                dvd.setVisibility(View.INVISIBLE);
-                tv.setVisibility(View.VISIBLE);
-                r1.setChecked(true);
-                r2.setChecked(false);
-            }
+                public boolean onTouch(View v, MotionEvent event) {
+                    return gestureDetector.onTouchEvent(event);
+                }
+            });
 
-            public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
-            }
-        });
+            dvd.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
+                public void onSwipeLeft() {
+                    dvd.setVisibility(View.VISIBLE);
+                    tv.setVisibility(View.INVISIBLE);
+                    r1.setChecked(false);
+                    r2.setChecked(true);
+                }
 
-        dvd.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
-            public void onSwipeLeft() {
-                dvd.setVisibility(View.VISIBLE);
-                tv.setVisibility(View.INVISIBLE);
-                r1.setChecked(false);
-                r2.setChecked(true);
-            }
+                public void onSwipeRight() {
+                    dvd.setVisibility(View.INVISIBLE);
+                    tv.setVisibility(View.VISIBLE);
+                    r1.setChecked(true);
+                    r2.setChecked(false);
+                }
 
-            public void onSwipeRight() {
-                dvd.setVisibility(View.INVISIBLE);
-                tv.setVisibility(View.VISIBLE);
-                r1.setChecked(true);
-                r2.setChecked(false);
-            }
-
-            public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
-            }
-        });
+                public boolean onTouch(View v, MotionEvent event) {
+                    return gestureDetector.onTouchEvent(event);
+                }
+            });
+        }
     }
 
     public void fixPermissionsForIr() {
@@ -1104,8 +1251,7 @@ public class IRMain extends Activity {
 
     private void sendKeyBool(final String filename) {
         File to = new File(filename);
-        spinner = ((Spinner) findViewById(R.id.spinner));
-        if (spinner.getSelectedItem() != null) {
+        if (mDrawerList.getItemAtPosition(item_position).toString() != null) {
             if (!to.exists()) {
                 adb = new AlertDialog.Builder(this);
                 adb.setTitle(getString(R.string.warning));
@@ -1200,10 +1346,11 @@ public class IRMain extends Activity {
     }
 
     public void prepItemBrandArray() {
-        spinner = ((Spinner) findViewById(R.id.spinner));
         ArrayList<String> localArrayList1 = new ArrayList<String>();
         boolean edited = false;
 
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
         for (File localFile1 : new File(this.irpath).listFiles()) {
             if (localFile1.isDirectory()) {
                 if (!localArrayList1.contains(localFile1.getName())) {
@@ -1211,14 +1358,44 @@ public class IRMain extends Activity {
                     edited = true;
                 }
             }
-
-            if (edited) {
-                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                        android.R.layout.simple_spinner_item, localArrayList1);
-                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(dataAdapter);
-            }
         }
+
+        if (edited) {
+            localArrayList1.add(getString(R.string.add_new_device) + "…");
+            // set up the drawer's list view with items and click listener
+            mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                    R.layout.drawer_list_item, localArrayList1));
+        }
+
+        // set a custom shadow that overlays the main content when the drawer opens
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerList.setOnItemLongClickListener(new DrawerItemLongClickListener());
+
+        // enable ActionBar app icon to behave as action to toggle nav drawer
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
+        ) {
+            public void onDrawerClosed(View view) {
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerList.setItemChecked(0, true);
     }
 
     @Override
@@ -1341,8 +1518,7 @@ public class IRMain extends Activity {
 
     public boolean prepBISpinner() {
         try {
-            spinner = (Spinner) findViewById(R.id.spinner);
-            item = spinner.getSelectedItem().toString();
+            item = mDrawerList.getItemAtPosition(item_position).toString();
             result = true;
         } catch (NullPointerException ex) {
             adb = new AlertDialog.Builder(this);
@@ -1535,7 +1711,6 @@ public class IRMain extends Activity {
             Log.e("Exception", "File write failed: " + e.toString());
         }
     }
-
 
     private void onEndis(String btn_name) {
         File f = new File(irpath + item + "/disable.ini");
@@ -3438,6 +3613,22 @@ public class IRMain extends Activity {
                 }
             }
         }).start();
+    }
+
+    /* The click listner for ListView in the navigation drawer */
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position, false);
+        }
+    }
+
+    private class DrawerItemLongClickListener implements ListView.OnItemLongClickListener {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position, true);
+            return false;
+        }
     }
 
     class setUUID extends AsyncTask<String, Integer, String> {

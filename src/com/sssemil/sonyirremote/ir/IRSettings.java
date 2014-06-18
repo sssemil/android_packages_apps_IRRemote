@@ -98,46 +98,6 @@ public class IRSettings extends PreferenceActivity {
         return sb.toString();
     }
 
-    public static void delete(File file)
-            throws IOException {
-
-        if (file.isDirectory()) {
-
-            //directory is empty, then delete it
-            if (file.list().length == 0) {
-
-                file.delete();
-                System.out.println("Directory is deleted : "
-                        + file.getAbsolutePath());
-
-            } else {
-
-                //list all the directory contents
-                String files[] = file.list();
-
-                for (String temp : files) {
-                    //construct the file structure
-                    File fileDelete = new File(file, temp);
-
-                    //recursive delete
-                    delete(fileDelete);
-                }
-
-                //check the directory again, if empty then delete it
-                if (file.list().length == 0) {
-                    file.delete();
-                    System.out.println("Directory is deleted : "
-                            + file.getAbsolutePath());
-                }
-            }
-
-        } else {
-            //if file, then delete it
-            file.delete();
-            System.out.println("File is deleted : " + file.getAbsolutePath());
-        }
-    }
-
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(IRSettings.this,
@@ -161,6 +121,7 @@ public class IRSettings extends PreferenceActivity {
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             cur_ver = pInfo.versionName;
+            findPreference("buildPref").setSummary(cur_ver);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -209,6 +170,10 @@ public class IRSettings extends PreferenceActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
+                Intent intent = new Intent(IRSettings.this,
+                        IRMain.class);
+                intent.putExtra("restart", "1");
+                startActivity(intent);
                 finish();
                 return true;
         }
@@ -270,7 +235,7 @@ public class IRSettings extends PreferenceActivity {
                     });
                     try {
                         File df = new File(irpath + lastWord.substring(lastWord.lastIndexOf("/") + 1).substring(0, lastWord.substring(lastWord.lastIndexOf("/") + 1).length() - 4));
-                        delete(df);
+                        IRCommon.delete(df);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -338,7 +303,9 @@ public class IRSettings extends PreferenceActivity {
         }).start();
     }
 
+
     public void onAddDeviceClick(View paramView) {
+        AlertDialog.Builder adb;
         try {
             itemN = (EditText) paramView
                     .findViewById(R.id.editText);
@@ -479,7 +446,7 @@ public class IRSettings extends PreferenceActivity {
                                     item = ar.get(selected);
                                     File dir = new File(irpath + item);
                                     try {
-                                        delete(dir);
+                                        IRCommon.delete(dir);
                                     } catch (IOException ex) {
                                         ex.printStackTrace();
                                         adb.setTitle(getString(R.string.error));

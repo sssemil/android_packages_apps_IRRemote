@@ -165,4 +165,8 @@ Select Start and press the button you want the app to learn."</string>
     <string name="rename_mode_btn">Rename mode</string>
     <string name="endis_mode_btn">En/Disable mode</string>
     <string name="reset">Reset</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="pref_title_build_version">Build version</string>
 </resources>

@@ -127,9 +127,10 @@
     <string name="alert_rename_mode">● RENAME MODE!</string>
     <string name="alert_endis_mode">● EN/DISABLE MODE!</string>
     <string name="change_mode">Сменить режим</string>
-    <string name="send_mode_btn">Send mode</string>
-    <string name="write_mode_btn">Write mode</string>
-    <string name="rename_mode_btn">Rename mode</string>
-    <string name="endis_mode_btn">En/Disable mode</string>
-    <string name="reset">Reset</string>
+    <string name="send_mode_btn">Режим отправки</string>
+    <string name="write_mode_btn">Режим записи</string>
+    <string name="rename_mode_btn">Режим переименования</string>
+    <string name="endis_mode_btn">Режим вкл./выкл.</string>
+    <string name="reset">Сбросить</string>
+    <string name="pref_title_build_version">Версия сборки</string>
 </resources>

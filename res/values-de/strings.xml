@@ -129,9 +129,10 @@ Wählen Sie „Start“ und drücken Sie auf die Taste, die von der App gelernt 
     <string name="alert_rename_mode">● RENAME MODE!</string>
     <string name="alert_endis_mode">● EN/DISABLE MODE!</string>
     <string name="change_mode">Änderungsmodus</string>
-    <string name="send_mode_btn">Send mode</string>
-    <string name="write_mode_btn">Write mode</string>
-    <string name="rename_mode_btn">Rename mode</string>
-    <string name="endis_mode_btn">En/Disable mode</string>
-    <string name="reset">Reset</string>
+    <string name="send_mode_btn">Sendemodus</string>
+    <string name="write_mode_btn">Schreibmodus</string>
+    <string name="rename_mode_btn">Umbenennen-Modus</string>
+    <string name="endis_mode_btn">De/Aktivieren Modus</string>
+    <string name="reset">Rücksetzen</string>
+    <string name="pref_title_build_version">Build-Version</string>
 </resources>

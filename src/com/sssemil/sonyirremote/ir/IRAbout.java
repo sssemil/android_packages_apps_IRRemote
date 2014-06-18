@@ -89,8 +89,7 @@ public class IRAbout extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onLicenseClick(View view)
-    {
+    public void onLicenseClick(View view) {
         Intent intent = new Intent(this,
                 IRLicense.class);
         startActivity(intent);

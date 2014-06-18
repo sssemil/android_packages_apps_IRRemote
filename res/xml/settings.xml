@@ -72,11 +72,15 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/other">
         <Preference
-            android:key="aboutPref"
-            android:summary="@string/license1"
-            android:title="@string/about" />
+            android:key="buildPref"
+            android:summary="-.-.-"
+            android:title="@string/pref_title_build_version" />
         <Preference
             android:key="open_sourcePref"
             android:title="@string/open_source_license" />
+        <Preference
+            android:key="aboutPref"
+            android:summary="@string/license1"
+            android:title="@string/about" />
     </PreferenceCategory>
 </PreferenceScreen>
