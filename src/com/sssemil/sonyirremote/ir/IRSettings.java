@@ -102,7 +102,7 @@ public class IRSettings extends PreferenceActivity {
     public void onBackPressed() {
         Intent intent = new Intent(IRSettings.this,
                 IRMain.class);
-        intent.putExtra("restart", "1");
+        //intent.putExtra("restart", "1");
         startActivity(intent);
         finish();
     }
@@ -150,6 +150,7 @@ public class IRSettings extends PreferenceActivity {
                                         .getLaunchIntentForPackage(getBaseContext().getPackageName());
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(i);
+                                finish();
                                 break;
                             } catch (NullPointerException ex) {
                                 ex.printStackTrace();

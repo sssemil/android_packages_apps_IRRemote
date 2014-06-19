@@ -110,6 +110,8 @@ public class IRMain extends Activity {
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private boolean run_threads = true;
+
     private int item_position;
 
     public static String normalisedVersion(String version) {
@@ -156,14 +158,17 @@ public class IRMain extends Activity {
             }
         } else {
             item_position = position;
-
-            item = mDrawerList.getItemAtPosition(position).toString();
+            try {
+                item = mDrawerList.getItemAtPosition(position).toString();
+            } catch (NullPointerException ex) {
+                item = "Example-TV";
+            }
 
             // update selected item and title, then close the drawer
             mDrawerList.setItemChecked(position, true);
             if (!long_click) {
                 mDrawerLayout.closeDrawer(mDrawerList);
-                getActionBar().setTitle(getString(R.string.app_name) + " - " + mDrawerList.getItemAtPosition(position).toString());
+                getActionBar().setTitle(getString(R.string.app_name) + " - " + item);
             } else {
                 item_position = position;
                 //delete  mDrawerList.getItemAtPosition(position).toString()
@@ -289,33 +294,6 @@ public class IRMain extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if (extras == null) {
-                restart = "0";
-            } else {
-                restart = extras.getString("restart");
-            }
-        } else {
-            restart = (String) savedInstanceState.getSerializable("restart");
-        }
-
-        if (restart.equals("1")) {
-            Thread t = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        Intent i = getBaseContext().getPackageManager()
-                                .getLaunchIntentForPackage(getBaseContext().getPackageName());
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(i);
-                    } catch (NullPointerException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            };
-            t.start();
-        }
         settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
         if (settings.contains("theme")) {
             if (settings.getString("theme", null).equals("1")) {
@@ -347,6 +325,7 @@ public class IRMain extends Activity {
                 IRCommon.getInstance().start();
             }
         }).start();
+        firstRunChecker();
         prepIRKeys();
         prepItemBrandArray();
         addUUID();
@@ -362,7 +341,6 @@ public class IRMain extends Activity {
         if (pInfo != null) {
             cur_ver = pInfo.versionName;
         }
-        firstRunChecker();
 
         if (savedInstanceState == null) {
             selectItem(0, false);
@@ -371,7 +349,7 @@ public class IRMain extends Activity {
         Thread thread = new Thread() {
             public void run() {
                 File f;
-                while (true) {
+                while (run_threads) {
                     if (main) {
                         try {
                             if (!current_mode.equals("endis")) {
@@ -587,7 +565,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/power.bin");
                                                 sleep(400);
                                             }
@@ -625,7 +603,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/chanelPl.bin");
                                                 sleep(400);
                                             }
@@ -661,7 +639,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/chanelMn.bin");
                                                 sleep(400);
                                             }
@@ -697,7 +675,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/volPl.bin");
                                                 sleep(400);
                                             }
@@ -733,7 +711,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/volMn.bin");
                                                 sleep(400);
                                             }
@@ -769,7 +747,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/up.bin");
                                                 sleep(400);
                                             }
@@ -805,7 +783,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/down.bin");
                                                 sleep(400);
                                             }
@@ -841,7 +819,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/right.bin");
                                                 sleep(400);
                                             }
@@ -877,7 +855,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/left.bin");
                                                 sleep(400);
                                             }
@@ -913,7 +891,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/wBack.bin");
                                                 sleep(400);
                                             }
@@ -949,7 +927,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         try {
-                                            while (button.isPressed()) {
+                                            while (button.isPressed() && run_threads) {
                                                 sendKeyBool(irpath + item + "/wFwrd.bin");
                                                 sleep(400);
                                             }
@@ -1144,6 +1122,12 @@ public class IRMain extends Activity {
 
     public void firstRunChecker() {
         boolean isFirstRun;
+        File f = new File(irpath);
+        File f2 = new File(irpath + "Example-TV");
+        if (!f.exists() || !f2.exists()) {
+            f.mkdir();
+            f2.mkdir();
+        }
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences settings2 =
                 getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
@@ -1409,9 +1393,15 @@ public class IRMain extends Activity {
         int id = menu_item.getItemId();
         if (id == R.id.action_settings) {
             main = false;
-            Intent intent = new Intent(IRMain.this,
-                    IRSettings.class);
-            startActivity(intent);
+            new Thread(new Runnable() {
+                public void run() {
+                    Intent intent = new Intent(IRMain.this,
+                            IRSettings.class);
+                    startActivity(intent);
+                    IRCommon.getInstance().stop();
+                }
+            }).start();
+            run_threads = false;
             finish();
             return true;
         } else if (id == R.id.action_mode) {
