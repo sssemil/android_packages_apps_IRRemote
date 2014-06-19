@@ -1323,6 +1323,14 @@ public class IRMain extends Activity {
     public void prepItemBrandArray() {
         ArrayList<String> localArrayList1 = new ArrayList<String>();
         boolean edited = false;
+        File f = new File(irpath);
+        File f2 = new File(irpath + "Example-TV");
+        if (!f.exists() && !f2.exists()) {
+            f.mkdir();
+            f2.mkdir();
+        } else if (f.exists() && f.listFiles().length == 0) {
+            f2.mkdir();
+        }
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -1370,6 +1378,12 @@ public class IRMain extends Activity {
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        try {
+            item = mDrawerList.getItemAtPosition(0).toString();
+        } catch (NullPointerException ex) {
+            item = "Example-TV";
+        }
+        getActionBar().setTitle(getString(R.string.app_name) + " - " + item);
         mDrawerList.setItemChecked(0, true);
     }
 
