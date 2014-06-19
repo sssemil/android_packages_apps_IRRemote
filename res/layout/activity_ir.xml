@@ -22,14 +22,14 @@
     android:layout_height="match_parent">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/main_btn"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
 
         <RelativeLayout
-            android:id="@+id/dvdL"
+            android:id="@+id/rl2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/power"
@@ -37,7 +37,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:orientation="vertical"
-            android:visibility="invisible">
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/button29"
@@ -151,11 +151,11 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/tvL"
+            android:id="@+id/rl1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/power"
-            android:layout_alignTop="@+id/dvdL"
+            android:layout_alignTop="@+id/rl2"
             android:orientation="vertical"
             android:visibility="visible">
 

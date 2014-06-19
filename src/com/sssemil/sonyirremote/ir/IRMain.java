@@ -37,6 +37,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -113,6 +114,13 @@ public class IRMain extends Activity {
     private boolean run_threads = true;
 
     private int item_position;
+
+
+    private RelativeLayout container;
+    private RelativeLayout rl1;
+    private RelativeLayout rl2;
+
+    private GestureDetector gesturedetector = null;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -950,42 +958,23 @@ public class IRMain extends Activity {
 
         if ((getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK) !=
-                Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-            final RelativeLayout tv = (RelativeLayout) findViewById(R.id.tvL);
-            final RelativeLayout dvd = (RelativeLayout) findViewById(R.id.dvdL);
+                Configuration.SCREENLAYOUT_SIZE_XLARGE) {//TODO improve
+            rl1 = (RelativeLayout) findViewById(R.id.rl1);
+            rl2 = (RelativeLayout) findViewById(R.id.rl2);
+            container = (RelativeLayout) findViewById(R.id.container);
             final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
             final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
-            tv.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
+            container.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
                 public void onSwipeLeft() {
-                    dvd.setVisibility(View.VISIBLE);
-                    tv.setVisibility(View.INVISIBLE);
+                    rl2.setVisibility(View.VISIBLE);
+                    rl1.setVisibility(View.INVISIBLE);
                     r1.setChecked(false);
                     r2.setChecked(true);
                 }
 
                 public void onSwipeRight() {
-                    dvd.setVisibility(View.INVISIBLE);
-                    tv.setVisibility(View.VISIBLE);
-                    r1.setChecked(true);
-                    r2.setChecked(false);
-                }
-
-                public boolean onTouch(View v, MotionEvent event) {
-                    return gestureDetector.onTouchEvent(event);
-                }
-            });
-
-            dvd.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
-                public void onSwipeLeft() {
-                    dvd.setVisibility(View.VISIBLE);
-                    tv.setVisibility(View.INVISIBLE);
-                    r1.setChecked(false);
-                    r2.setChecked(true);
-                }
-
-                public void onSwipeRight() {
-                    dvd.setVisibility(View.INVISIBLE);
-                    tv.setVisibility(View.VISIBLE);
+                    rl2.setVisibility(View.INVISIBLE);
+                    rl1.setVisibility(View.VISIBLE);
                     r1.setChecked(true);
                     r2.setChecked(false);
                 }
@@ -1124,8 +1113,10 @@ public class IRMain extends Activity {
         boolean isFirstRun;
         File f = new File(irpath);
         File f2 = new File(irpath + "Example-TV");
-        if (!f.exists() || !f2.exists()) {
+        if (!f.exists() && !f2.exists()) {
             f.mkdir();
+            f2.mkdir();
+        } else if (f.exists() && f.listFiles().length == 0) {
             f2.mkdir();
         }
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
