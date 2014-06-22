@@ -19,7 +19,7 @@
  */
 
 int IRsendcmd(void *cmd, int len);
-int IRpowerOn(int state);
+int IRpowerOn(int state, const char *powernode);
 int IRserialOpen();
 int IRserialClose();
 int IRlearnKeyToFile(const char *filename);

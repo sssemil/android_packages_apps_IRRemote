@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class IRCommon {
+    private String powernode = "/sys/devices/platform/ir_remote_control/enable";
+    
     static {
         System.loadLibrary("jni_sonyopenir");
     }
@@ -79,9 +81,9 @@ public class IRCommon {
         }
     }
 
-    private native int startIR();
+    private native int startIR(String powernode);
 
-    private native int stopIR();
+    private native int stopIR(String powernode);
 
     private native int learnKey(String filename);
 
@@ -90,11 +92,11 @@ public class IRCommon {
     private native int sendRawKey(String key, int length);
 
     public int start() {
-        return startIR();
+        return startIR(powernode);
     }
 
     public int stop() {
-        return stopIR();
+        return stopIR(powernode);
     }
 
     public int send(String filename) {
@@ -110,7 +112,8 @@ public class IRCommon {
     }
 
     public void restart() {
-        stopIR();
-        startIR();
+        stopIR(powernode);
+        startIR(powernode);
     }
 }
+

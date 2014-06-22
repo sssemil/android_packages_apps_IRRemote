@@ -60,18 +60,18 @@ extern "C" {
 /*
  * Class:     com_sssemil_sonyirremote_ir_IRCommon
  * Method:    startIR
- * Signature: ()I
+ * Signature: (Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_IRCommon_startIR
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     com_sssemil_sonyirremote_ir_IRCommon
  * Method:    stopIR
- * Signature: ()I
+ * Signature: (Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_IRCommon_stopIR
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     com_sssemil_sonyirremote_ir_IRCommon

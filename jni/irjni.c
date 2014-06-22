@@ -12,39 +12,30 @@
 #define SLEEPTIME 2000
 
 JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_IRCommon_startIR
-  (JNIEnv * je, jobject jo){
-
-   int status = IRpowerOn(1);
+  (JNIEnv * je, jobject jo, jstring js){
+   const char *powernode = (*je)->GetStringUTFChars(je, js, 0);
+   int status = IRpowerOn(1, powernode);
    usleep(SLEEPTIME);
    status = IRserialOpen();
    usleep(SLEEPTIME);
    IRkickStart();
    usleep(SLEEPTIME);
-
-
-   /*
-   char *data = (char*) IRlearnKeyData();
-
-   LOGI("%s : test! %s\n",__func__,data);
-
-   free(data);*/
-
-
+   (*je)->ReleaseStringUTFChars(je, js, powernode);
 
    return 1;
-
 }
 
 
 JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_IRCommon_stopIR
-  (JNIEnv * je, jobject jo){
-
+  (JNIEnv * je, jobject jo, jstring js){
+   const char *powernode = (*je)->GetStringUTFChars(je, js, 0);
    usleep(SLEEPTIME*10);
    int status = IRserialClose();
    usleep(SLEEPTIME);
-   status = IRpowerOn(0);
-   return 1;
+   status = IRpowerOn(0, powernode);
+   (*je)->ReleaseStringUTFChars(je, js, powernode);
 
+   return 1;
 }
 
 JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_IRCommon_learnKey
@@ -74,7 +65,6 @@ JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_IRCommon_sendKey
   (*je)->ReleaseStringUTFChars(je, js, filename);
 
   return ret;
-
 }
 
 
@@ -90,6 +80,4 @@ JNIEXPORT jint JNICALL Java_com_sssemil_sonyirremote_ir_IRCommon_sendRawKey
   (*je)->ReleaseStringUTFChars(je, js, key);
 
   return ret;
-
-
 }

@@ -83,15 +83,15 @@ int IRsendcmd(void *cmd, int len){
 }
 
 //Powers on the IR chip by writing to the correct device node
-int IRpowerOn(int state){
+int IRpowerOn(int state, const char *powernode){
 
     LOGI("%s : CALLED\n", __func__);
 
     errno = 0;
-    int powerctl = open(IRPOWERNODE, O_WRONLY);
+    int powerctl = open(powernode, O_WRONLY);
 
     if (powerctl < 0){
-        LOGE("%s : Error opaning power node %s error : %s\n", __func__, IRPOWERNODE , strerror(errno));
+        LOGE("%s : Error opaning power node %s error : %s\n", __func__, powernode , strerror(errno));
     }
 
     char ctl;
