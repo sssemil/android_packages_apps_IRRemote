@@ -92,9 +92,10 @@ Do you want to update to a newer version?</string>
     <string name="failed_lk">Failed! - learnKey </string>
     <string name="failed_sk">Failed! - sendKey </string>
     <string name="fr">Thanks for installing my app!
-To start using it go to settings and download device files for TV or anything else. If you can`t find your device, you can write commands by yourself by just adding new device from settings.
-Thanks!
-    NOTE: This app is under development and it was tested only on Sony Xperia ZL(odin) running CyanogenMod 11!</string>
+To start using it go to settings and download device files for your TV or anything else. If you can`t find your device, you can write commands by yourself.
+We are using Google Analytics API to collect anonymous data and improve our app.
+        Thanks!
+    NOTE: This app is under development and it was tested only on Sony Xperia ZL(odin) and Sony Tab Z(pollux) running CyanogenMod 11!</string>
 
     <string name="welcome">Welcome!</string>
     <string name="done">Done!</string>

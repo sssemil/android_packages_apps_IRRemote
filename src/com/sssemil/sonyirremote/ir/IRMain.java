@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -37,7 +38,6 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,6 +55,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Fields;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.StandardExceptionParser;
 import com.sssemil.sonyirremote.ir.Utils.OnSwipeTouchListener;
 
 import org.apache.http.HttpEntity;
@@ -93,7 +97,6 @@ public class IRMain extends Activity {
     public String current_mode = "send";
     public String last_ver = "zirt";
     public String cur_ver;
-    public String restart = "0";
     public ArrayList<String> first = new ArrayList<String>();
     public ArrayList<String> total = new ArrayList<String>();
     public ArrayList<String> disable = new ArrayList<String>();
@@ -115,12 +118,10 @@ public class IRMain extends Activity {
 
     private int item_position;
 
-
-    private RelativeLayout container;
     private RelativeLayout rl1;
     private RelativeLayout rl2;
 
-    private GestureDetector gesturedetector = null;
+    private Resources res;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -133,6 +134,30 @@ public class IRMain extends Activity {
             sb.append(String.format("%" + maxWidth + 's', s));
         }
         return sb.toString();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        new Thread(new Runnable() {
+            public void run() {
+                IRCommon.getInstance().stop(res);
+            }
+        }).start();
+        EasyTracker.getInstance(this).activityStart(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        new Thread(new Runnable() {
+            public void run() {
+                IRCommon.getInstance().start(res);
+            }
+        }).start();
+        EasyTracker easyTracker = EasyTracker.getInstance(this);
+        easyTracker.set(Fields.TRACKING_ID, "UA-xxxxxx-x");
+        easyTracker.activityStart(this);
     }
 
     private void selectItem(int position, boolean long_click) {
@@ -316,6 +341,7 @@ public class IRMain extends Activity {
         if (settings.contains("volkey")) {
             volkey = settings.getString("volkey", null);
         }
+        res = getResources();
 
         setContentView(R.layout.activity_ir);
         Thread ft = new Thread() {
@@ -330,7 +356,7 @@ public class IRMain extends Activity {
         alert = (TextView) findViewById(R.id.alert);
         new Thread(new Runnable() {
             public void run() {
-                IRCommon.getInstance().start();
+                IRCommon.getInstance().start(res);
             }
         }).start();
         firstRunChecker();
@@ -550,7 +576,7 @@ public class IRMain extends Activity {
                         }
                     }
                     if (do_restart) {
-                        IRCommon.getInstance().restart();
+                        IRCommon.getInstance().restart(res);
                         do_restart = false;
                     }
                 }
@@ -961,7 +987,7 @@ public class IRMain extends Activity {
                 Configuration.SCREENLAYOUT_SIZE_XLARGE) {//TODO improve
             rl1 = (RelativeLayout) findViewById(R.id.rl1);
             rl2 = (RelativeLayout) findViewById(R.id.rl2);
-            container = (RelativeLayout) findViewById(R.id.container);
+            RelativeLayout container = (RelativeLayout) findViewById(R.id.container);
             final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
             final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
             container.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
@@ -987,7 +1013,7 @@ public class IRMain extends Activity {
     }
 
     public void fixPermissionsForIr() {
-        File enable = new File("/sys/devices/platform/ir_remote_control/enable");
+        File enable = new File(IRCommon.getInstance().getPowernode(res));
         File device = new File("/dev/ttyHSL2");
         final String[] enablePermissions = {"su", "-c", "chmod 222 ", enable.getPath()};
         final String[] devicePermissions = {"su", "-c", "chmod 666 ", device.getPath()};
@@ -1034,11 +1060,11 @@ public class IRMain extends Activity {
                             try {
                                 Runtime.getRuntime().exec(enablePermissions);
                                 Runtime.getRuntime().exec(devicePermissions);
-                                IRCommon.getInstance().start();
+                                IRCommon.getInstance().start(res);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            IRCommon.getInstance().restart();
+                            IRCommon.getInstance().restart(res);
                         }
                     }
             );
@@ -1064,7 +1090,7 @@ public class IRMain extends Activity {
         super.onPause();
         new Thread(new Runnable() {
             public void run() {
-                IRCommon.getInstance().stop();
+                IRCommon.getInstance().stop(res);
             }
         }).start();
     }
@@ -1074,7 +1100,7 @@ public class IRMain extends Activity {
         super.onResume();
         new Thread(new Runnable() {
             public void run() {
-                IRCommon.getInstance().start();
+                IRCommon.getInstance().start(res);
             }
         }).start();
         settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
@@ -1209,7 +1235,7 @@ public class IRMain extends Activity {
         new Thread(new Runnable() {
             public void run() {
                 mProgressDialog.show();
-                IRCommon.getInstance().restart();
+                IRCommon.getInstance().restart(res);
                 state = IRCommon.getInstance().learn(filename);
                 if (state < 0) {
                     runOnUiThread(new Runnable() {
@@ -1300,14 +1326,25 @@ public class IRMain extends Activity {
         new Thread(new Runnable() {
             public void run() {
                 state = IRCommon.getInstance().send(filename);
-                if (state < 0) {
-                    do_restart = true;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            alert(getString(R.string.non_zero));
-                        }
-                    });
+                try {
+                    if (state < 0) {
+                        do_restart = true;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                alert(getString(R.string.non_zero));
+                            }
+                        });
+                        throw new NonZeroStatusException();
+                    }
+                } catch (NonZeroStatusException e) {
+
+                    EasyTracker easyTracker = EasyTracker.getInstance(IRMain.this);
+
+                    easyTracker.send(MapBuilder
+                            .createException(new StandardExceptionParser(IRMain.this, null)
+                                    .getDescription(Thread.currentThread().getName(),
+                                            e), false).build());
                 }
             }
         }).start();
@@ -1403,7 +1440,7 @@ public class IRMain extends Activity {
                     Intent intent = new Intent(IRMain.this,
                             IRSettings.class);
                     startActivity(intent);
-                    IRCommon.getInstance().stop();
+                    IRCommon.getInstance().stop(res);
                 }
             }).start();
             run_threads = false;
@@ -1446,7 +1483,7 @@ public class IRMain extends Activity {
                                                                     int id) {
                                                     new Thread(new Runnable() {
                                                         public void run() {
-                                                            IRCommon.getInstance().restart();
+                                                            IRCommon.getInstance().restart(res);
                                                         }
                                                     }).start();
                                                     alert.setText(
@@ -1786,6 +1823,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -1833,6 +1871,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -1880,6 +1919,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -1927,6 +1967,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -1974,6 +2015,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2021,6 +2063,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2068,6 +2111,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2115,6 +2159,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2162,6 +2207,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2209,6 +2255,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2256,6 +2303,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2303,6 +2351,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2350,6 +2399,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2397,6 +2447,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2444,6 +2495,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2491,6 +2543,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2538,6 +2591,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2585,6 +2639,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2632,6 +2687,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2679,6 +2735,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2726,6 +2783,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2773,6 +2831,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2820,6 +2879,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2867,6 +2927,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2914,6 +2975,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -2961,6 +3023,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3008,6 +3071,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3055,6 +3119,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3102,6 +3167,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3149,6 +3215,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3196,6 +3263,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3243,6 +3311,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3290,6 +3359,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3337,6 +3407,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3384,6 +3455,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3431,6 +3503,7 @@ public class IRMain extends Activity {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
                 Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
                 adb = new AlertDialog.Builder(this);
@@ -3752,6 +3825,15 @@ public class IRMain extends Activity {
                 Log.e("GetLastVer", ex.getMessage());
                 return null;
             }
+        }
+    }
+
+    private class NonZeroStatusException extends Exception {
+        public NonZeroStatusException() {
+        }
+
+        public NonZeroStatusException(String message) {
+            super(message);
         }
     }
 }

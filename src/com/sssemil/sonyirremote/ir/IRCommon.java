@@ -19,15 +19,12 @@
 
 package com.sssemil.sonyirremote.ir;
 
+import android.content.res.Resources;
+
 import java.io.File;
 import java.io.IOException;
 
 public class IRCommon {
-    private String powernode = "/sys/devices/platform/ir_remote_control/enable";
-    
-    static {
-        System.loadLibrary("jni_sonyopenir");
-    }
 
     private static IRCommon instance = null;
 
@@ -81,6 +78,22 @@ public class IRCommon {
         }
     }
 
+    public String getPowernode(Resources res) {
+        String[] array = res.getStringArray(R.array.powerNodePathVariants);
+        File path_file;
+        for (int i = 0; i <= array.length; i++) {
+            path_file = new File(array[i]);
+            if (path_file.exists()) {
+                return path_file.getPath();
+            }
+        }
+        return null;
+    }
+
+    static {
+        System.loadLibrary("jni_sonyopenir");
+    }
+
     private native int startIR(String powernode);
 
     private native int stopIR(String powernode);
@@ -91,12 +104,12 @@ public class IRCommon {
 
     private native int sendRawKey(String key, int length);
 
-    public int start() {
-        return startIR(powernode);
+    public int start(Resources res) {
+        return startIR(getPowernode(res));
     }
 
-    public int stop() {
-        return stopIR(powernode);
+    public int stop(Resources res) {
+        return stopIR(getPowernode(res));
     }
 
     public int send(String filename) {
@@ -111,9 +124,9 @@ public class IRCommon {
         return learnKey(filename);
     }
 
-    public void restart() {
-        stopIR(powernode);
-        startIR(powernode);
+    public void restart(Resources res) {
+        stopIR(getPowernode(res));
+        startIR(getPowernode(res));
     }
 }
 

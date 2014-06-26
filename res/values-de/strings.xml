@@ -59,10 +59,11 @@ Wollen Sie auf eine neuere Version aktualisieren?</string>
     <string name="down_keys">Herunterladen von Dateien Tasten…</string>
     <string name="failed_lk">Failed! - learnKey </string>
     <string name="failed_sk">Failed! - sendKey </string>
-    <string name="fr">Vielen Dank für die Installation meiner app! 
-Um ihn zu benutzen, um die Einstellungen und laden Sie Gerätedateien für TV oder sonst etwas. Wenn Sie `t finden können Ihr Gerät, können Sie Befehle, die von sich selbst zu schreiben, indem einfach neue Gerät aus-Einstellungen.
-Vielen Dank! 
-     ACHTUNG: Diese App ist in der Entwicklung, und es wurde nur auf Sony Xperia ZL (odin) läuft CyanogenMod 11 getestet!</string>
+    <string name="fr">Vielen Dank für die Installation meiner app!
+Um ihn zu benutzen, um die Einstellungen und laden Sie Gerätedateien für Ihr TV oder sonst etwas. Wenn Sie Ihr Gerät nicht finden, können Sie Befehle von selbst schreiben.
+Wir verwenden Google Analytics-API, um anonyme Daten sammeln und zur Verbesserung unserer App.
+         Vielen Dank!
+     ACHTUNG: Diese App ist in der Entwicklung, und es wurde nur auf Sony Xperia ZL (Odin) und Sony Tab Z (Pollux) läuft CyanogenMod 11 getestet!</string>
 
     <string name="welcome">Willkommen!</string>
     <string name="done">Fertig!</string>

@@ -34,4 +34,9 @@
         <item>Volume buttons</item>
         <item>Chanel buttons</item>
     </string-array>
+
+    <string-array name="powerNodePathVariants" translatable="false">
+        <item>/sys/devices/platform/ir_remote_control/enable</item>
+        <item>/sys/class/htc_cir/cir/enable_cir</item>
+    </string-array>
 </resources>

@@ -42,6 +42,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Fields;
 import com.sssemil.sonyirremote.ir.Utils.Compress;
 import com.sssemil.sonyirremote.ir.Utils.Decompress;
 
@@ -913,4 +915,17 @@ public class IRSettings extends PreferenceActivity {
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        EasyTracker.getInstance(this).activityStart(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EasyTracker easyTracker = EasyTracker.getInstance(this);
+        easyTracker.set(Fields.TRACKING_ID, "UA-52301928-1");
+        easyTracker.activityStart(this);
+    }
 }

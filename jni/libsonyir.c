@@ -51,7 +51,6 @@
 
 #endif
 
-#define IRPOWERNODE "/sys/devices/platform/ir_remote_control/enable"
 #define IRDEVICE "/dev/ttyHSL2"
 
 
