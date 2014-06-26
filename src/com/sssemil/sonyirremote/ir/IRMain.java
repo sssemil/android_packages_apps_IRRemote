@@ -156,7 +156,7 @@ public class IRMain extends Activity {
             }
         }).start();
         EasyTracker easyTracker = EasyTracker.getInstance(this);
-        easyTracker.set(Fields.TRACKING_ID, "UA-xxxxxx-x");
+        easyTracker.set(Fields.TRACKING_ID, "UA-XXXXX-X");
         easyTracker.activityStart(this);
     }
 
