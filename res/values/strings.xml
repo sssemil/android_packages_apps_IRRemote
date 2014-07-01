@@ -105,7 +105,8 @@ We are using Google Analytics API to collect anonymous data and improve our app.
     <string name="files"> files!</string>
     <string name="you_need_to_select">You need to select an option first!</string>
     <string name="waiting_for_signal">Waiting for signal to learn…</string>
-    <string name="warning">Warning!</string><string name="alredy_exists">The command you are trying to write already exists! By doing this you will overwrite existing command!
+    <string name="warning">Warning!</string>
+    <string name="already_exists">The command you are trying to write already exists! By doing this you will overwrite existing command!
 
 Do you want to continue?</string>
     <string name="not_exists">The command for this button does not exists! Do you want to write it now?</string>

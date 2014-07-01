@@ -25,7 +25,7 @@
     <string name="add_brnd">Yeni cihaz əlavə et</string>
     <string name="add_new_device">Yeni cihaz əlavə et</string>
     <string name="already_new">Sizin versiyanız artıq sonuncudur!</string>
-    <string name="alredy_exists">Bu düyməsini üçün komanda mövcud deyil! İndi yazmaq istəyirsiniz?</string>
+    <string name="already_exists">Bu düyməsini üçün komanda mövcud deyil! İndi yazmaq istəyirsiniz?</string>
     <string name="app_name">İR Remote</string>
     <string name="are_u_s_del">Sizə daimi Bu qovluğu silməyə əminsinizmi?</string>
     <string name="brand">Marka (məsələn, Sony)</string>

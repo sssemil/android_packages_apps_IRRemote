@@ -34,6 +34,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -70,6 +74,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,15 +82,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 public class IRMain extends Activity {
 
-    public static final String PREFS_NAME = "SIRR";
+    public static final String PREFS_NAME = "com.sssemil.sonyirremote.ir_preferences";
+    private static final String TAG = "IRMain";
     public String irpath = Environment
             .getExternalStorageDirectory() + "/irremote_keys/";//place to store commands
     public String http_path_root2;
@@ -103,7 +109,7 @@ public class IRMain extends Activity {
     boolean main = true;
     boolean result = false;
     boolean do_restart = false;
-    EditText brandN, itemN;
+    private EditText brandN, itemN;
     private String last_mode;
     private ProgressDialog mProgressDialog;
     private SharedPreferences settings;
@@ -120,6 +126,9 @@ public class IRMain extends Activity {
 
     private RelativeLayout rl1;
     private RelativeLayout rl2;
+
+    private HandlerThread mCheckThread;
+    private Handler mCheckHandler;
 
     private Resources res;
 
@@ -145,6 +154,10 @@ public class IRMain extends Activity {
             }
         }).start();
         EasyTracker.getInstance(this).activityStart(this);
+        run_threads = false;
+        if (mCheckThread.isAlive()) {
+            mCheckThread.quit();
+        }
     }
 
     @Override
@@ -156,8 +169,25 @@ public class IRMain extends Activity {
             }
         }).start();
         EasyTracker easyTracker = EasyTracker.getInstance(this);
-        easyTracker.set(Fields.TRACKING_ID, "UA-XXXXX-X");
+        easyTracker.set(Fields.TRACKING_ID, "UA-XXXXXXXX-X");
         easyTracker.activityStart(this);
+        run_threads = true;
+        if (!mCheckThread.isAlive()) {
+            mCheckThread.start();
+            mCheckHandler = new StateChecker(mCheckThread.getLooper());
+            mCheckHandler.sendEmptyMessage(0);
+        }
+        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        if (settings.contains("theme")) {
+            if (settings.getString("theme", null).equals("1")) {
+                super.setTheme(R.style.Holo);
+            } else if (settings.getString("theme", null).equals("2")) {
+                super.setTheme(R.style.Holo_Light_DarkActionBar);
+            } else if (settings.getString("theme", null).equals("3")) {
+                super.setTheme(R.style.Theme_Holo_Light);
+            }
+        }
+        prepItemBrandArray();
     }
 
     private void selectItem(int position, boolean long_click) {
@@ -193,7 +223,7 @@ public class IRMain extends Activity {
             item_position = position;
             try {
                 item = mDrawerList.getItemAtPosition(position).toString();
-            } catch (NullPointerException ex) {
+            } catch (NullPointerException e) {
                 item = "Example-TV";
             }
 
@@ -204,7 +234,6 @@ public class IRMain extends Activity {
                 getActionBar().setTitle(getString(R.string.app_name) + " - " + item);
             } else {
                 item_position = position;
-                //delete  mDrawerList.getItemAtPosition(position).toString()
                 adb = new AlertDialog.Builder(IRMain.this);
                 adb.setTitle(getString(R.string.warning));
                 adb.setMessage(getString(R.string.are_u_s_del));
@@ -215,8 +244,8 @@ public class IRMain extends Activity {
                         File dir = new File(irpath + item);
                         try {
                             IRCommon.delete(dir);
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
+                        } catch (IOException e) {
+                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                             adb.setTitle(getString(R.string.error));
                             adb.setMessage(getString(R.string.failed_del_fl_io));
                             adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -272,7 +301,8 @@ public class IRMain extends Activity {
             } else {
                 throw new NullPointerException();
             }
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException e) {
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
@@ -362,15 +392,14 @@ public class IRMain extends Activity {
         firstRunChecker();
         prepIRKeys();
         prepItemBrandArray();
-        addUUID();
         PackageInfo pInfo = null;
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             cur_ver = pInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         }
         if (pInfo != null) {
             cur_ver = pInfo.versionName;
@@ -380,209 +409,18 @@ public class IRMain extends Activity {
             selectItem(0, false);
         }
 
-        Thread thread = new Thread() {
-            public void run() {
-                File f;
-                while (run_threads) {
-                    if (main) {
-                        try {
-                            if (!current_mode.equals("endis")) {
-                                f = new File(irpath + item + "/disable.ini");
-                                if (f.exists()) {
-                                    try {
-                                        for (int i = 3; i <= 38; i++) {
-                                            final String btn = "button" + i;
-                                            if (!disable.contains(btn)) {
-                                                runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        int id = getResources().getIdentifier(btn,
-                                                                "id", "com.sssemil.sonyirremote.ir");
-                                                        Button button = ((Button) findViewById(id));
-                                                        try {
-                                                            button.setEnabled(true);
-                                                        } catch (Exception ex) {
-                                                            ex.printStackTrace();
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        }
-                                        FileInputStream is = new FileInputStream(f);
-                                        BufferedReader reader = new BufferedReader(
-                                                new InputStreamReader(is));
-                                        String line;
-                                        disable.clear();
-                                        while ((line = reader.readLine()) != null) {
-                                            final String finalLine = line;
-                                            disable.add(line);
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    int id = getResources().getIdentifier(finalLine,
-                                                            "id", "com.sssemil.sonyirremote.ir");
-                                                    Button button = ((Button) findViewById(id));
-                                                    try {
-                                                        button.setEnabled(false);
-                                                    } catch (Exception ex) {
-                                                        //ex.printStackTrace();
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        reader.close();
-                                        is.close();
-                                    } catch (Exception e) {
-                                        //e.printStackTrace();
-                                    }
-                                } else if (!f.exists()) {
-                                    for (int i = 3; i <= 38; i++) {
-                                        final String btn = "button" + i;
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                int id = getResources().getIdentifier(btn,
-                                                        "id", "com.sssemil.sonyirremote.ir");
-                                                Button button = ((Button) findViewById(id));
-                                                try {
-                                                    button.setEnabled(true);
-                                                } catch (Exception ex) {
-                                                    //ex.printStackTrace();
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                            if (current_mode.equals("endis")) {
-                                f = new File(irpath + item + "/disable.ini");
-                                if (f.exists()) {
-                                    try {
-                                        for (int i = 3; i <= 38; i++) {
-                                            final String btn = "button" + i;
-                                            if (!disable.contains(btn)) {
-                                                runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        int id = getResources().getIdentifier(btn,
-                                                                "id",
-                                                                "com.sssemil.sonyirremote.ir");
-                                                        Button button = ((Button) findViewById(id));
-                                                        try {
-                                                            button.setTextColor(Color.DKGRAY);
-                                                            if (settings.contains("theme")) {
-                                                                if (settings.getString("theme",
-                                                                        null).equals("1")) {
-                                                                    button.setTextColor(
-                                                                            Color.WHITE);
-                                                                } else {
-                                                                    button.setTextColor(
-                                                                            Color.BLACK);
-                                                                }
-                                                                button.setEnabled(true);
-                                                            }
-                                                        } catch (Exception ex) {
-                                                            ex.printStackTrace();
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        }
-                                        FileInputStream is = new FileInputStream(f);
-                                        BufferedReader reader = new BufferedReader(
-                                                new InputStreamReader(is));
-                                        String line;
-                                        disable.clear();
-                                        while ((line = reader.readLine()) != null) {
-                                            final String finalLine = line;
-                                            disable.add(line);
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    int id = getResources().getIdentifier(finalLine,
-                                                            "id", "com.sssemil.sonyirremote.ir");
-                                                    Button button = ((Button) findViewById(id));
-                                                    try {
-                                                        button.setTextColor(Color.DKGRAY);
-                                                        button.setEnabled(true);
-                                                    } catch (Exception ex) {
-                                                        //ex.printStackTrace();
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        reader.close();
-                                        is.close();
-                                    } catch (Exception e) {
-                                        //e.printStackTrace();
-                                    }
-                                } else if (!f.exists()) {
-                                    for (int i = 3; i <= 38; i++) {
-                                        final String btn = "button" + i;
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                int id = getResources().getIdentifier(btn,
-                                                        "id", "com.sssemil.sonyirremote.ir");
-                                                Button button = ((Button) findViewById(id));
-                                                try {
-                                                    button.setEnabled(true);
-                                                } catch (Exception ex) {
-                                                    //ex.printStackTrace();
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                            f = new File(irpath + item + "/text.ini");
-                            if (f.exists()) {
-                                try {
-                                    FileInputStream is = new FileInputStream(f);
-                                    BufferedReader reader = new BufferedReader(
-                                            new InputStreamReader(is));
-                                    String line;
-                                    while ((line = reader.readLine()) != null) {
-                                        String arr[] = line.split(" ", 2);
-                                        final String firstWord = arr[0];
-                                        final String theRest = arr[1];
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                int id = getResources().getIdentifier(firstWord,
-                                                        "id", "com.sssemil.sonyirremote.ir");
-                                                Button button = ((Button) findViewById(id));
-                                                try {
-                                                    button.setText(theRest);
-                                                } catch (Exception ex) {
-                                                    //ex.printStackTrace();
-                                                }
-                                            }
-                                        });
-                                    }
-                                    reader.close();
-                                    is.close();
-                                } catch (Exception e) {
-                                    //e.printStackTrace();
-                                }
-                            }
-                            try {
-                                Thread.sleep(500);
-                            } catch (Exception e) {
-                                //e.printStackTrace();
-                            }
-                        } catch (Exception e) {
-                            //e.printStackTrace();
-                        }
-                    }
-                    if (do_restart) {
-                        IRCommon.getInstance().restart(res);
-                        do_restart = false;
-                    }
-                }
+        mCheckThread = new HandlerThread("StateChecker");
+        if (run_threads) {
+            if (!mCheckThread.isAlive()) {
+                mCheckThread.start();
+                mCheckHandler = new StateChecker(mCheckThread.getLooper());
+                mCheckHandler.sendEmptyMessage(0);
             }
-        };
-        thread.start();
+        } else {
+            if (mCheckThread.isAlive()) {
+                mCheckThread.quit();
+            }
+        }
 
         Thread btn = new Thread() {
             @Override
@@ -604,7 +442,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -642,7 +480,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -657,7 +495,7 @@ public class IRMain extends Activity {
             }
         };
         btn3.start();
-//conthere
+
         Thread btn4 = new Thread() {
             @Override
             public void run() {
@@ -678,7 +516,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -714,7 +552,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -750,7 +588,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -786,7 +624,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -822,7 +660,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -858,7 +696,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -894,7 +732,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -930,7 +768,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -966,7 +804,7 @@ public class IRMain extends Activity {
                                                 sleep(400);
                                             }
                                         } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                     }
                                 };
@@ -984,7 +822,7 @@ public class IRMain extends Activity {
 
         if ((getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK) !=
-                Configuration.SCREENLAYOUT_SIZE_XLARGE) {//TODO improve
+                Configuration.SCREENLAYOUT_SIZE_XLARGE) {//TODO improve swiping
             rl1 = (RelativeLayout) findViewById(R.id.rl1);
             rl2 = (RelativeLayout) findViewById(R.id.rl2);
             RelativeLayout container = (RelativeLayout) findViewById(R.id.container);
@@ -1012,6 +850,176 @@ public class IRMain extends Activity {
         }
     }
 
+    private void checkState() {
+        if (main) {
+            File f;
+            if (!current_mode.equals("endis")) {
+                f = new File(irpath + item + "/disable.ini");
+                if (f.exists()) {
+                    try {
+                        for (int i = 3; i <= 38; i++) {
+                            final String btn = "button" + i;
+                            if (!disable.contains(btn)) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int id = getResources().getIdentifier(btn,
+                                                "id", "com.sssemil.sonyirremote.ir");
+                                        Button button = ((Button) findViewById(id));
+                                        button.setEnabled(true);
+                                    }
+                                });
+                            }
+                        }
+                        FileInputStream is = new FileInputStream(f);
+                        BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(is));
+                        String line;
+                        disable.clear();
+                        while ((line = reader.readLine()) != null) {
+                            final String finalLine = line;
+                            disable.add(line);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int id = getResources().getIdentifier(finalLine,
+                                            "id", "com.sssemil.sonyirremote.ir");
+                                    Button button = ((Button) findViewById(id));
+                                    button.setEnabled(false);
+
+                                }
+                            });
+                        }
+                        reader.close();
+                        is.close();
+                    } catch (FileNotFoundException e) {
+                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                    } catch (IOException e) {
+                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                    }
+                } else if (!f.exists()) {
+                    for (int i = 3; i <= 38; i++) {
+                        final String btn = "button" + i;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                int id = getResources().getIdentifier(btn,
+                                        "id", "com.sssemil.sonyirremote.ir");
+                                Button button = ((Button) findViewById(id));
+                                button.setEnabled(true);
+                            }
+                        });
+                    }
+                }
+            }
+            if (current_mode.equals("endis")) {
+                f = new File(irpath + item + "/disable.ini");
+                if (f.exists()) {
+                    try {
+                        for (int i = 3; i <= 38; i++) {
+                            final String btn = "button" + i;
+                            if (!disable.contains(btn)) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int id = getResources().getIdentifier(btn,
+                                                "id",
+                                                "com.sssemil.sonyirremote.ir");
+                                        Button button = ((Button) findViewById(id));
+                                            button.setTextColor(Color.DKGRAY);
+                                            if (settings.contains("theme")) {
+                                                if (settings.getString("theme",
+                                                        null).equals("1")) {
+                                                    button.setTextColor(
+                                                            Color.WHITE);
+                                                } else {
+                                                    button.setTextColor(
+                                                            Color.BLACK);
+                                                }
+                                                button.setEnabled(true);
+                                            }
+
+                                    }
+                                });
+                            }
+                        }
+                        FileInputStream is = new FileInputStream(f);
+                        BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(is));
+                        String line;
+                        disable.clear();
+                        while ((line = reader.readLine()) != null) {
+                            final String finalLine = line;
+                            disable.add(line);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int id = getResources().getIdentifier(finalLine,
+                                            "id", "com.sssemil.sonyirremote.ir");
+                                    Button button = ((Button) findViewById(id));
+                                    button.setTextColor(Color.DKGRAY);
+                                    button.setEnabled(true);
+                                }
+                            });
+                        }
+                        reader.close();
+                        is.close();
+                    } catch (FileNotFoundException e) {
+                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                    } catch (IOException e) {
+                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                    }
+                } else if (!f.exists()) {
+                    for (int i = 3; i <= 38; i++) {
+                        final String btn = "button" + i;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                int id = getResources().getIdentifier(btn,
+                                        "id", "com.sssemil.sonyirremote.ir");
+                                Button button = ((Button) findViewById(id));
+                                button.setEnabled(true);
+                            }
+                        });
+                    }
+                }
+            }
+            f = new File(irpath + item + "/text.ini");
+            if (f.exists()) {
+                try {
+                    FileInputStream is = new FileInputStream(f);
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(is));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        String arr[] = line.split(" ", 2);
+                        final String firstWord = arr[0];
+                        final String theRest = arr[1];
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                int id = getResources().getIdentifier(firstWord,
+                                        "id", "com.sssemil.sonyirremote.ir");
+                                Button button = ((Button) findViewById(id));
+                                button.setText(theRest);
+                            }
+                        });
+                    }
+                    reader.close();
+                    is.close();
+                } catch (FileNotFoundException e) {
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                } catch (IOException e) {
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                }
+            }
+        }
+        if (do_restart) {
+            IRCommon.getInstance().restart(res);
+            do_restart = false;
+        }
+    }
+
     public void fixPermissionsForIr() {
         File enable = new File(IRCommon.getInstance().getPowernode(res));
         File device = new File("/dev/ttyHSL2");
@@ -1024,7 +1032,7 @@ public class IRMain extends Activity {
             do_fix = true;
             try {
                 Runtime.getRuntime().exec("su");
-            } catch (IOException ex) {
+            } catch (IOException e) {
                 found = false;
             }
 
@@ -1062,7 +1070,7 @@ public class IRMain extends Activity {
                                 Runtime.getRuntime().exec(devicePermissions);
                                 IRCommon.getInstance().start(res);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                             }
                             IRCommon.getInstance().restart(res);
                         }
@@ -1103,36 +1111,6 @@ public class IRMain extends Activity {
                 IRCommon.getInstance().start(res);
             }
         }).start();
-        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
-        if (settings.contains("theme")) {
-            if (settings.getString("theme", null).equals("1")) {
-                super.setTheme(R.style.Holo);
-            } else if (settings.getString("theme", null).equals("2")) {
-                super.setTheme(R.style.Holo_Light_DarkActionBar);
-            } else if (settings.getString("theme", null).equals("3")) {
-                super.setTheme(R.style.Theme_Holo_Light);
-            }
-        }
-        prepItemBrandArray();
-    }
-
-    private void addUUID() {
-        boolean empty = true;
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        if (!settings.contains("UUID")) {
-            empty = true;
-        } else if (settings.contains("UUID")) {
-            empty = false;
-        }
-        if (empty) {
-            String id = UUID.randomUUID().toString();
-            settings = getSharedPreferences(PREFS_NAME, 0);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putString("UUID", id);
-            editor.commit();
-            setUUID setUUID1 = new setUUID();
-            setUUID1.execute(id);
-        }
     }
 
     public void firstRunChecker() {
@@ -1146,35 +1124,36 @@ public class IRMain extends Activity {
             f2.mkdir();
         }
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences settings2 =
-                getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        SharedPreferences.Editor editor;
+
         if (!settings.contains("isFirstRun")) {
             isFirstRun = true;
-            SharedPreferences.Editor editor2 = settings2.edit();
-            editor2.putString("theme", "1");
-            editor2.putBoolean("autoUpd", true);
-            editor2.commit();
+            editor = settings.edit();
+            editor.putString("theme", "1");
+            editor.putBoolean("autoUpd", true);
+            editor.commit();
         } else {
             isFirstRun = settings.getBoolean("isFirstRun", false);
         }
+
         if (isFirstRun) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.welcome));
             builder.setMessage(getString(R.string.fr));
             builder.setPositiveButton(getString(R.string.pos_ans), null);
             builder.show();
-            SharedPreferences.Editor editor = settings.edit();
+            editor = settings.edit();
             editor.putBoolean("isFirstRun", false);
             editor.commit();
         }
 
         boolean checkUpd;
-        if (!settings2.contains("autoUpd")) {
+        if (!settings.contains("autoUpd")) {
             checkUpd = false;
         } else {
-            checkUpd = settings2.getBoolean("autoUpd", true);
+            checkUpd = settings.getBoolean("autoUpd", true);
         }
-        Log.i("Update", String.valueOf(checkUpd));
+        Log.i(TAG, "Update " + String.valueOf(checkUpd));
         if (checkUpd) {
             update(true);
         }
@@ -1193,7 +1172,7 @@ public class IRMain extends Activity {
         if (to.exists()) {
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.warning));
-            adb.setMessage(getString(R.string.alredy_exists));
+            adb.setMessage(getString(R.string.already_exists));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton(getString(R.string.pos_ans),
                     new DialogInterface.OnClickListener() {
@@ -1338,7 +1317,7 @@ public class IRMain extends Activity {
                         throw new NonZeroStatusException();
                     }
                 } catch (NonZeroStatusException e) {
-
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                     EasyTracker easyTracker = EasyTracker.getInstance(IRMain.this);
 
                     easyTracker.send(MapBuilder
@@ -1417,7 +1396,7 @@ public class IRMain extends Activity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         try {
             item = mDrawerList.getItemAtPosition(0).toString();
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException e) {
             item = "Example-TV";
         }
         getActionBar().setTitle(getString(R.string.app_name) + " - " + item);
@@ -1458,8 +1437,6 @@ public class IRMain extends Activity {
 
             rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    Log.i("ch", promptsView.getResources()
-                            .getResourceEntryName(rg.getCheckedRadioButtonId()));
                     current_mode = promptsView.getResources()
                             .getResourceEntryName(rg.getCheckedRadioButtonId());
                     if (current_mode.equals("send")) {
@@ -1552,7 +1529,8 @@ public class IRMain extends Activity {
         try {
             item = mDrawerList.getItemAtPosition(item_position).toString();
             result = true;
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException e) {
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
@@ -1678,7 +1656,6 @@ public class IRMain extends Activity {
                         out_data += total.toArray()[i];
                     }
                 }
-                Log.i("out", out_data);
                 FileOutputStream fOut = new FileOutputStream(f);
                 OutputStreamWriter myOutWriter =
                         new OutputStreamWriter(fOut);
@@ -1687,13 +1664,12 @@ public class IRMain extends Activity {
                 fOut.close();
                 setDefaultString(btn_name);
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         }
     }
 
     private void onRename(String new_name, String btn_name) {
-        Log.i(new_name, btn_name);
         File f = new File(irpath + item + "/text.ini");
         try {
             if (!f.exists()) {
@@ -1711,8 +1687,8 @@ public class IRMain extends Activity {
             }
             reader.close();
             is.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         }
         if (!first.contains(btn_name)) {
             total.add(btn_name + " " + new_name);
@@ -1740,7 +1716,7 @@ public class IRMain extends Activity {
             myOutWriter.close();
             fOut.close();
         } catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         }
     }
 
@@ -1765,8 +1741,8 @@ public class IRMain extends Activity {
             }
             reader.close();
             is.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         }
 
         if (!first.contains(btn_name)) {
@@ -1795,7 +1771,7 @@ public class IRMain extends Activity {
             myOutWriter.close();
             fOut.close();
         } catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
+            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         }
     }
 
@@ -3564,12 +3540,12 @@ public class IRMain extends Activity {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Log.i("Update", "last_ver : " + getLastVer1.execute().get()
+                    Log.i(TAG, "Update last_ver : " + getLastVer1.execute().get()
                             + " cur_ver : " + cur_ver);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 }
                 if (last_ver.equals("zirt")) {
                     if (!silent) {
@@ -3609,7 +3585,7 @@ public class IRMain extends Activity {
                     } else if (result.equals("==")) {
                         doUpdate = false;
                     }
-                    Log.i("Update", String.valueOf(doUpdate));
+                    Log.i(TAG, "Update " + String.valueOf(doUpdate));
 
                     if (doUpdate) {
                         adb.setTitle(getString(R.string.update));
@@ -3638,9 +3614,9 @@ public class IRMain extends Activity {
                                                     downloadApp1.execute(http_path_last_download1
                                                             + last_ver + http_path_last_download2).get();
                                                 } catch (InterruptedException e) {
-                                                    e.printStackTrace();
+                                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                                 } catch (ExecutionException e) {
-                                                    e.printStackTrace();
+                                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                                 }
                                                 mProgressDialog.cancel();
                                             }
@@ -3683,6 +3659,21 @@ public class IRMain extends Activity {
         }).start();
     }
 
+    private class StateChecker extends Handler {
+
+        public StateChecker(Looper looper) {
+            super(looper);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (run_threads) {
+                checkState();
+                sendEmptyMessageDelayed(0, 500);
+            }
+        }
+    }
+
     /* The click listner for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
@@ -3712,7 +3703,8 @@ public class IRMain extends Activity {
                 HttpResponse response = httpclient.execute(httppost);
                 response.getEntity();
                 return "done";
-            } catch (IOException ex) {
+            } catch (IOException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 return null;
             }
         }
@@ -3728,7 +3720,7 @@ public class IRMain extends Activity {
             OutputStream output = null;
             HttpURLConnection connection = null;
             try {
-                Log.v("DownloadApp", "Starting... ");
+                Log.v(TAG, "DownloadApp" + "Starting... ");
                 URL url = new URL(sUrl[0]);
 
                 connection = (HttpURLConnection) url.openConnection();
@@ -3749,7 +3741,7 @@ public class IRMain extends Activity {
                 input = connection.getInputStream();
                 output = new FileOutputStream(Environment
                         .getExternalStorageDirectory() + "/upd.apk");
-                Log.v("DownloadApp", "output " + Environment
+                Log.v(TAG, "DownloadApp" + "output " + Environment
                         .getExternalStorageDirectory() + "/upd.apk");
 
                 byte data[] = new byte[4096];
@@ -3767,7 +3759,7 @@ public class IRMain extends Activity {
                         publishProgress((int) (total * 100 / fileLength));
                     output.write(data, 0, count);
                 }
-                Log.v("DownloadApp", "Done!");
+                Log.v(TAG, "DownloadApp" + "Done!");
 
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.fromFile(new File(Environment
@@ -3776,8 +3768,14 @@ public class IRMain extends Activity {
                 );
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-            } catch (Exception e) {
-                Log.e("DownloadApp", e.getMessage());
+            } catch (MalformedURLException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                return e.toString();
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                return e.toString();
+            } catch (IOException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 return e.toString();
             } finally {
                 try {
@@ -3785,7 +3783,8 @@ public class IRMain extends Activity {
                         output.close();
                     if (input != null)
                         input.close();
-                } catch (IOException ignored) {
+                } catch (IOException e) {
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 }
 
                 if (connection != null)
@@ -3819,10 +3818,10 @@ public class IRMain extends Activity {
                 while ((line = r.readLine()) != null) {
                     last_ver += line;
                 }
-                Log.i("GetLastVer", last_ver);
+                Log.i(TAG, "GetLastVer" + last_ver);
                 return last_ver;
-            } catch (IOException ex) {
-                Log.e("GetLastVer", ex.getMessage());
+            } catch (IOException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 return null;
             }
         }

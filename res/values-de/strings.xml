@@ -74,7 +74,7 @@ Wir verwenden Google Analytics-API, um anonyme Daten sammeln und zur Verbesserun
     <string name="you_need_to_select">Sie müssen eine Auswahl zuerst auswählen!</string>
     <string name="waiting_for_signal">Warten auf Signal zu lernen…</string>
     <string name="warning">Warnung!</string>
-    <string name="alredy_exists">Der Befehl, den Sie versuchen zu schreiben, sind bereits vorhanden! Auf diese Weise werden Sie vorhandenen Befehl überschreiben! 
+    <string name="already_exists">Der Befehl, den Sie versuchen zu schreiben, sind bereits vorhanden! Auf diese Weise werden Sie vorhandenen Befehl überschreiben!
 
 Wollen Sie fortfahren?</string>
     <string name="not_exists">Der Befehl für diese Taste nicht existiert! Wissen Sie, es jetzt zu schreiben??</string>
