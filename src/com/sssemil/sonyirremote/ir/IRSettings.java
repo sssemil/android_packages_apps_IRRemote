@@ -72,7 +72,7 @@ public class IRSettings extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "IRSettings";
-    SharedPreferences settings;
+    private SharedPreferences settings;
     private String http_path_root2;
     private String http_path_last_download1;
     private String http_path_last_download2;
@@ -89,7 +89,7 @@ public class IRSettings extends PreferenceActivity implements
     private String item = "null";
     private EditText brandN, itemN;
     private Spinner spinner;
-    private String saved_theme;
+    private int saved_theme;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -120,7 +120,7 @@ public class IRSettings extends PreferenceActivity implements
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
-        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
         adb = new AlertDialog.Builder(this);
         PackageInfo pInfo = null;
         try {
@@ -135,19 +135,8 @@ public class IRSettings extends PreferenceActivity implements
 
     @Override
     protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
-        if (settings.contains("theme")) {
-            saved_theme = settings.getString("theme", null);
-            if (saved_theme.equals("1")) {
-                theme.applyStyle(R.style.Holo, true);
-            } else if (saved_theme.equals("2")) {
-                theme.applyStyle(R.style.Holo_Light_DarkActionBar, true);
-            } else if (saved_theme.equals("3")) {
-                theme.applyStyle(R.style.Theme_Holo_Light, true);
-            }
-        } else {
-            theme.applyStyle(resid, true);
-        }
+        saved_theme = IRCommon.getInstance().getCurrentThemeId(this, resid);
+        theme.applyStyle(saved_theme, true);
     }
 
     @Override
@@ -553,7 +542,7 @@ public class IRSettings extends PreferenceActivity implements
                     }
                 }
             } else if (key.equals(("theme"))) {
-                SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+                SharedPreferences settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
                 if (settings.contains("theme")) {
                     if (settings.getString("theme", null).equals("1")) {
                         super.setTheme(R.style.Holo);
@@ -689,6 +678,7 @@ public class IRSettings extends PreferenceActivity implements
     public void onStop() {
         super.onStop();
         EasyTracker.getInstance(this).activityStart(this);
+        settings.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -713,9 +703,9 @@ public class IRSettings extends PreferenceActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
         if (settings.contains("theme")) {
-            if (!saved_theme.equals(settings.getString("theme", null))) {
+            if (!String.valueOf(saved_theme).equals(settings.getString("theme", null))) {
                 Intent i = getBaseContext().getPackageManager()
                         .getLaunchIntentForPackage(getBaseContext().getPackageName());
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

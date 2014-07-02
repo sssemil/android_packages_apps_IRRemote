@@ -90,7 +90,6 @@ import java.util.regex.Pattern;
 
 public class IRMain extends Activity {
 
-    public static final String PREFS_NAME = "com.sssemil.sonyirremote.ir_preferences";
     private static final String TAG = "IRMain";
     public String irpath = Environment
             .getExternalStorageDirectory() + "/irremote_keys/";//place to store commands
@@ -145,6 +144,57 @@ public class IRMain extends Activity {
         return sb.toString();
     }
 
+    public void onClick(final View view) {
+        Button btn = (Button) view;
+        Log.i(TAG, (String) btn.getContentDescription());
+        String usage = (String) btn.getContentDescription();
+        if (prepBISpinner()) {
+            result = false;
+            if (current_mode.equals("send")) {
+                sendKeyBool(irpath + item + "/" + usage + ".bin");
+            } else if (current_mode.equals("write")) {
+                learnKeyBool(irpath + item + "/" + usage + ".bin");
+            } else if (current_mode.equals("rename")) {
+                LayoutInflater li = LayoutInflater.from(this);
+                final View promptsView = li.inflate(R.layout.rename_menu, null);
+                Button button = (Button) findViewById(view.getId());
+                assert promptsView != null;
+                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
+                ed.setHint(button.getText());
+                adb = new AlertDialog.Builder(this);
+                adb.setTitle(getString(R.string.add_new_device));
+                adb
+                        .setCancelable(false)
+                        .setPositiveButton(getString(R.string.pos_ans),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        onRename(ed.getText().toString(),
+                                                getResources().getResourceEntryName(view.getId()));
+                                    }
+                                }
+                        )
+                        .setNeutralButton(getString(R.string.reset),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        onReset(getResources().getResourceEntryName(view.getId()));
+                                    }
+                                }
+                        )
+                        .setNegativeButton(getString(R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                }
+                        );
+                adb.setView(promptsView);
+                adb.show();
+            } else if (current_mode.equals("endis")) {
+                onEndis(getResources().getResourceEntryName(view.getId()));
+            }
+        }
+    }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -155,9 +205,13 @@ public class IRMain extends Activity {
         }).start();
         EasyTracker.getInstance(this).activityStart(this);
         run_threads = false;
+        //mHandler.removeCallbacksAndMessages(null);
+        mCheckHandler.removeCallbacksAndMessages(null);
         if (mCheckThread.isAlive()) {
             mCheckThread.quit();
         }
+        mCheckHandler = null;
+        mCheckThread = null;
     }
 
     @Override
@@ -173,11 +227,13 @@ public class IRMain extends Activity {
         easyTracker.activityStart(this);
         run_threads = true;
         if (!mCheckThread.isAlive()) {
+            mCheckThread = new HandlerThread("StateChecker");
             mCheckThread.start();
-            mCheckHandler = new StateChecker(mCheckThread.getLooper());
+            mCheckHandler = new StateChecker(mCheckHandler.getLooper());
             mCheckHandler.sendEmptyMessage(0);
         }
-        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
+
+        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
         if (settings.contains("theme")) {
             if (settings.getString("theme", null).equals("1")) {
                 super.setTheme(R.style.Holo);
@@ -238,7 +294,8 @@ public class IRMain extends Activity {
                 adb.setTitle(getString(R.string.warning));
                 adb.setMessage(getString(R.string.are_u_s_del));
                 adb.setIcon(android.R.drawable.ic_dialog_alert);
-                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                adb.setPositiveButton(getString(R.string.pos_ans),
+                        new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         item = mDrawerList.getItemAtPosition(item_position).toString();
                         File dir = new File(irpath + item);
@@ -249,7 +306,8 @@ public class IRMain extends Activity {
                             adb.setTitle(getString(R.string.error));
                             adb.setMessage(getString(R.string.failed_del_fl_io));
                             adb.setIcon(android.R.drawable.ic_dialog_alert);
-                            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                            adb.setPositiveButton(getString(R.string.pos_ans),
+                                    new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                 }
                             });
@@ -257,14 +315,16 @@ public class IRMain extends Activity {
                         }
                         adb = new AlertDialog.Builder(IRMain.this);
                         adb.setTitle(getString(R.string.done));
-                        adb.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
+                        adb.setMessage(getString(R.string.done_removing)
+                                + " " + item + " " + getString(R.string.files));
                         adb.setPositiveButton(getString(R.string.pos_ans), null);
                         adb.show();
                         prepItemBrandArray();
                     }
                 });
 
-                adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                adb.setNegativeButton(getString(R.string.cancel),
+                        new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
@@ -284,15 +344,19 @@ public class IRMain extends Activity {
             if (itemN.getText() != null || brandN.getText() != null) {
                 String all = brandN.getText().toString() + "-" + itemN.getText().toString();
                 if (!all.equals("-")) {
-                    File localFile2 = new File(irpath + brandN.getText().toString() + "-" + itemN.getText().toString());
+                    File localFile2 = new File(irpath + brandN.getText().toString()
+                            + "-" + itemN.getText().toString());
                     if (!localFile2.isDirectory()) {
                         localFile2.mkdirs();
                     }
                 }
                 adb = new AlertDialog.Builder(this);
                 adb.setTitle(getString(R.string.done));
-                adb.setMessage(getString(R.string.new_item) + " " + brandN.getText().toString() + "-" + itemN.getText().toString() + " " + getString(R.string.crt_slf));
-                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                adb.setMessage(getString(R.string.new_item) + " "
+                        + brandN.getText().toString() + "-" + itemN.getText().toString()
+                        + " " + getString(R.string.crt_slf));
+                adb.setPositiveButton(getString(R.string.pos_ans),
+                        new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 });
@@ -307,7 +371,8 @@ public class IRMain extends Activity {
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
             adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+            adb.setPositiveButton(getString(R.string.pos_ans),
+                    new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                 }
             });
@@ -355,18 +420,14 @@ public class IRMain extends Activity {
     }
 
     @Override
+    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
+        theme.applyStyle(IRCommon.getInstance().getCurrentThemeId(this, resid), true);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
-        if (settings.contains("theme")) {
-            if (settings.getString("theme", null).equals("1")) {
-                super.setTheme(R.style.Holo);
-            } else if (settings.getString("theme", null).equals("2")) {
-                super.setTheme(R.style.Holo_Light_DarkActionBar);
-            } else if (settings.getString("theme", null).equals("3")) {
-                super.setTheme(R.style.Theme_Holo_Light);
-            }
-        }
+        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
 
         if (settings.contains("volkey")) {
             volkey = settings.getString("volkey", null);
@@ -422,403 +483,50 @@ public class IRMain extends Activity {
             }
         }
 
-        Thread btn = new Thread() {
+        final View.OnLongClickListener listener = new View.OnLongClickListener() {
             @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.power);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/power.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
+            public boolean onLongClick(final View v) {
+                final Button btn = (Button) v;
+                Log.i(TAG, (String) btn.getContentDescription());
+                final String usage = (String) btn.getContentDescription();
+                if (prepBISpinner()) {
+                    result = false;
+                    if (current_mode.equals("send")) {
+                        Thread t = new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    while (btn.isPressed() && run_threads) {
+                                        sendKeyBool(irpath + item + "/" + usage + ".bin");
+                                        sleep(400);
                                     }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/power.bin");
+                                } catch (InterruptedException e) {
+                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                                }
                             }
-                        }
-                        return true;
+                        };
+                        t.start();
+                    } else if (current_mode.equals("write")) {
+                        learnKeyBool(irpath + item + "/" + usage + ".bin");
                     }
-                });
+                }
+                return true;
             }
         };
-        btn.start();
 
-        Thread btn3 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button3);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
+        for (int i = 2; i <= 38; i++) {
+            final String btn = "button" + i;
+            if (!disable.contains(btn)) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public boolean onLongClick(View v) {
-                        button.setPressed(true);
-                        v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/chanelPl.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/chanelPl.bin");
-                            }
-                        }
-                        return true;
+                    public void run() {
+                        int id = getResources().getIdentifier(btn,
+                                "id", getPackageName());
+                        findViewById(id).setOnLongClickListener(listener);
                     }
                 });
             }
-        };
-        btn3.start();
-
-        Thread btn4 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button4);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/chanelMn.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/chanelMn.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn4.start();
-
-        Thread btn5 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button5);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/volPl.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/volPl.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn5.start();
-
-        Thread btn6 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button6);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/volMn.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/volMn.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn6.start();
-
-        Thread btn17 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button17);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/up.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/up.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn17.start();
-
-        Thread btn18 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button18);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/down.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/down.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn18.start();
-
-        Thread btn20 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button20);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/right.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/right.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn20.start();
-
-        Thread btn21 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button21);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/left.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/left.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn21.start();
-
-        Thread btn29 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button29);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/wBack.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/wBack.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn29.start();
-
-        Thread btn32 = new Thread() {
-            @Override
-            public void run() {
-                final Button button = (Button) findViewById(R.id.button32);
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (prepBISpinner()) ;
-                        {
-                            result = false;
-                            if (current_mode.equals("send")) {
-                                Thread t = new Thread() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            while (button.isPressed() && run_threads) {
-                                                sendKeyBool(irpath + item + "/wFwrd.bin");
-                                                sleep(400);
-                                            }
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                    }
-                                };
-                                t.start();
-                            } else if (current_mode.equals("write")) {
-                                learnKeyBool(irpath + item + "/wFwrd.bin");
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        };
-        btn32.start();
+        }
 
         if ((getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK) !=
@@ -926,18 +634,18 @@ public class IRMain extends Activity {
                                                 "id",
                                                 "com.sssemil.sonyirremote.ir");
                                         Button button = ((Button) findViewById(id));
-                                            button.setTextColor(Color.DKGRAY);
-                                            if (settings.contains("theme")) {
-                                                if (settings.getString("theme",
-                                                        null).equals("1")) {
-                                                    button.setTextColor(
-                                                            Color.WHITE);
-                                                } else {
-                                                    button.setTextColor(
-                                                            Color.BLACK);
-                                                }
-                                                button.setEnabled(true);
+                                        button.setTextColor(Color.DKGRAY);
+                                        if (settings.contains("theme")) {
+                                            if (settings.getString("theme",
+                                                    null).equals("1")) {
+                                                button.setTextColor(
+                                                        Color.WHITE);
+                                            } else {
+                                                button.setTextColor(
+                                                        Color.BLACK);
                                             }
+                                            button.setEnabled(true);
+                                        }
 
                                     }
                                 });
@@ -1123,7 +831,8 @@ public class IRMain extends Activity {
         } else if (f.exists() && f.listFiles().length == 0) {
             f2.mkdir();
         }
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences settings =
+                getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
         SharedPreferences.Editor editor;
 
         if (!settings.contains("isFirstRun")) {
@@ -1775,1746 +1484,6 @@ public class IRMain extends Activity {
         }
     }
 
-    public void onPowerClick(View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/power.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/power.bin");
-            }
-        }
-    }
-
-    public void onChanelPlClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/chanelPl.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/chanelPl.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onChanelMnClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/chanelMn.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/chanelMn.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onVolumePlClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/volPl.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/volPl.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onVolumeMnClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/volMn.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/volMn.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on1Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/1.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/1.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on2Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/2.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/2.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on3Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/3.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/3.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on4Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/4.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/4.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on5Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/5.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/5.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on6Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/6.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/6.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on7Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/7.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/7.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on8Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/8.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/8.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on9Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/9.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/9.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void on0Click(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/0.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/0.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onUpClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/up.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/up.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onDownClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/down.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/down.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onLeftClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/left.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/left.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onRightClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/right.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/right.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onEnterClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/enter.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/enter.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onTsttClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/tstt.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/tstt.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onReturnClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/return.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/return.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onOptionsClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/options.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/options.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onGuideClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/guide.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/guide.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onMuteClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/mute.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/mute.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onHomeClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/home.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/home.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onInputClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/input.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/input.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onPauseClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/pause.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/pause.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onPlayClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/play.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/play.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onStopClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/stop.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/stop.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onSrClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/sr.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/sr.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onQClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/q.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/q.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onExitClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/exit.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/exit.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onAudioClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/audio.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/audio.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onTVRADIOClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/tvr.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/tvr.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onWfClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/wFwrd.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/wFwrd.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
-    public void onWbClick(final View view) {
-        if (prepBISpinner()) ;
-        {
-            result = false;
-            if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/wBack.bin");
-            } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/wBack.bin");
-            } else if (current_mode.equals("rename")) {
-                LayoutInflater li = LayoutInflater.from(this);
-                final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
-                assert promptsView != null;
-                final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
-                ed.setHint(button.getText());
-                adb = new AlertDialog.Builder(this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onRename(ed.getText().toString(), getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNeutralButton(getString(R.string.reset),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onReset(getResources().getResourceEntryName(view.getId()));
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (current_mode.equals("endis")) {
-                onEndis(getResources().getResourceEntryName(view.getId()));
-            }
-        }
-    }
-
     public String compare(String v1, String v2) {
         String s1 = normalisedVersion(v1);
         String s2 = normalisedVersion(v2);
@@ -3612,11 +1581,14 @@ public class IRMain extends Activity {
                                                 final DownloadApp downloadApp1 = new DownloadApp();
                                                 try {
                                                     downloadApp1.execute(http_path_last_download1
-                                                            + last_ver + http_path_last_download2).get();
+                                                            + last_ver + http_path_last_download2)
+                                                            .get();
                                                 } catch (InterruptedException e) {
-                                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                                                    Log.d(TAG, "catch " + e.toString()
+                                                            + " hit in run", e);
                                                 } catch (ExecutionException e) {
-                                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                                                    Log.d(TAG, "catch " + e.toString()
+                                                            + " hit in run", e);
                                                 }
                                                 mProgressDialog.cancel();
                                             }

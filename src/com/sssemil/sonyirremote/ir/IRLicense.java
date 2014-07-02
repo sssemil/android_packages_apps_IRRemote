@@ -20,7 +20,7 @@
 package com.sssemil.sonyirremote.ir;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebResourceResponse;
@@ -39,7 +39,11 @@ public class IRLicense extends Activity {
             return null;
         }
     };
-    String saved_theme;
+
+    @Override
+    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
+        theme.applyStyle(IRCommon.getInstance().getCurrentThemeId(this, resid), true);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -54,17 +58,6 @@ public class IRLicense extends Activity {
 
     public void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
-        SharedPreferences settings = getSharedPreferences("com.sssemil.sonyirremote.ir_preferences", 0);
-        if (settings.contains("theme")) {
-            saved_theme = settings.getString("theme", null);
-            if (saved_theme.equals("1")) {
-                super.setTheme(R.style.Holo);
-            } else if (saved_theme.equals("2")) {
-                super.setTheme(R.style.Holo_Light_DarkActionBar);
-            } else if (saved_theme.equals("3")) {
-                super.setTheme(R.style.Theme_Holo_Light);
-            }
-        }
         setContentView(R.layout.license_menu);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         WebView localWebView = (WebView) findViewById(R.id.webView);

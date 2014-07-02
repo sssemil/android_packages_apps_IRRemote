@@ -17,6 +17,44 @@
      MA  02110-1301, USA.
 -->
 <resources>
+    <string name="btn3" translatable="false">chanelPl</string>
+    <string name="btn4" translatable="false">chanelMn</string>
+    <string name="btn5" translatable="false">volPl</string>
+    <string name="btn6" translatable="false">volMn</string>
+    <string name="btn7" translatable="false">1</string>
+    <string name="btn8" translatable="false">2</string>
+    <string name="btn9" translatable="false">3</string>
+    <string name="btn10" translatable="false">4</string>
+    <string name="btn11" translatable="false">5</string>
+    <string name="btn12" translatable="false">6</string>
+    <string name="btn13" translatable="false">7</string>
+    <string name="btn14" translatable="false">8</string>
+    <string name="btn15" translatable="false">9</string>
+    <string name="btn16" translatable="false">0</string>
+    <string name="btn17" translatable="false">up</string>
+    <string name="btn18" translatable="false">down</string>
+    <string name="btn19" translatable="false">enter</string>
+    <string name="btn20" translatable="false">right</string>
+    <string name="btn21" translatable="false">left</string>
+    <string name="btn22" translatable="false">mute</string>
+    <string name="btn23" translatable="false">input</string>
+    <string name="btn24" translatable="false">home</string>
+    <string name="btn25" translatable="false">tstt</string>
+    <string name="btn26" translatable="false">return</string>
+    <string name="btn27" translatable="false">options</string>
+    <string name="btn28" translatable="false">guide</string>
+    <string name="btnP" translatable="false">power</string>
+    <string name="btn29" translatable="false">wBack</string>
+    <string name="btn30" translatable="false">pause</string>
+    <string name="btn31" translatable="false">play</string>
+    <string name="btn32" translatable="false">wFwrd</string>
+    <string name="btn33" translatable="false">stop</string>
+    <string name="btn34" translatable="false">sr</string>
+    <string name="btn35" translatable="false">q</string>
+    <string name="btn36" translatable="false">exit</string>
+    <string name="btn37" translatable="false">tvr</string>
+    <string name="btn38" translatable="false">audio</string>
+
     <string name="one" translatable="false">1</string>
     <string name="two" translatable="false">2</string>
     <string name="tree" translatable="false">3</string>

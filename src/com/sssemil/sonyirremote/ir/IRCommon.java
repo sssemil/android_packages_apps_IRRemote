@@ -19,13 +19,17 @@
 
 package com.sssemil.sonyirremote.ir;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
 
 public class IRCommon {
 
+    private static final String TAG = "IRCommon";
     private static IRCommon instance = null;
 
     protected IRCommon() {
@@ -47,7 +51,7 @@ public class IRCommon {
             if (file.list().length == 0) {
 
                 file.delete();
-                System.out.println("Directory is deleted : "
+                Log.d(TAG, "Directory is deleted : "
                         + file.getAbsolutePath());
 
             } else {
@@ -66,7 +70,7 @@ public class IRCommon {
                 //check the directory again, if empty then delete it
                 if (file.list().length == 0) {
                     file.delete();
-                    System.out.println("Directory is deleted : "
+                    Log.d(TAG, "Directory is deleted : "
                             + file.getAbsolutePath());
                 }
             }
@@ -74,7 +78,7 @@ public class IRCommon {
         } else {
             //if file, then delete it
             file.delete();
-            System.out.println("File is deleted : " + file.getAbsolutePath());
+            Log.d(TAG, "File is deleted : " + file.getAbsolutePath());
         }
     }
 
@@ -127,6 +131,25 @@ public class IRCommon {
     public void restart(Resources res) {
         stopIR(getPowernode(res));
         startIR(getPowernode(res));
+    }
+
+    public String PREFS_NAME(Context context) {
+        return context.getPackageName() + "_preferences";
+    }
+
+    public int getCurrentThemeId(Context context, int default_resid) {
+        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME(context), 0);
+        if (settings.contains("theme")) {
+            String saved_theme = settings.getString("theme", null);
+            if (saved_theme.equals("1")) {
+                return R.style.Holo;
+            } else if (saved_theme.equals("2")) {
+                return R.style.Holo_Light_DarkActionBar;
+            } else if (saved_theme.equals("3")) {
+                return R.style.Theme_Holo_Light;
+            }
+        }
+        return default_resid;
     }
 }
 
