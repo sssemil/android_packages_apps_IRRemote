@@ -27,7 +27,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.Preference;
@@ -45,25 +44,11 @@ import android.widget.TextView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.sssemil.sonyirremote.ir.Utils.Compress;
-import com.sssemil.sonyirremote.ir.Utils.Decompress;
+import com.sssemil.sonyirremote.ir.Utils.Download;
+import com.sssemil.sonyirremote.ir.Utils.GetText;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -76,14 +61,10 @@ public class IRSettings extends PreferenceActivity implements
     private String http_path_root2;
     private String http_path_last_download1;
     private String http_path_last_download2;
-    private ArrayList<String> ar = new ArrayList<String>();
-    private String ar2;
-    private String irpath = Environment.getExternalStorageDirectory() + "/irremote_keys/";//place to store commands
     private String last_ver = "zirt";
     private String cur_ver;
     private ProgressDialog mProgressDialog;
     private AlertDialog.Builder adb;
-    private String resp = "ko";
     private String lastWord;
     private boolean cont = false;
     private String item = "null";
@@ -209,70 +190,75 @@ public class IRSettings extends PreferenceActivity implements
                         }
                     });
                     try {
-                        File df = new File(irpath + lastWord.substring(lastWord.lastIndexOf("/") + 1).substring(0, lastWord.substring(lastWord.lastIndexOf("/") + 1).length() - 4));
+                        File df = new File(IRCommon.getIrPath() + lastWord.substring(lastWord.lastIndexOf("/") + 1).substring(0, lastWord.substring(lastWord.lastIndexOf("/") + 1).length() - 4));
                         IRCommon.delete(df);
                     } catch (IOException e) {
                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                     }
-                    final DownloadTask downloadTask = new DownloadTask();
+                    final Download downloadZip1 = new Download(http_path_last_download1
+                            + last_ver + http_path_last_download2,
+                            Environment
+                                    .getExternalStorageDirectory()
+                                    + "/upd.apk", IRSettings.this, "zip"
+                    );
+
                     try {
-                        downloadTask.execute(lastWord).get();
+                        String list;
+                        if (!(list = downloadZip1.execute(lastWord).get()).equals("ok")) {
+                            mProgressDialog.cancel();
+                            adb.setTitle(getString(R.string.download));
+                            adb.setMessage(getString(R.string.ser3));
+                            adb.setIcon(android.R.drawable.ic_dialog_alert);
+                            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    doOnDown(content);
+                                }
+                            });
+
+                            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //finish();
+                                }
+                            });
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressDialog.cancel();
+                                    adb.show();
+                                }
+                            });
+                        } else {
+                            mProgressDialog.cancel();
+                            LayoutInflater li = LayoutInflater.from(IRSettings.this);
+                            final View promptsView = li.inflate(R.layout.done_menu, null);
+                            TextView tw = (TextView) promptsView.findViewById(R.id.textView2);
+                            tw.setText(list);
+                            adb = new AlertDialog.Builder(IRSettings.this);
+                            adb.setTitle(getString(R.string.downloadT));
+                            adb.setIcon(android.R.drawable.ic_dialog_info);
+                            adb
+                                    .setCancelable(false)
+                                    .setPositiveButton(getString(R.string.pos_ans),
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    //onAddDeviceClick(promptsView);
+                                                }
+                                            }
+                                    );
+                            adb.setView(promptsView);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressDialog.cancel();
+                                    adb.show();
+                                }
+                            });
+                        }
                     } catch (InterruptedException e) {
                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                     } catch (ExecutionException e) {
                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                     }
-                    mProgressDialog.cancel();
-
-                    if (!resp.equals("ok")) {
-                        adb.setTitle(getString(R.string.download));
-                        adb.setMessage(getString(R.string.ser3));
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
-                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                doOnDown(content);
-                            }
-                        });
-
-                        adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        });
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.cancel();
-                                adb.show();
-                            }
-                        });
-                    } else {
-                        LayoutInflater li = LayoutInflater.from(IRSettings.this);
-                        final View promptsView = li.inflate(R.layout.done_menu, null);
-                        TextView tw = (TextView) promptsView.findViewById(R.id.textView2);
-                        tw.setText(ar2);
-                        adb = new AlertDialog.Builder(IRSettings.this);
-                        adb.setTitle(getString(R.string.downloadT));
-                        adb.setIcon(android.R.drawable.ic_dialog_info);
-                        adb
-                                .setCancelable(false)
-                                .setPositiveButton(getString(R.string.pos_ans),
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                //onAddDeviceClick(promptsView);
-                                            }
-                                        }
-                                );
-                        adb.setView(promptsView);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.cancel();
-                                adb.show();
-                            }
-                        });
-                    }
-                    resp = "ko";
                 }
             }
         }).start();
@@ -289,7 +275,7 @@ public class IRSettings extends PreferenceActivity implements
             if (itemN.getText() != null && brandN.getText() != null) {
                 String all = brandN.getText().toString() + "-" + itemN.getText().toString();
                 if (!all.equals("-")) {
-                    File localFile2 = new File(irpath + brandN.getText().toString() + "-" + itemN.getText().toString());
+                    File localFile2 = new File(IRCommon.getIrPath() + brandN.getText().toString() + "-" + itemN.getText().toString());
                     if (!localFile2.isDirectory()) {
                         localFile2.mkdirs();
                     }
@@ -323,6 +309,7 @@ public class IRSettings extends PreferenceActivity implements
                                          final Preference preference) {
         String key = preference.getKey();
         adb = new AlertDialog.Builder(this);
+        final ArrayList<String> ar = new ArrayList<String>();
         if (key != null) {
             if (key.equals("aboutPref")) {
                 Intent intent = new Intent(this,
@@ -365,9 +352,9 @@ public class IRSettings extends PreferenceActivity implements
 
                 new Thread(new Runnable() {
                     public void run() {
-                        final GetAwItems getAwItems1 = new GetAwItems();
+                        final GetText getAwItems1 = new GetText();
                         try {
-                            getAwItems1.execute().get();
+                            getAwItems1.execute(http_path_root2 + "downloads").get();
                         } catch (InterruptedException e) {
                             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                         } catch (ExecutionException e) {
@@ -399,7 +386,7 @@ public class IRSettings extends PreferenceActivity implements
                 try {
                     adb.setTitle(getString(R.string.remove));
                     ar.clear();
-                    for (File localFile1 : new File(irpath).listFiles()) {
+                    for (File localFile1 : new File(IRCommon.getIrPath()).listFiles()) {
                         if (localFile1.isDirectory()) {
                             if (!ar.contains(localFile1.getName())) {
                                 ar.add(localFile1.getName());
@@ -420,7 +407,7 @@ public class IRSettings extends PreferenceActivity implements
                             adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     item = ar.get(selected);
-                                    File dir = new File(irpath + item);
+                                    File dir = new File(IRCommon.getIrPath() + item);
                                     try {
                                         IRCommon.delete(dir);
                                     } catch (IOException e) {
@@ -486,7 +473,7 @@ public class IRSettings extends PreferenceActivity implements
                                         try {
                                             spinner = (Spinner) promptsView.findViewById(R.id.spinner);
                                             item = spinner.getSelectedItem().toString();
-                                            Compress c = new Compress(irpath + item, Environment.getExternalStorageDirectory() + "/" + item + ".zip");
+                                            Compress c = new Compress(IRCommon.getIrPath() + item, Environment.getExternalStorageDirectory() + "/" + item + ".zip");
                                             c.zip();
                                             Intent emailIntent = new Intent(Intent.ACTION_SEND);
                                             emailIntent.setType("application/zip");
@@ -526,7 +513,7 @@ public class IRSettings extends PreferenceActivity implements
                 ArrayList<String> localArrayList1 = new ArrayList<String>();
                 boolean edited = false;
 
-                for (File localFile1 : new File(irpath).listFiles()) {
+                for (File localFile1 : new File(IRCommon.getIrPath()).listFiles()) {
                     if (localFile1.isDirectory()) {
                         if (!localArrayList1.contains(localFile1.getName())) {
                             localArrayList1.add(localFile1.getName());
@@ -558,7 +545,7 @@ public class IRSettings extends PreferenceActivity implements
     }
 
     public void update() {
-        final GetLastVer getLastVer1 = new GetLastVer();
+        final GetText getLastVer1 = new GetText();
         final AlertDialog.Builder adb = new AlertDialog.Builder(this);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(getString(R.string.checking));
@@ -573,7 +560,7 @@ public class IRSettings extends PreferenceActivity implements
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Log.i("Update", "last_ver : " + getLastVer1.execute().get() + " cur_ver : " + cur_ver);
+                    Log.i("Update", "last_ver : " + getLastVer1.execute(http_path_root2 + "last.php").get() + " cur_ver : " + cur_ver);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 } catch (ExecutionException e) {
@@ -632,7 +619,12 @@ public class IRSettings extends PreferenceActivity implements
                                             }
                                         });
 
-                                        final DownloadApp downloadApp1 = new DownloadApp();
+                                        final Download downloadApp1 = new Download(http_path_last_download1
+                                                + last_ver + http_path_last_download2,
+                                                Environment
+                                                        .getExternalStorageDirectory()
+                                                        + "/upd.apk", IRSettings.this, "apk"
+                                        );
                                         try {
                                             downloadApp1.execute(http_path_last_download1 + last_ver + http_path_last_download2).get();
                                         } catch (InterruptedException e) {
@@ -711,233 +703,6 @@ public class IRSettings extends PreferenceActivity implements
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
                 finish();
-            }
-        }
-    }
-
-    class DownloadTask extends AsyncTask<String, Integer, String> {
-
-        public DownloadTask() {
-        }
-
-        protected String doInBackground(String... sUrl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                Log.v("DownloadTask", "Starting... ");
-                URL url = new URL(sUrl[0]);
-                String filePath = url.getFile();
-                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + fileName);
-                Log.v("DownloadTask", "output " + Environment.getExternalStorageDirectory() + "/" + fileName);
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    output.write(data, 0, count);
-                }
-                Log.v("DownloadTask", "Done!");
-                //---------Unzip--------
-                String zipFile = Environment.getExternalStorageDirectory() + "/" + fileName;
-                String unzipLocation = irpath;
-
-                Decompress d = new Decompress(zipFile, unzipLocation);
-                ar2 = d.unzip();
-                //----------------------
-                resp = "ok";
-                return "ok";
-            } catch (MalformedURLException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return e.toString();
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return e.toString();
-            } catch (IOException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException e) {
-                    Log.d(TAG, "catch IOException hit in run", e);
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-            }
-        }
-    }
-
-    class GetAwItems extends AsyncTask<String, Integer, String> {
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        public GetAwItems() {
-        }
-
-        protected String doInBackground(String... sUrl) {
-            try {
-                HttpGet httppost = new HttpGet(http_path_root2 + "downloads");
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity ht = response.getEntity();
-
-                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-
-                InputStream is = buf.getContent();
-
-                BufferedReader r = new BufferedReader(new InputStreamReader(is));
-
-                String line;
-                ar.clear();
-                while ((line = r.readLine()) != null) {
-                    ar.add(line);
-                }
-                Log.i("line", String.valueOf(ar.size()));
-
-                return ar.get(0);
-            } catch (IOException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return null;
-            }
-        }
-    }
-
-    class DownloadApp extends AsyncTask<String, Integer, String> {
-
-        public DownloadApp() {
-        }
-
-        protected String doInBackground(String... sUrl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                Log.v("DownloadApp", "Starting... ");
-                URL url = new URL(sUrl[0]);
-
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/upd.apk");
-                Log.v("DownloadApp", "output " + Environment.getExternalStorageDirectory() + "/upd.apk");
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    output.write(data, 0, count);
-                }
-                Log.v("DownloadApp", "Done!");
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/upd.apk")), "application/vnd.android.package-archive");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            } catch (MalformedURLException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-            } catch (IOException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException e) {
-                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-            }
-            return null;
-        }
-    }
-
-    class GetLastVer extends AsyncTask<String, Integer, String> {
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        public GetLastVer() {
-        }
-
-        protected String doInBackground(String... sUrl) {
-            try {
-                HttpGet httppost = new HttpGet(http_path_root2 + "last.php");
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity ht = response.getEntity();
-
-                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-
-                InputStream is = buf.getContent();
-
-                BufferedReader r = new BufferedReader(new InputStreamReader(is));
-
-                String line;
-                last_ver = "";
-                while ((line = r.readLine()) != null) {
-                    last_ver += line;
-                }
-                Log.i("GetLastVer", last_ver);
-                return last_ver;
-            } catch (IOException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return null;
             }
         }
     }

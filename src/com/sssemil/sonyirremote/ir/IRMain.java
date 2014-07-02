@@ -30,8 +30,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -63,13 +61,9 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.StandardExceptionParser;
+import com.sssemil.sonyirremote.ir.Utils.Download;
+import com.sssemil.sonyirremote.ir.Utils.GetText;
 import com.sssemil.sonyirremote.ir.Utils.OnSwipeTouchListener;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -77,13 +71,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -91,8 +80,6 @@ import java.util.regex.Pattern;
 public class IRMain extends Activity {
 
     private static final String TAG = "IRMain";
-    public String irpath = Environment
-            .getExternalStorageDirectory() + "/irremote_keys/";//place to store commands
     public String http_path_root2;
     public String http_path_last_download1;
     public String http_path_last_download2;
@@ -151,9 +138,9 @@ public class IRMain extends Activity {
         if (prepBISpinner()) {
             result = false;
             if (current_mode.equals("send")) {
-                sendKeyBool(irpath + item + "/" + usage + ".bin");
+                sendKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
             } else if (current_mode.equals("write")) {
-                learnKeyBool(irpath + item + "/" + usage + ".bin");
+                learnKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
             } else if (current_mode.equals("rename")) {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
@@ -296,39 +283,42 @@ public class IRMain extends Activity {
                 adb.setIcon(android.R.drawable.ic_dialog_alert);
                 adb.setPositiveButton(getString(R.string.pos_ans),
                         new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        item = mDrawerList.getItemAtPosition(item_position).toString();
-                        File dir = new File(irpath + item);
-                        try {
-                            IRCommon.delete(dir);
-                        } catch (IOException e) {
-                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                            adb.setTitle(getString(R.string.error));
-                            adb.setMessage(getString(R.string.failed_del_fl_io));
-                            adb.setIcon(android.R.drawable.ic_dialog_alert);
-                            adb.setPositiveButton(getString(R.string.pos_ans),
-                                    new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface dialog, int which) {
+                                item = mDrawerList.getItemAtPosition(item_position).toString();
+                                File dir = new File(IRCommon.getIrPath() + item);
+                                try {
+                                    IRCommon.delete(dir);
+                                } catch (IOException e) {
+                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                                    adb.setTitle(getString(R.string.error));
+                                    adb.setMessage(getString(R.string.failed_del_fl_io));
+                                    adb.setIcon(android.R.drawable.ic_dialog_alert);
+                                    adb.setPositiveButton(getString(R.string.pos_ans),
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                }
+                                            }
+                                    );
+                                    adb.show();
                                 }
-                            });
-                            adb.show();
+                                adb = new AlertDialog.Builder(IRMain.this);
+                                adb.setTitle(getString(R.string.done));
+                                adb.setMessage(getString(R.string.done_removing)
+                                        + " " + item + " " + getString(R.string.files));
+                                adb.setPositiveButton(getString(R.string.pos_ans), null);
+                                adb.show();
+                                prepItemBrandArray();
+                            }
                         }
-                        adb = new AlertDialog.Builder(IRMain.this);
-                        adb.setTitle(getString(R.string.done));
-                        adb.setMessage(getString(R.string.done_removing)
-                                + " " + item + " " + getString(R.string.files));
-                        adb.setPositiveButton(getString(R.string.pos_ans), null);
-                        adb.show();
-                        prepItemBrandArray();
-                    }
-                });
+                );
 
                 adb.setNegativeButton(getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface dialog, int which) {
 
-                    }
-                });
+                            }
+                        }
+                );
                 adb.show();
             }
         }
@@ -344,7 +334,7 @@ public class IRMain extends Activity {
             if (itemN.getText() != null || brandN.getText() != null) {
                 String all = brandN.getText().toString() + "-" + itemN.getText().toString();
                 if (!all.equals("-")) {
-                    File localFile2 = new File(irpath + brandN.getText().toString()
+                    File localFile2 = new File(IRCommon.getIrPath() + brandN.getText().toString()
                             + "-" + itemN.getText().toString());
                     if (!localFile2.isDirectory()) {
                         localFile2.mkdirs();
@@ -357,9 +347,10 @@ public class IRMain extends Activity {
                         + " " + getString(R.string.crt_slf));
                 adb.setPositiveButton(getString(R.string.pos_ans),
                         new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }
+                );
                 adb.show();
                 prepItemBrandArray();
             } else {
@@ -373,9 +364,10 @@ public class IRMain extends Activity {
             adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton(getString(R.string.pos_ans),
                     new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }
+            );
             adb.show();
         }
     }
@@ -403,9 +395,9 @@ public class IRMain extends Activity {
                 file2 = "/chanelMn.bin";
             }
             if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)) {
-                sendKeyBool(irpath + item + file1);
+                sendKeyBool(IRCommon.getIrPath() + item + file1);
             } else if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
-                sendKeyBool(irpath + item + file2);
+                sendKeyBool(IRCommon.getIrPath() + item + file2);
             }
         }
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -497,7 +489,7 @@ public class IRMain extends Activity {
                             public void run() {
                                 try {
                                     while (btn.isPressed() && run_threads) {
-                                        sendKeyBool(irpath + item + "/" + usage + ".bin");
+                                        sendKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
                                         sleep(400);
                                     }
                                 } catch (InterruptedException e) {
@@ -507,7 +499,7 @@ public class IRMain extends Activity {
                         };
                         t.start();
                     } else if (current_mode.equals("write")) {
-                        learnKeyBool(irpath + item + "/" + usage + ".bin");
+                        learnKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
                     }
                 }
                 return true;
@@ -562,7 +554,7 @@ public class IRMain extends Activity {
         if (main) {
             File f;
             if (!current_mode.equals("endis")) {
-                f = new File(irpath + item + "/disable.ini");
+                f = new File(IRCommon.getIrPath() + item + "/disable.ini");
                 if (f.exists()) {
                     try {
                         for (int i = 3; i <= 38; i++) {
@@ -621,7 +613,7 @@ public class IRMain extends Activity {
                 }
             }
             if (current_mode.equals("endis")) {
-                f = new File(irpath + item + "/disable.ini");
+                f = new File(IRCommon.getIrPath() + item + "/disable.ini");
                 if (f.exists()) {
                     try {
                         for (int i = 3; i <= 38; i++) {
@@ -692,7 +684,7 @@ public class IRMain extends Activity {
                     }
                 }
             }
-            f = new File(irpath + item + "/text.ini");
+            f = new File(IRCommon.getIrPath() + item + "/text.ini");
             if (f.exists()) {
                 try {
                     FileInputStream is = new FileInputStream(f);
@@ -823,8 +815,8 @@ public class IRMain extends Activity {
 
     public void firstRunChecker() {
         boolean isFirstRun;
-        File f = new File(irpath);
-        File f2 = new File(irpath + "Example-TV");
+        File f = new File(IRCommon.getIrPath());
+        File f2 = new File(IRCommon.getIrPath() + "Example-TV");
         if (!f.exists() && !f2.exists()) {
             f.mkdir();
             f2.mkdir();
@@ -1039,7 +1031,7 @@ public class IRMain extends Activity {
     }
 
     public void prepIRKeys() {
-        File f = new File(irpath);
+        File f = new File(IRCommon.getIrPath());
         if (!f.isDirectory()) {
             f.mkdirs();
         }
@@ -1048,8 +1040,8 @@ public class IRMain extends Activity {
     public void prepItemBrandArray() {
         ArrayList<String> localArrayList1 = new ArrayList<String>();
         boolean edited = false;
-        File f = new File(irpath);
-        File f2 = new File(irpath + "Example-TV");
+        File f = new File(IRCommon.getIrPath());
+        File f2 = new File(IRCommon.getIrPath() + "Example-TV");
         if (!f.exists() && !f2.exists()) {
             f.mkdir();
             f2.mkdir();
@@ -1059,7 +1051,7 @@ public class IRMain extends Activity {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        for (File localFile1 : new File(this.irpath).listFiles()) {
+        for (File localFile1 : new File(IRCommon.getIrPath()).listFiles()) {
             if (localFile1.isDirectory()) {
                 if (!localArrayList1.contains(localFile1.getName())) {
                     localArrayList1.add(localFile1.getName());
@@ -1082,9 +1074,10 @@ public class IRMain extends Activity {
         mDrawerList.setOnItemLongClickListener(new DrawerItemLongClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
-
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -1177,12 +1170,12 @@ public class IRMain extends Activity {
                                                     alert.setVisibility(View.VISIBLE);
                                                     alert.setTextColor(Color.RED);
 
-                                                    File f = new File(irpath + item);
+                                                    File f = new File(IRCommon.getIrPath() + item);
                                                     if (!f.isDirectory()) {
                                                         f.mkdirs();
                                                     }
 
-                                                    File f2 = new File(irpath + brand);
+                                                    File f2 = new File(IRCommon.getIrPath() + brand);
                                                     if (!f2.isDirectory()) {
                                                         f2.mkdirs();
                                                     }
@@ -1336,7 +1329,7 @@ public class IRMain extends Activity {
     }
 
     private void onReset(String btn_name) {
-        File f = new File(irpath + item + "/text.ini");
+        File f = new File(IRCommon.getIrPath() + item + "/text.ini");
         try {
             if (f.exists()) {
                 FileInputStream is = new FileInputStream(f);
@@ -1379,7 +1372,7 @@ public class IRMain extends Activity {
     }
 
     private void onRename(String new_name, String btn_name) {
-        File f = new File(irpath + item + "/text.ini");
+        File f = new File(IRCommon.getIrPath() + item + "/text.ini");
         try {
             if (!f.exists()) {
                 f.createNewFile();
@@ -1430,7 +1423,7 @@ public class IRMain extends Activity {
     }
 
     private void onEndis(String btn_name) {
-        File f = new File(irpath + item + "/disable.ini");
+        File f = new File(IRCommon.getIrPath() + item + "/disable.ini");
         int id = getResources().getIdentifier(btn_name,
                 "id", "com.sssemil.sonyirremote.ir");
         Button button = ((Button) findViewById(id));
@@ -1492,7 +1485,7 @@ public class IRMain extends Activity {
     }
 
     public void update(final boolean silent) {
-        final GetLastVer getLastVer1 = new GetLastVer();
+        final GetText getLastVer1 = new GetText();
         adb = new AlertDialog.Builder(this);
         if (!silent) {
             mProgressDialog = new ProgressDialog(IRMain.this);
@@ -1509,7 +1502,8 @@ public class IRMain extends Activity {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Log.i(TAG, "Update last_ver : " + getLastVer1.execute().get()
+                    Log.i(TAG, "Update last_ver : " + (last_ver = getLastVer1.execute(http_path_root2
+                            + "last.php").get().get(0))
                             + " cur_ver : " + cur_ver);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
@@ -1578,11 +1572,15 @@ public class IRMain extends Activity {
                                                     }
                                                 });
 
-                                                final DownloadApp downloadApp1 = new DownloadApp();
+                                                Download downloadApp1 =
+                                                        new Download(http_path_last_download1
+                                                                + last_ver + http_path_last_download2,
+                                                                Environment
+                                                                        .getExternalStorageDirectory()
+                                                                        + "/upd.apk", IRMain.this, "apk"
+                                                        );
                                                 try {
-                                                    downloadApp1.execute(http_path_last_download1
-                                                            + last_ver + http_path_last_download2)
-                                                            .get();
+                                                    downloadApp1.execute().get();
                                                 } catch (InterruptedException e) {
                                                     Log.d(TAG, "catch " + e.toString()
                                                             + " hit in run", e);
@@ -1662,150 +1660,6 @@ public class IRMain extends Activity {
         }
     }
 
-    class setUUID extends AsyncTask<String, Integer, String> {
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        public setUUID() {
-        }
-
-        protected String doInBackground(String... UUID) {
-            try {
-                HttpGet httppost = new HttpGet("http://sssemil.comli.com/uuid.php?uuid=" + UUID[0]);
-                HttpResponse response = httpclient.execute(httppost);
-                response.getEntity();
-                return "done";
-            } catch (IOException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return null;
-            }
-        }
-    }
-
-    class DownloadApp extends AsyncTask<String, Integer, String> {
-
-        public DownloadApp() {
-        }
-
-        protected String doInBackground(String... sUrl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                Log.v(TAG, "DownloadApp" + "Starting... ");
-                URL url = new URL(sUrl[0]);
-
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream(Environment
-                        .getExternalStorageDirectory() + "/upd.apk");
-                Log.v(TAG, "DownloadApp" + "output " + Environment
-                        .getExternalStorageDirectory() + "/upd.apk");
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    output.write(data, 0, count);
-                }
-                Log.v(TAG, "DownloadApp" + "Done!");
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(Environment
-                                .getExternalStorageDirectory() + "/upd.apk")),
-                        "application/vnd.android.package-archive"
-                );
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            } catch (MalformedURLException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return e.toString();
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return e.toString();
-            } catch (IOException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException e) {
-                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-            }
-            return null;
-        }
-    }
-
-    class GetLastVer extends AsyncTask<String, Integer, String> {
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        public GetLastVer() {
-        }
-
-        protected String doInBackground(String... sUrl) {
-            try {
-                HttpGet httppost = new HttpGet(http_path_root2 + "last.php");
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity ht = response.getEntity();
-
-                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-
-                InputStream is = buf.getContent();
-
-                BufferedReader r = new BufferedReader(new InputStreamReader(is));
-
-                String line;
-                last_ver = "";
-                while ((line = r.readLine()) != null) {
-                    last_ver += line;
-                }
-                Log.i(TAG, "GetLastVer" + last_ver);
-                return last_ver;
-            } catch (IOException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                return null;
-            }
-        }
-    }
-
-    private class NonZeroStatusException extends Exception {
-        public NonZeroStatusException() {
-        }
-
-        public NonZeroStatusException(String message) {
-            super(message);
-        }
-    }
+    private class NonZeroStatusException extends Exception { }
 }
 

@@ -22,6 +22,7 @@ package com.sssemil.sonyirremote.ir;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -80,6 +81,10 @@ public class IRCommon {
             file.delete();
             Log.d(TAG, "File is deleted : " + file.getAbsolutePath());
         }
+    }
+
+    public static String getIrPath() {
+        return Environment.getExternalStorageDirectory() + "/irremote_keys/";
     }
 
     public String getPowernode(Resources res) {
