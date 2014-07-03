@@ -43,9 +43,9 @@ import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
-import com.sssemil.sonyirremote.ir.Utils.Compress;
-import com.sssemil.sonyirremote.ir.Utils.Download;
-import com.sssemil.sonyirremote.ir.Utils.GetText;
+import com.sssemil.sonyirremote.ir.Utils.zip.Compress;
+import com.sssemil.sonyirremote.ir.Utils.net.Download;
+import com.sssemil.sonyirremote.ir.Utils.net.GetText;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class IRSettings extends PreferenceActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
@@ -111,6 +111,7 @@ public class IRSettings extends PreferenceActivity implements
         } catch (PackageManager.NameNotFoundException e) {
             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         }
+        assert pInfo != null;
         cur_ver = pInfo.versionName;
     }
 
@@ -697,7 +698,8 @@ public class IRSettings extends PreferenceActivity implements
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
         if (settings.contains("theme")) {
-            if (!String.valueOf(saved_theme).equals(settings.getString("theme", null))) {
+            if (saved_theme != IRCommon.getInstance().getCurrentThemeId(this, saved_theme)) {
+                saved_theme = IRCommon.getInstance().getCurrentThemeId(this, saved_theme);
                 Intent i = getBaseContext().getPackageManager()
                         .getLaunchIntentForPackage(getBaseContext().getPackageName());
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

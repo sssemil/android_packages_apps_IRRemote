@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package com.sssemil.sonyirremote.ir.Utils;
+package com.sssemil.sonyirremote.ir.Utils.net;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +26,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.sssemil.sonyirremote.ir.IRCommon;
+import com.sssemil.sonyirremote.ir.Utils.zip.Decompress;
 
 import java.io.File;
 import java.io.FileNotFoundException;

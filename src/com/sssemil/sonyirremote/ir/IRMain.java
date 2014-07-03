@@ -61,8 +61,8 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.StandardExceptionParser;
-import com.sssemil.sonyirremote.ir.Utils.Download;
-import com.sssemil.sonyirremote.ir.Utils.GetText;
+import com.sssemil.sonyirremote.ir.Utils.net.Download;
+import com.sssemil.sonyirremote.ir.Utils.net.GetText;
 import com.sssemil.sonyirremote.ir.Utils.OnSwipeTouchListener;
 
 import java.io.BufferedReader;
@@ -1508,6 +1508,8 @@ public class IRMain extends Activity {
                 } catch (InterruptedException e) {
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 } catch (ExecutionException e) {
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                } catch (NullPointerException e) {
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 }
                 if (last_ver.equals("zirt")) {
