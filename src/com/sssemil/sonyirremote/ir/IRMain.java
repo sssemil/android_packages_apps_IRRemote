@@ -19,8 +19,13 @@
 
 package com.sssemil.sonyirremote.ir;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,16 +41,18 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -53,7 +60,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,7 +69,6 @@ import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.StandardExceptionParser;
 import com.sssemil.sonyirremote.ir.Utils.net.Download;
 import com.sssemil.sonyirremote.ir.Utils.net.GetText;
-import com.sssemil.sonyirremote.ir.Utils.OnSwipeTouchListener;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -74,10 +79,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
-public class IRMain extends Activity {
+public class IRMain extends Activity implements ActionBar.TabListener, View.OnLongClickListener {
 
     private static final String TAG = "IRMain";
     public String http_path_root2;
@@ -95,7 +101,6 @@ public class IRMain extends Activity {
     boolean main = true;
     boolean result = false;
     boolean do_restart = false;
-    private EditText brandN, itemN;
     private String last_mode;
     private ProgressDialog mProgressDialog;
     private SharedPreferences settings;
@@ -105,18 +110,16 @@ public class IRMain extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-
     private boolean run_threads = true;
-
     private int item_position;
-
-    private RelativeLayout rl1;
-    private RelativeLayout rl2;
-
     private HandlerThread mCheckThread;
     private Handler mCheckHandler;
-
     private Resources res;
+
+    private ViewPager mViewPager;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ArrayList<View> mView = new ArrayList<View>();
+    private int mCurrent = 0;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -144,7 +147,7 @@ public class IRMain extends Activity {
             } else if (current_mode.equals("rename")) {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
-                Button button = (Button) findViewById(view.getId());
+                Button button = (Button) mViewPager.findViewById(view.getId());
                 assert promptsView != null;
                 final EditText ed = (EditText) promptsView.findViewById(R.id.editText);
                 ed.setHint(button.getText());
@@ -210,25 +213,14 @@ public class IRMain extends Activity {
             }
         }).start();
         EasyTracker easyTracker = EasyTracker.getInstance(this);
-        easyTracker.set(Fields.TRACKING_ID, "UA-XXXXXXXX-X");
+        easyTracker.set(Fields.TRACKING_ID, "UA-52301928-1");
         easyTracker.activityStart(this);
         run_threads = true;
-        if (!mCheckThread.isAlive()) {
+        if (mCheckThread == null || !mCheckThread.isAlive()) {
             mCheckThread = new HandlerThread("StateChecker");
             mCheckThread.start();
-            mCheckHandler = new StateChecker(mCheckHandler.getLooper());
+            mCheckHandler = new StateChecker(mCheckThread.getLooper());
             mCheckHandler.sendEmptyMessage(0);
-        }
-
-        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
-        if (settings.contains("theme")) {
-            if (settings.getString("theme", null).equals("1")) {
-                super.setTheme(R.style.Holo);
-            } else if (settings.getString("theme", null).equals("2")) {
-                super.setTheme(R.style.Holo_Light_DarkActionBar);
-            } else if (settings.getString("theme", null).equals("3")) {
-                super.setTheme(R.style.Theme_Holo_Light);
-            }
         }
         prepItemBrandArray();
     }
@@ -327,9 +319,9 @@ public class IRMain extends Activity {
     public void onAddDeviceClick(View paramView) {
         AlertDialog.Builder adb;
         try {
-            itemN = (EditText) paramView
+            EditText itemN = (EditText) paramView
                     .findViewById(R.id.editText);
-            brandN = (EditText) paramView
+            EditText brandN = (EditText) paramView
                     .findViewById(R.id.editText2);
             if (itemN.getText() != null || brandN.getText() != null) {
                 String all = brandN.getText().toString() + "-" + itemN.getText().toString();
@@ -426,7 +418,44 @@ public class IRMain extends Activity {
         }
         res = getResources();
 
-        setContentView(R.layout.activity_ir);
+        setContentView(R.layout.root);
+
+        // Set up the action bar.
+        final ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        // When swiping between different sections, select the corresponding
+        // tab. We can also use ActionBar.Tab#select() to do this if we have
+        // a reference to the Tab.
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                actionBar.setSelectedNavigationItem(position);
+                mCurrent = position;
+            }
+        });
+
+        // For each of the sections in the app, add a tab to the action bar.
+        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+            // Create a tab with text corresponding to the page title defined by
+            // the adapter. Also specify this Activity object, which implements
+            // the TabListener interface, as the callback (listener) for when
+            // this tab is selected.
+            actionBar.addTab(
+                    actionBar.newTab()
+                            .setText(mSectionsPagerAdapter.getPageTitle(i))
+                            .setTabListener(this)
+            );
+        }
+
         Thread ft = new Thread() {
             public void run() {
                 fixPermissionsForIr();
@@ -475,121 +504,134 @@ public class IRMain extends Activity {
             }
         }
 
-        final View.OnLongClickListener listener = new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View v) {
-                final Button btn = (Button) v;
-                Log.i(TAG, (String) btn.getContentDescription());
-                final String usage = (String) btn.getContentDescription();
-                if (prepBISpinner()) {
-                    result = false;
-                    if (current_mode.equals("send")) {
-                        Thread t = new Thread() {
-                            @Override
-                            public void run() {
-                                try {
-                                    while (btn.isPressed() && run_threads) {
-                                        sendKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
-                                        sleep(400);
-                                    }
-                                } catch (InterruptedException e) {
-                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                }
-                            }
-                        };
-                        t.start();
-                    } else if (current_mode.equals("write")) {
-                        learnKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
-                    }
-                }
-                return true;
-            }
-        };
-
-        for (int i = 2; i <= 38; i++) {
-            final String btn = "button" + i;
-            if (!disable.contains(btn)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int id = getResources().getIdentifier(btn,
-                                "id", getPackageName());
-                        findViewById(id).setOnLongClickListener(listener);
-                    }
-                });
-            }
-        }
-
-        if ((getResources().getConfiguration().screenLayout &
-                Configuration.SCREENLAYOUT_SIZE_MASK) !=
-                Configuration.SCREENLAYOUT_SIZE_XLARGE) {//TODO improve swiping
-            rl1 = (RelativeLayout) findViewById(R.id.rl1);
-            rl2 = (RelativeLayout) findViewById(R.id.rl2);
-            RelativeLayout container = (RelativeLayout) findViewById(R.id.container);
-            final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
-            final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
-            container.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
-                public void onSwipeLeft() {
-                    rl2.setVisibility(View.VISIBLE);
-                    rl1.setVisibility(View.INVISIBLE);
-                    r1.setChecked(false);
-                    r2.setChecked(true);
-                }
-
-                public void onSwipeRight() {
-                    rl2.setVisibility(View.INVISIBLE);
-                    rl1.setVisibility(View.VISIBLE);
-                    r1.setChecked(true);
-                    r2.setChecked(false);
-                }
-
-                public boolean onTouch(View v, MotionEvent event) {
-                    return gestureDetector.onTouchEvent(event);
-                }
-            });
-        }
+        findViewById(R.id.button2).setOnLongClickListener(this);
     }
 
     private void checkState() {
-        if (main) {
+        if (main && mView.size() > 0 && mView.get(mCurrent) != null) {
             File f;
             if (!current_mode.equals("endis")) {
+                Log.w(TAG, current_mode + " != endis");
+                f = new File(IRCommon.getIrPath() + item + "/disable.ini");
+                if (f.exists()) {
+                    try {
+                        String arr[] = mView.get(mCurrent).getContentDescription()
+                                .toString().split("-", 2);
+                        String firstWord = arr[0];
+                        String theRest = arr[1];
+                        for (int i = Integer.parseInt(firstWord); i <= Integer.parseInt(theRest); i++) {
+                            final String btn = "button" + i;
+                            if (!disable.contains(btn)) {
+                                if (mView.get(mCurrent) != null) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            int id = mView.get(mCurrent).getResources().getIdentifier(btn,
+                                                    "id", "com.sssemil.sonyirremote.ir");
+                                            Button button = ((Button) mView.get(mCurrent).findViewById(id));
+                                            button.setEnabled(true);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        FileInputStream is = new FileInputStream(f);
+                        BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(is));
+                        String line;
+                        disable.clear();
+                        while ((line = reader.readLine()) != null) {
+                            disable.add(line);
+                            if (mView.get(mCurrent) != null) {
+                                final Button button = (Button) mView.get(mCurrent)
+                                        .findViewById(mView.get(mCurrent).getResources()
+                                                .getIdentifier(line, "id", getPackageName()));
+                                if (button != null) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            button.setEnabled(false);//TODO fix
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        reader.close();
+                        is.close();
+                    } catch (FileNotFoundException e) {
+                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                    } catch (IOException e) {
+                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                    }
+                } else if (!f.exists()) {
+                    for (int i = 3; i <= 38; i++) {
+                        final String btn = "button" + i;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mView.get(mCurrent) != null) {
+                                    int id = mView.get(mCurrent).getResources().getIdentifier(btn,
+                                            "id", "com.sssemil.sonyirremote.ir");
+                                    Button button = (Button) mView.get(mCurrent).findViewById(id);
+                                    if (button != null) button.setEnabled(true);
+                                }
+                            }
+                        });
+                    }
+                }
+            } else if (current_mode.equals("endis")) {
                 f = new File(IRCommon.getIrPath() + item + "/disable.ini");
                 if (f.exists()) {
                     try {
                         for (int i = 3; i <= 38; i++) {
                             final String btn = "button" + i;
                             if (!disable.contains(btn)) {
+                                final Button button = (Button) mView.get(mCurrent)
+                                        .findViewById(mView.get(mCurrent).getResources()
+                                                .getIdentifier(btn, "id", getPackageName()));
+                                if (mView.get(mCurrent) != null && button != null) {
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            button.setTextColor(Color.DKGRAY);
+
+                                            if (settings.contains("theme")) {
+                                                if (settings.getString("theme",
+                                                        null).equals("1")) {
+                                                    button.setTextColor(
+                                                            Color.WHITE);
+                                                } else {
+                                                    button.setTextColor(
+                                                            Color.BLACK);
+                                                }
+                                                button.setEnabled(true);
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        FileInputStream is = new FileInputStream(f);
+                        BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(is));
+                        String line;
+                        disable.clear();
+                        while ((line = reader.readLine()) != null) {
+                            disable.add(line);
+                            final Button button = (Button) mView.get(mCurrent)
+                                    .findViewById(mView.get(mCurrent).getResources()
+                                            .getIdentifier(line, "id", getPackageName()));
+                            if (mView.get(mCurrent) != null && button!= null) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        int id = getResources().getIdentifier(btn,
-                                                "id", "com.sssemil.sonyirremote.ir");
-                                        Button button = ((Button) findViewById(id));
+                                        button.setTextColor(Color.DKGRAY);
                                         button.setEnabled(true);
                                     }
                                 });
                             }
                         }
-                        FileInputStream is = new FileInputStream(f);
-                        BufferedReader reader = new BufferedReader(
-                                new InputStreamReader(is));
-                        String line;
-                        disable.clear();
-                        while ((line = reader.readLine()) != null) {
-                            final String finalLine = line;
-                            disable.add(line);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    int id = getResources().getIdentifier(finalLine,
-                                            "id", "com.sssemil.sonyirremote.ir");
-                                    Button button = ((Button) findViewById(id));
-                                    button.setEnabled(false);
-
-                                }
-                            });
-                        }
                         reader.close();
                         is.close();
                     } catch (FileNotFoundException e) {
@@ -600,87 +642,16 @@ public class IRMain extends Activity {
                 } else if (!f.exists()) {
                     for (int i = 3; i <= 38; i++) {
                         final String btn = "button" + i;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                int id = getResources().getIdentifier(btn,
-                                        "id", "com.sssemil.sonyirremote.ir");
-                                Button button = ((Button) findViewById(id));
-                                button.setEnabled(true);
-                            }
-                        });
-                    }
-                }
-            }
-            if (current_mode.equals("endis")) {
-                f = new File(IRCommon.getIrPath() + item + "/disable.ini");
-                if (f.exists()) {
-                    try {
-                        for (int i = 3; i <= 38; i++) {
-                            final String btn = "button" + i;
-                            if (!disable.contains(btn)) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        int id = getResources().getIdentifier(btn,
-                                                "id",
-                                                "com.sssemil.sonyirremote.ir");
-                                        Button button = ((Button) findViewById(id));
-                                        button.setTextColor(Color.DKGRAY);
-                                        if (settings.contains("theme")) {
-                                            if (settings.getString("theme",
-                                                    null).equals("1")) {
-                                                button.setTextColor(
-                                                        Color.WHITE);
-                                            } else {
-                                                button.setTextColor(
-                                                        Color.BLACK);
-                                            }
-                                            button.setEnabled(true);
-                                        }
-
-                                    }
-                                });
-                            }
-                        }
-                        FileInputStream is = new FileInputStream(f);
-                        BufferedReader reader = new BufferedReader(
-                                new InputStreamReader(is));
-                        String line;
-                        disable.clear();
-                        while ((line = reader.readLine()) != null) {
-                            final String finalLine = line;
-                            disable.add(line);
+                        final Button button = (Button) mView.get(mCurrent).findViewById(mView.get(mCurrent).getResources()
+                                .getIdentifier(btn, "id", getPackageName()));
+                        if (button != null) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    int id = getResources().getIdentifier(finalLine,
-                                            "id", "com.sssemil.sonyirremote.ir");
-                                    Button button = ((Button) findViewById(id));
-                                    button.setTextColor(Color.DKGRAY);
                                     button.setEnabled(true);
                                 }
                             });
                         }
-                        reader.close();
-                        is.close();
-                    } catch (FileNotFoundException e) {
-                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                    } catch (IOException e) {
-                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                    }
-                } else if (!f.exists()) {
-                    for (int i = 3; i <= 38; i++) {
-                        final String btn = "button" + i;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                int id = getResources().getIdentifier(btn,
-                                        "id", "com.sssemil.sonyirremote.ir");
-                                Button button = ((Button) findViewById(id));
-                                button.setEnabled(true);
-                            }
-                        });
                     }
                 }
             }
@@ -695,15 +666,17 @@ public class IRMain extends Activity {
                         String arr[] = line.split(" ", 2);
                         final String firstWord = arr[0];
                         final String theRest = arr[1];
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                int id = getResources().getIdentifier(firstWord,
-                                        "id", "com.sssemil.sonyirremote.ir");
-                                Button button = ((Button) findViewById(id));
-                                button.setText(theRest);
-                            }
-                        });
+                        final Button button = (Button) mView.get(mCurrent)
+                                .findViewById(mView.get(mCurrent).getResources()
+                                        .getIdentifier(firstWord, "id", getPackageName()));
+                        if (button != null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    button.setText(theRest);
+                                }
+                            });
+                        }
                     }
                     reader.close();
                     is.close();
@@ -1153,7 +1126,6 @@ public class IRMain extends Activity {
                             adb = new AlertDialog.Builder(IRMain.this);
                             adb.setTitle(getString(R.string.warning));
                             adb.setView(promptsView);
-                            adb.setPositiveButton(getString(R.string.start), null);
                             adb
                                     .setCancelable(false)
                                     .setPositiveButton(getString(R.string.start),
@@ -1250,9 +1222,9 @@ public class IRMain extends Activity {
     }
 
     public void setDefaultString(String btn_name) {
-        int id = getResources().getIdentifier(btn_name,
+        int id = mView.get(mCurrent).getResources().getIdentifier(btn_name,
                 "id", "com.sssemil.sonyirremote.ir");
-        Button button = ((Button) findViewById(id));
+        Button button = ((Button) mView.get(mCurrent).findViewById(id));
         if (btn_name.equals("button3")) {
             button.setText(getString(R.string.plus));
         } else if (btn_name.equals("button4")) {
@@ -1426,54 +1398,56 @@ public class IRMain extends Activity {
         File f = new File(IRCommon.getIrPath() + item + "/disable.ini");
         int id = getResources().getIdentifier(btn_name,
                 "id", "com.sssemil.sonyirremote.ir");
-        Button button = ((Button) findViewById(id));
-        try {
-            if (!f.exists()) {
-                f.createNewFile();
+        Button button = (Button) mView.get(mCurrent).findViewById(id);
+        if(button !=null) {
+            try {
+                if (!f.exists()) {
+                    f.createNewFile();
+                }
+                FileInputStream is = new FileInputStream(f);
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(is));
+                String line;
+                first.clear();
+                total.clear();
+                while ((line = reader.readLine()) != null) {
+                    first.add(line.split(" ", 2)[0]);
+                    total.add(line);
+                }
+                reader.close();
+                is.close();
+            } catch (IOException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
             }
-            FileInputStream is = new FileInputStream(f);
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(is));
-            String line;
-            first.clear();
-            total.clear();
-            while ((line = reader.readLine()) != null) {
-                first.add(line.split(" ", 2)[0]);
-                total.add(line);
-            }
-            reader.close();
-            is.close();
-        } catch (IOException e) {
-            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-        }
 
-        if (!first.contains(btn_name)) {
-            total.add(btn_name);
-            button.setEnabled(false);
-        } else {
-            int index = first.indexOf(btn_name);
-            total.remove(index);
-            button.setEnabled(true);
-        }
-        String out_data = "";
-
-        for (int i = 0; i < total.toArray().length; i++) {
-            if (i < total.toArray().length - 1) {
-                out_data += total.toArray()[i] + "\n";
+            if (!first.contains(btn_name)) {
+                total.add(btn_name);
+                button.setEnabled(false);
             } else {
-                out_data += total.toArray()[i];
+                int index = first.indexOf(btn_name);
+                total.remove(index);
+                button.setEnabled(true);
             }
-        }
+            String out_data = "";
 
-        try {
-            FileOutputStream fOut = new FileOutputStream(f);
-            OutputStreamWriter myOutWriter =
-                    new OutputStreamWriter(fOut);
-            myOutWriter.append(out_data);
-            myOutWriter.close();
-            fOut.close();
-        } catch (IOException e) {
-            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+            for (int i = 0; i < total.toArray().length; i++) {
+                if (i < total.toArray().length - 1) {
+                    out_data += total.toArray()[i] + "\n";
+                } else {
+                    out_data += total.toArray()[i];
+                }
+            }
+
+            try {
+                FileOutputStream fOut = new FileOutputStream(f);
+                OutputStreamWriter myOutWriter =
+                        new OutputStreamWriter(fOut);
+                myOutWriter.append(out_data);
+                myOutWriter.close();
+                fOut.close();
+            } catch (IOException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+            }
         }
     }
 
@@ -1631,6 +1605,162 @@ public class IRMain extends Activity {
         }).start();
     }
 
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        // When the given tab is selected, switch to the corresponding page in
+        // the ViewPager.
+        mViewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public boolean onLongClick(final View v) {
+        final Button btn = (Button) v;
+        Log.i(TAG, (String) btn.getContentDescription());
+        final String usage = (String) btn.getContentDescription();
+        if (prepBISpinner()) {
+            result = false;
+            if (current_mode.equals("send")) {
+                Thread t = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            while (btn.isPressed() && run_threads) {
+                                sendKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
+                                sleep(400);
+                            }
+                        } catch (InterruptedException e) {
+                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                        }
+                    }
+                };
+                t.start();
+            } else if (current_mode.equals("write")) {
+                learnKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
+            }
+        }
+        return true;
+    }
+
+    /**
+     * A {@link android.support.v13.app.FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            return fragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 2 total pages.
+            return 2;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            Locale l = Locale.getDefault();
+            return getString(R.string.sr).toUpperCase(l);
+        }
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    @SuppressLint("ValidFragment")
+    public class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private final String ARG_SECTION_NUMBER = "section_number";
+
+        public PlaceholderFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            Log.i("ARG_SECTION_NUMBER", String.valueOf(getArguments().getInt(ARG_SECTION_NUMBER)));
+            int current = getArguments().getInt(ARG_SECTION_NUMBER) - 1;
+            mView.clear();
+            mView.add(inflater.inflate(R.layout.activity_ir1, container, false));
+            mView.add(inflater.inflate(R.layout.activity_ir2, container, false));
+            String arr[] = mView.get(current).getContentDescription()
+                    .toString().split("-", 2);
+            String firstWord = arr[0];
+            String theRest = arr[1];
+            for (int i = Integer.parseInt(firstWord); i <= Integer.parseInt(theRest); i++) {
+                final String btn = "button" + i;
+                Button button = (Button) mView.get(current).findViewById(mView.get(current)
+                        .getResources().getIdentifier(btn,
+                                "id", getPackageName()));
+                button.setOnLongClickListener(IRMain.this);
+            }
+            File f = new File(IRCommon.getIrPath() + item + "/text.ini");
+            if (f.exists()) {
+                try {
+                    FileInputStream is = new FileInputStream(f);
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(is));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        String arr2[] = line.split(" ", 2);
+                        firstWord = arr2[0];
+                        theRest = arr2[1];
+                        final Button button = (Button) mView.get(current)
+                                .findViewById(mView.get(current).getResources()
+                                        .getIdentifier(firstWord, "id", getPackageName()));
+                        if (button != null) {
+                            final String finalTheRest = theRest;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    button.setText(finalTheRest);
+                                }
+                            });
+                        }
+                    }
+                    reader.close();
+                    is.close();
+                } catch (FileNotFoundException e) {
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                } catch (IOException e) {
+                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                }
+            }
+            return mView.get(current);
+        }
+    }
+
     private class StateChecker extends Handler {
 
         public StateChecker(Looper looper) {
@@ -1662,6 +1792,7 @@ public class IRMain extends Activity {
         }
     }
 
-    private class NonZeroStatusException extends Exception { }
+    private class NonZeroStatusException extends Exception {
+    }
 }
 

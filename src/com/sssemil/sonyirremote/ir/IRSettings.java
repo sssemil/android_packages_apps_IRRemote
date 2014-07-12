@@ -43,9 +43,9 @@ import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
-import com.sssemil.sonyirremote.ir.Utils.zip.Compress;
 import com.sssemil.sonyirremote.ir.Utils.net.Download;
 import com.sssemil.sonyirremote.ir.Utils.net.GetText;
+import com.sssemil.sonyirremote.ir.Utils.zip.Compress;
 
 import java.io.File;
 import java.io.IOException;
