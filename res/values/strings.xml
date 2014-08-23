@@ -209,4 +209,5 @@ Select Start and press the button you want the app to learn."</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="pref_title_build_version">Build version</string>
+    <string name="not_supported">Sizin cihazıvız dəstəklənmir!</string>
 </resources>

@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package com.sssemil.sonyirremote.ir;
+package com.sssemil.ir;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -43,9 +43,9 @@ import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
-import com.sssemil.sonyirremote.ir.Utils.zip.Compress;
-import com.sssemil.sonyirremote.ir.Utils.net.Download;
-import com.sssemil.sonyirremote.ir.Utils.net.GetText;
+import com.sssemil.ir.Utils.net.Download;
+import com.sssemil.ir.Utils.net.GetText;
+import com.sssemil.ir.Utils.zip.Compress;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class IRSettings extends PreferenceActivity implements
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
-        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
+        settings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
         adb = new AlertDialog.Builder(this);
         PackageInfo pInfo = null;
         try {
@@ -191,7 +191,10 @@ public class IRSettings extends PreferenceActivity implements
                         }
                     });
                     try {
-                        File df = new File(IRCommon.getIrPath() + lastWord.substring(lastWord.lastIndexOf("/") + 1).substring(0, lastWord.substring(lastWord.lastIndexOf("/") + 1).length() - 4));
+                        File df = new File(IRCommon.getIrPath()
+                                + lastWord.substring(lastWord.lastIndexOf("/") + 1)
+                                .substring(0, lastWord.substring(
+                                        lastWord.lastIndexOf("/") + 1).length() - 4));
                         IRCommon.delete(df);
                     } catch (IOException e) {
                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
@@ -530,7 +533,7 @@ public class IRSettings extends PreferenceActivity implements
                     }
                 }
             } else if (key.equals(("theme"))) {
-                SharedPreferences settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
+                SharedPreferences settings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
                 if (settings.contains("theme")) {
                     if (settings.getString("theme", null).equals("1")) {
                         super.setTheme(R.style.Holo);
@@ -561,7 +564,8 @@ public class IRSettings extends PreferenceActivity implements
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Log.i("Update", "last_ver : " + getLastVer1.execute(http_path_root2 + "last.php").get() + " cur_ver : " + cur_ver);
+                    Log.i("Update", "last_ver : " + getLastVer1.execute(http_path_root2
+                            + "last.php").get() + " cur_ver : " + cur_ver);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 } catch (ExecutionException e) {
@@ -650,7 +654,7 @@ public class IRSettings extends PreferenceActivity implements
                                 adb.show();
                             }
                         });
-                    } else if (!doUpdate) {
+                    } else {
                         adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.already_new));
                         adb.setPositiveButton(getString(R.string.pos_ans), null);
@@ -678,7 +682,7 @@ public class IRSettings extends PreferenceActivity implements
     public void onStart() {
         super.onStart();
         EasyTracker easyTracker = EasyTracker.getInstance(this);
-        easyTracker.set(Fields.TRACKING_ID, "UA-52301928-1");
+        easyTracker.set(Fields.TRACKING_ID, IRCommon.getID());
         easyTracker.activityStart(this);
     }
 
@@ -696,7 +700,7 @@ public class IRSettings extends PreferenceActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
+        settings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
         if (settings.contains("theme")) {
             if (saved_theme != IRCommon.getInstance().getCurrentThemeId(this, saved_theme)) {
                 saved_theme = IRCommon.getInstance().getCurrentThemeId(this, saved_theme);

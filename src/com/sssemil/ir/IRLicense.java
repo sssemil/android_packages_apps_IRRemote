@@ -17,31 +17,22 @@
  * MA  02110-1301, USA.
  */
 
-package com.sssemil.sonyirremote.ir;
+package com.sssemil.ir;
 
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.MenuItem;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 
 public class IRLicense extends Activity {
 
-    private final WebViewClient mClient = new WebViewClient() {
-        public WebResourceResponse shouldInterceptRequest(WebView paramAnonymousWebView, String paramAnonymousString) {
-            if ("camera:license".equals(paramAnonymousString))
-                return new WebResourceResponse("text/html", "utf8", IRLicense.this.getResources().openRawResource(R.raw.license));
-            return null;
-        }
-    };
-
     @Override
-    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
+    protected void onApplyThemeResource(@NonNull Resources.Theme theme, int resid, boolean first) {
         theme.applyStyle(IRCommon.getInstance().getCurrentThemeId(this, resid), true);
     }
 
@@ -59,10 +50,9 @@ public class IRLicense extends Activity {
     public void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         setContentView(R.layout.license_menu);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
         WebView localWebView = (WebView) findViewById(R.id.webView);
-        localWebView.setWebViewClient(this.mClient);
-        localWebView.loadUrl("camera:license");
+        localWebView.loadUrl("file:///android_res/raw/license.html");
     }
 
     @Override
@@ -75,7 +65,7 @@ public class IRLicense extends Activity {
     public void onStart() {
         super.onStart();
         EasyTracker easyTracker = EasyTracker.getInstance(this);
-        easyTracker.set(Fields.TRACKING_ID, "UA-52301928-1");
+        easyTracker.set(Fields.TRACKING_ID, IRCommon.getID());
         easyTracker.activityStart(this);
     }
 }

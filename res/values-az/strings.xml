@@ -76,5 +76,6 @@ Başla seçin və proqramlar öyrənmək istədiyiniz düyməsini basın.</strin
     <string name="reset">Reset</string>
     <string name="open_source_license">Açıq kodlu lisenziya</string>
     <string name="pref_title_build_version">Buildın versiyası</string>
+    <string name="not_supported">Sizin cihazıvız !</string>
 
 </resources>

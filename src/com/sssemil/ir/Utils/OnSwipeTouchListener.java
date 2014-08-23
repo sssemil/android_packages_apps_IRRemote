@@ -17,7 +17,7 @@
  * MA  02110-1301, USA.
  */
 
-package com.sssemil.sonyirremote.ir.Utils;
+package com.sssemil.ir.Utils;
 
 import android.content.Context;
 import android.view.GestureDetector;

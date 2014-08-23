@@ -18,7 +18,7 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.sssemil.sonyirremote.ir.ir">
+    tools:context="com.sssemil.ir.ir">
 
     <item
         android:id="@+id/action_mode"

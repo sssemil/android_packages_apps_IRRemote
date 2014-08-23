@@ -17,7 +17,7 @@
  * MA  02110-1301, USA.
  */
 
-package com.sssemil.sonyirremote.ir;
+package com.sssemil.ir;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -61,9 +61,9 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.StandardExceptionParser;
-import com.sssemil.sonyirremote.ir.Utils.net.Download;
-import com.sssemil.sonyirremote.ir.Utils.net.GetText;
-import com.sssemil.sonyirremote.ir.Utils.OnSwipeTouchListener;
+import com.sssemil.ir.Utils.OnSwipeTouchListener;
+import com.sssemil.ir.Utils.net.Download;
+import com.sssemil.ir.Utils.net.GetText;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -89,16 +89,18 @@ public class IRMain extends Activity {
     public String current_mode = "send";
     public String last_ver = "zirt";
     public String cur_ver;
+
     public ArrayList<String> first = new ArrayList<String>();
     public ArrayList<String> total = new ArrayList<String>();
     public ArrayList<String> disable = new ArrayList<String>();
+
     boolean main = true;
     boolean result = false;
     boolean do_restart = false;
-    private EditText brandN, itemN;
+
     private String last_mode;
     private ProgressDialog mProgressDialog;
-    private SharedPreferences settings;
+    private SharedPreferences mSettings;
     private AlertDialog.Builder adb;
     private String volkey = "1";
     private TextView alert;
@@ -116,7 +118,9 @@ public class IRMain extends Activity {
     private HandlerThread mCheckThread;
     private Handler mCheckHandler;
 
-    private Resources res;
+    private Resources mResources;
+
+    private android.app.ActionBar mActionBar;
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -185,52 +189,57 @@ public class IRMain extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        new Thread(new Runnable() {
-            public void run() {
-                IRCommon.getInstance().stop(res);
+        if (!IRCommon.getPowerNode(mResources).equals("/")) {
+            new Thread(new Runnable() {
+                public void run() {
+                    IRCommon.getInstance().stop(mResources);
+                }
+            }).start();
+            EasyTracker.getInstance(this).activityStart(this);
+            run_threads = false;
+            //mHandler.removeCallbacksAndMessages(null);
+            mCheckHandler.removeCallbacksAndMessages(null);
+            if (mCheckThread.isAlive()) {
+                mCheckThread.quit();
             }
-        }).start();
-        EasyTracker.getInstance(this).activityStart(this);
-        run_threads = false;
-        //mHandler.removeCallbacksAndMessages(null);
-        mCheckHandler.removeCallbacksAndMessages(null);
-        if (mCheckThread.isAlive()) {
-            mCheckThread.quit();
+            mCheckHandler = null;
+            mCheckThread = null;
         }
-        mCheckHandler = null;
-        mCheckThread = null;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        new Thread(new Runnable() {
-            public void run() {
-                IRCommon.getInstance().start(res);
-            }
-        }).start();
-        EasyTracker easyTracker = EasyTracker.getInstance(this);
-        easyTracker.set(Fields.TRACKING_ID, "UA-XXXXXXXX-X");
-        easyTracker.activityStart(this);
-        run_threads = true;
-        if (!mCheckThread.isAlive()) {
-            mCheckThread = new HandlerThread("StateChecker");
-            mCheckThread.start();
-            mCheckHandler = new StateChecker(mCheckHandler.getLooper());
-            mCheckHandler.sendEmptyMessage(0);
-        }
+        if (!IRCommon.getPowerNode(mResources).equals("/")) {
+            new Thread(new Runnable() {
+                public void run() {
+                    IRCommon.getInstance().start(mResources);
+                }
+            }).start();
 
-        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
-        if (settings.contains("theme")) {
-            if (settings.getString("theme", null).equals("1")) {
-                super.setTheme(R.style.Holo);
-            } else if (settings.getString("theme", null).equals("2")) {
-                super.setTheme(R.style.Holo_Light_DarkActionBar);
-            } else if (settings.getString("theme", null).equals("3")) {
-                super.setTheme(R.style.Theme_Holo_Light);
+            EasyTracker easyTracker = EasyTracker.getInstance(this);
+            easyTracker.set(Fields.TRACKING_ID, IRCommon.getID());
+            easyTracker.activityStart(this);
+            run_threads = true;
+            if (!mCheckThread.isAlive()) {
+                mCheckThread = new HandlerThread("StateChecker");
+                mCheckThread.start();
+                mCheckHandler = new StateChecker(mCheckHandler.getLooper());
+                mCheckHandler.sendEmptyMessage(0);
             }
+
+            mSettings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
+            if (mSettings.contains("theme")) {
+                if (mSettings.getString("theme", null).equals("1")) {
+                    super.setTheme(R.style.Holo);
+                } else if (mSettings.getString("theme", null).equals("2")) {
+                    super.setTheme(R.style.Holo_Light_DarkActionBar);
+                } else if (mSettings.getString("theme", null).equals("3")) {
+                    super.setTheme(R.style.Theme_Holo_Light);
+                }
+            }
+            prepItemBrandArray();
         }
-        prepItemBrandArray();
     }
 
     private void selectItem(int position, boolean long_click) {
@@ -274,7 +283,7 @@ public class IRMain extends Activity {
             mDrawerList.setItemChecked(position, true);
             if (!long_click) {
                 mDrawerLayout.closeDrawer(mDrawerList);
-                getActionBar().setTitle(getString(R.string.app_name) + " - " + item);
+                mActionBar.setTitle(getString(R.string.app_name) + " - " + item);
             } else {
                 item_position = position;
                 adb = new AlertDialog.Builder(IRMain.this);
@@ -327,9 +336,9 @@ public class IRMain extends Activity {
     public void onAddDeviceClick(View paramView) {
         AlertDialog.Builder adb;
         try {
-            itemN = (EditText) paramView
+            EditText itemN = (EditText) paramView
                     .findViewById(R.id.editText);
-            brandN = (EditText) paramView
+            EditText brandN = (EditText) paramView
                     .findViewById(R.id.editText2);
             if (itemN.getText() != null || brandN.getText() != null) {
                 String all = brandN.getText().toString() + "-" + itemN.getText().toString();
@@ -375,8 +384,9 @@ public class IRMain extends Activity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        if (!IRCommon.getPowerNode(mResources).equals("/")) {
+            mDrawerToggle.syncState();
+        }
     }
 
     @Override
@@ -419,134 +429,155 @@ public class IRMain extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        settings = getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
 
-        if (settings.contains("volkey")) {
-            volkey = settings.getString("volkey", null);
+        mResources = getResources();
+
+        mSettings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
+
+        if (mSettings.contains("volkey")) {
+            volkey = mSettings.getString("volkey", null);
         }
-        res = getResources();
 
         setContentView(R.layout.activity_ir);
-        Thread ft = new Thread() {
-            public void run() {
-                fixPermissionsForIr();
-            }
-        };
-        ft.start();
-        http_path_root2 = getString(R.string.http_path_root2);
-        http_path_last_download1 = getString(R.string.http_path_last_download1);
-        http_path_last_download2 = getString(R.string.http_path_last_download2);
-        alert = (TextView) findViewById(R.id.alert);
-        new Thread(new Runnable() {
-            public void run() {
-                IRCommon.getInstance().start(res);
-            }
-        }).start();
-        firstRunChecker();
-        prepIRKeys();
-        prepItemBrandArray();
-        PackageInfo pInfo = null;
-        try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            cur_ver = pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-        } catch (NullPointerException e) {
-            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-        }
-        if (pInfo != null) {
-            cur_ver = pInfo.versionName;
-        }
 
-        if (savedInstanceState == null) {
-            selectItem(0, false);
-        }
+        mActionBar = getActionBar();
 
-        mCheckThread = new HandlerThread("StateChecker");
-        if (run_threads) {
-            if (!mCheckThread.isAlive()) {
-                mCheckThread.start();
-                mCheckHandler = new StateChecker(mCheckThread.getLooper());
-                mCheckHandler.sendEmptyMessage(0);
-            }
-        } else {
-            if (mCheckThread.isAlive()) {
-                mCheckThread.quit();
-            }
-        }
-
-        final View.OnLongClickListener listener = new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View v) {
-                final Button btn = (Button) v;
-                Log.i(TAG, (String) btn.getContentDescription());
-                final String usage = (String) btn.getContentDescription();
-                if (prepBISpinner()) {
-                    result = false;
-                    if (current_mode.equals("send")) {
-                        Thread t = new Thread() {
-                            @Override
-                            public void run() {
-                                try {
-                                    while (btn.isPressed() && run_threads) {
-                                        sendKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
-                                        sleep(400);
-                                    }
-                                } catch (InterruptedException e) {
-                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                }
-                            }
-                        };
-                        t.start();
-                    } else if (current_mode.equals("write")) {
-                        learnKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
-                    }
+        if (!IRCommon.getPowerNode(mResources).equals("/")) {
+            Thread ft = new Thread() {
+                public void run() {
+                    fixPermissionsForIr();
                 }
-                return true;
+            };
+            ft.start();
+            http_path_root2 = getString(R.string.http_path_root2);
+            http_path_last_download1 = getString(R.string.http_path_last_download1);
+            http_path_last_download2 = getString(R.string.http_path_last_download2);
+            alert = (TextView) findViewById(R.id.alert);
+            new Thread(new Runnable() {
+                public void run() {
+                    IRCommon.getInstance().start(mResources);
+                }
+            }).start();
+            firstRunChecker();
+            prepIRKeys();
+            prepItemBrandArray();
+            PackageInfo pInfo = null;
+            try {
+                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                cur_ver = pInfo.versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+            } catch (NullPointerException e) {
+                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
             }
-        };
+            if (pInfo != null) {
+                cur_ver = pInfo.versionName;
+            }
 
-        for (int i = 2; i <= 38; i++) {
-            final String btn = "button" + i;
-            if (!disable.contains(btn)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int id = getResources().getIdentifier(btn,
-                                "id", getPackageName());
-                        findViewById(id).setOnLongClickListener(listener);
+            if (savedInstanceState == null) {
+                selectItem(0, false);
+            }
+
+            mCheckThread = new HandlerThread("StateChecker");
+            if (run_threads) {
+                if (!mCheckThread.isAlive()) {
+                    mCheckThread.start();
+                    mCheckHandler = new StateChecker(mCheckThread.getLooper());
+                    mCheckHandler.sendEmptyMessage(0);
+                }
+            } else {
+                if (mCheckThread.isAlive()) {
+                    mCheckThread.quit();
+                }
+            }
+
+            final View.OnLongClickListener listener = new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(final View v) {
+                    final Button btn = (Button) v;
+                    Log.i(TAG, (String) btn.getContentDescription());
+                    final String usage = (String) btn.getContentDescription();
+                    if (prepBISpinner()) {
+                        result = false;
+                        if (current_mode.equals("send")) {
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        while (btn.isPressed() && run_threads) {
+                                            sendKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
+                                            sleep(400);
+                                        }
+                                    } catch (InterruptedException e) {
+                                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                                    }
+                                }
+                            };
+                            t.start();
+                        } else if (current_mode.equals("write")) {
+                            learnKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
+                        }
+                    }
+                    return true;
+                }
+            };
+
+            for (int i = 2; i <= 38; i++) {
+                final String btn = "button" + i;
+                if (!disable.contains(btn)) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int id = getResources().getIdentifier(btn,
+                                    "id", getPackageName());
+                            findViewById(id).setOnLongClickListener(listener);
+                        }
+                    });
+                }
+            }
+
+            if ((getResources().getConfiguration().screenLayout &
+                    Configuration.SCREENLAYOUT_SIZE_MASK) !=
+                    Configuration.SCREENLAYOUT_SIZE_XLARGE) {//TODO improve swiping
+                rl1 = (RelativeLayout) findViewById(R.id.rl1);
+                rl2 = (RelativeLayout) findViewById(R.id.rl2);
+                RelativeLayout container = (RelativeLayout) findViewById(R.id.container);
+                final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
+                final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
+                container.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
+                    public void onSwipeLeft() {
+                        rl2.setVisibility(View.VISIBLE);
+                        rl1.setVisibility(View.INVISIBLE);
+                        r1.setChecked(false);
+                        r2.setChecked(true);
+                    }
+
+                    public void onSwipeRight() {
+                        rl2.setVisibility(View.INVISIBLE);
+                        rl1.setVisibility(View.VISIBLE);
+                        r1.setChecked(true);
+                        r2.setChecked(false);
+                    }
+
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return gestureDetector.onTouchEvent(event);
                     }
                 });
             }
-        }
-
-        if ((getResources().getConfiguration().screenLayout &
-                Configuration.SCREENLAYOUT_SIZE_MASK) !=
-                Configuration.SCREENLAYOUT_SIZE_XLARGE) {//TODO improve swiping
-            rl1 = (RelativeLayout) findViewById(R.id.rl1);
-            rl2 = (RelativeLayout) findViewById(R.id.rl2);
-            RelativeLayout container = (RelativeLayout) findViewById(R.id.container);
-            final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
-            final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
-            container.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
-                public void onSwipeLeft() {
-                    rl2.setVisibility(View.VISIBLE);
-                    rl1.setVisibility(View.INVISIBLE);
-                    r1.setChecked(false);
-                    r2.setChecked(true);
-                }
-
-                public void onSwipeRight() {
-                    rl2.setVisibility(View.INVISIBLE);
-                    rl1.setVisibility(View.VISIBLE);
-                    r1.setChecked(true);
-                    r2.setChecked(false);
-                }
-
-                public boolean onTouch(View v, MotionEvent event) {
-                    return gestureDetector.onTouchEvent(event);
-                }
-            });
+        } else {
+            adb = new AlertDialog.Builder(this);
+            adb
+                    .setMessage(getString(R.string.not_supported))
+                    .setPositiveButton(getString(R.string.exit),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    run_threads = false;
+                                    finish();
+                                }
+                            }
+                    )
+                    .setCancelable(false);
+            adb.show();
         }
     }
 
@@ -564,7 +595,7 @@ public class IRMain extends Activity {
                                     @Override
                                     public void run() {
                                         int id = getResources().getIdentifier(btn,
-                                                "id", "com.sssemil.sonyirremote.ir");
+                                                "id", "com.sssemil.ir");
                                         Button button = ((Button) findViewById(id));
                                         button.setEnabled(true);
                                     }
@@ -583,7 +614,7 @@ public class IRMain extends Activity {
                                 @Override
                                 public void run() {
                                     int id = getResources().getIdentifier(finalLine,
-                                            "id", "com.sssemil.sonyirremote.ir");
+                                            "id", "com.sssemil.ir");
                                     Button button = ((Button) findViewById(id));
                                     button.setEnabled(false);
 
@@ -604,7 +635,7 @@ public class IRMain extends Activity {
                             @Override
                             public void run() {
                                 int id = getResources().getIdentifier(btn,
-                                        "id", "com.sssemil.sonyirremote.ir");
+                                        "id", "com.sssemil.ir");
                                 Button button = ((Button) findViewById(id));
                                 button.setEnabled(true);
                             }
@@ -624,11 +655,11 @@ public class IRMain extends Activity {
                                     public void run() {
                                         int id = getResources().getIdentifier(btn,
                                                 "id",
-                                                "com.sssemil.sonyirremote.ir");
+                                                "com.sssemil.ir");
                                         Button button = ((Button) findViewById(id));
                                         button.setTextColor(Color.DKGRAY);
-                                        if (settings.contains("theme")) {
-                                            if (settings.getString("theme",
+                                        if (mSettings.contains("theme")) {
+                                            if (mSettings.getString("theme",
                                                     null).equals("1")) {
                                                 button.setTextColor(
                                                         Color.WHITE);
@@ -655,7 +686,7 @@ public class IRMain extends Activity {
                                 @Override
                                 public void run() {
                                     int id = getResources().getIdentifier(finalLine,
-                                            "id", "com.sssemil.sonyirremote.ir");
+                                            "id", "com.sssemil.ir");
                                     Button button = ((Button) findViewById(id));
                                     button.setTextColor(Color.DKGRAY);
                                     button.setEnabled(true);
@@ -676,7 +707,7 @@ public class IRMain extends Activity {
                             @Override
                             public void run() {
                                 int id = getResources().getIdentifier(btn,
-                                        "id", "com.sssemil.sonyirremote.ir");
+                                        "id", "com.sssemil.ir");
                                 Button button = ((Button) findViewById(id));
                                 button.setEnabled(true);
                             }
@@ -699,7 +730,7 @@ public class IRMain extends Activity {
                             @Override
                             public void run() {
                                 int id = getResources().getIdentifier(firstWord,
-                                        "id", "com.sssemil.sonyirremote.ir");
+                                        "id", "com.sssemil.ir");
                                 Button button = ((Button) findViewById(id));
                                 button.setText(theRest);
                             }
@@ -715,18 +746,18 @@ public class IRMain extends Activity {
             }
         }
         if (do_restart) {
-            IRCommon.getInstance().restart(res);
+            IRCommon.getInstance().restart(mResources);
             do_restart = false;
         }
     }
 
     public void fixPermissionsForIr() {
-        File enable = new File(IRCommon.getInstance().getPowernode(res));
+        File enable = new File(IRCommon.getPowerNode(mResources));
         File device = new File("/dev/ttyHSL2");
         final String[] enablePermissions = {"su", "-c", "chmod 222 ", enable.getPath()};
         final String[] devicePermissions = {"su", "-c", "chmod 666 ", device.getPath()};
         boolean do_fix = false;
-        boolean found = false;
+        boolean found = true;
 
         if (!device.canRead() || !device.canWrite() || !enable.canWrite()) {
             do_fix = true;
@@ -768,11 +799,11 @@ public class IRMain extends Activity {
                             try {
                                 Runtime.getRuntime().exec(enablePermissions);
                                 Runtime.getRuntime().exec(devicePermissions);
-                                IRCommon.getInstance().start(res);
+                                IRCommon.getInstance().start(mResources);
                             } catch (IOException e) {
                                 Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                             }
-                            IRCommon.getInstance().restart(res);
+                            IRCommon.getInstance().restart(mResources);
                         }
                     }
             );
@@ -796,21 +827,25 @@ public class IRMain extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        new Thread(new Runnable() {
-            public void run() {
-                IRCommon.getInstance().stop(res);
-            }
-        }).start();
+        if (!IRCommon.getPowerNode(mResources).equals("/")) {
+            new Thread(new Runnable() {
+                public void run() {
+                    IRCommon.getInstance().stop(mResources);
+                }
+            }).start();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        new Thread(new Runnable() {
-            public void run() {
-                IRCommon.getInstance().start(res);
-            }
-        }).start();
+        if (!IRCommon.getPowerNode(mResources).equals("/")) {
+            new Thread(new Runnable() {
+                public void run() {
+                    IRCommon.getInstance().start(mResources);
+                }
+            }).start();
+        }
     }
 
     public void firstRunChecker() {
@@ -824,7 +859,7 @@ public class IRMain extends Activity {
             f2.mkdir();
         }
         SharedPreferences settings =
-                getSharedPreferences(IRCommon.getInstance().PREFS_NAME(this), 0);
+                getSharedPreferences(IRCommon.getPrefsName(this), 0);
         SharedPreferences.Editor editor;
 
         if (!settings.contains("isFirstRun")) {
@@ -832,7 +867,7 @@ public class IRMain extends Activity {
             editor = settings.edit();
             editor.putString("theme", "1");
             editor.putBoolean("autoUpd", true);
-            editor.commit();
+            editor.apply();
         } else {
             isFirstRun = settings.getBoolean("isFirstRun", false);
         }
@@ -915,7 +950,7 @@ public class IRMain extends Activity {
         new Thread(new Runnable() {
             public void run() {
                 mProgressDialog.show();
-                IRCommon.getInstance().restart(res);
+                IRCommon.getInstance().restart(mResources);
                 state = IRCommon.getInstance().learn(filename);
                 if (state < 0) {
                     runOnUiThread(new Runnable() {
@@ -1074,9 +1109,9 @@ public class IRMain extends Activity {
         mDrawerList.setOnItemLongClickListener(new DrawerItemLongClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
-        if (getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setHomeButtonEnabled(true);
+        if (mActionBar != null) {
+            mActionBar.setDisplayHomeAsUpEnabled(true);
+            mActionBar.setHomeButtonEnabled(true);
         }
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
@@ -1101,7 +1136,7 @@ public class IRMain extends Activity {
         } catch (NullPointerException e) {
             item = "Example-TV";
         }
-        getActionBar().setTitle(getString(R.string.app_name) + " - " + item);
+        mActionBar.setTitle(getString(R.string.app_name) + " - " + item);
         mDrawerList.setItemChecked(0, true);
     }
 
@@ -1114,14 +1149,18 @@ public class IRMain extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem menu_item) {
         int id = menu_item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == android.R.id.home) {
+            if (mDrawerToggle.onOptionsItemSelected(menu_item)) {
+                return true;
+            }
+        } else if (id == R.id.action_settings) {
             main = false;
             new Thread(new Runnable() {
                 public void run() {
                     Intent intent = new Intent(IRMain.this,
                             IRSettings.class);
                     startActivity(intent);
-                    IRCommon.getInstance().stop(res);
+                    IRCommon.getInstance().stop(mResources);
                 }
             }).start();
             run_threads = false;
@@ -1131,7 +1170,7 @@ public class IRMain extends Activity {
             LayoutInflater li = LayoutInflater.from(this);
             final View promptsView = li.inflate(R.layout.modes_menu, null);
             int rb_id = promptsView.getResources().getIdentifier(current_mode,
-                    "id", "com.sssemil.sonyirremote.ir");
+                    "id", "com.sssemil.ir");
 
             final RadioButton radioButton = (RadioButton) promptsView.findViewById(rb_id);
             radioButton.setChecked(true);
@@ -1162,7 +1201,7 @@ public class IRMain extends Activity {
                                                                     int id) {
                                                     new Thread(new Runnable() {
                                                         public void run() {
-                                                            IRCommon.getInstance().restart(res);
+                                                            IRCommon.getInstance().restart(mResources);
                                                         }
                                                     }).start();
                                                     alert.setText(
@@ -1170,12 +1209,14 @@ public class IRMain extends Activity {
                                                     alert.setVisibility(View.VISIBLE);
                                                     alert.setTextColor(Color.RED);
 
-                                                    File f = new File(IRCommon.getIrPath() + item);
+                                                    File f = new File(IRCommon.getIrPath()
+                                                            + item);
                                                     if (!f.isDirectory()) {
                                                         f.mkdirs();
                                                     }
 
-                                                    File f2 = new File(IRCommon.getIrPath() + brand);
+                                                    File f2 = new File(IRCommon.getIrPath()
+                                                            + brand);
                                                     if (!f2.isDirectory()) {
                                                         f2.mkdirs();
                                                     }
@@ -1251,7 +1292,7 @@ public class IRMain extends Activity {
 
     public void setDefaultString(String btn_name) {
         int id = getResources().getIdentifier(btn_name,
-                "id", "com.sssemil.sonyirremote.ir");
+                "id", "com.sssemil.ir");
         Button button = ((Button) findViewById(id));
         if (btn_name.equals("button3")) {
             button.setText(getString(R.string.plus));
@@ -1425,7 +1466,7 @@ public class IRMain extends Activity {
     private void onEndis(String btn_name) {
         File f = new File(IRCommon.getIrPath() + item + "/disable.ini");
         int id = getResources().getIdentifier(btn_name,
-                "id", "com.sssemil.sonyirremote.ir");
+                "id", "com.sssemil.ir");
         Button button = ((Button) findViewById(id));
         try {
             if (!f.exists()) {
@@ -1520,7 +1561,7 @@ public class IRMain extends Activity {
                         adb.setPositiveButton(getString(R.string.pos_ans),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        update(silent);
+                                        update(false);
                                     }
                                 }
                         );
@@ -1575,11 +1616,14 @@ public class IRMain extends Activity {
                                                 });
 
                                                 Download downloadApp1 =
-                                                        new Download(http_path_last_download1
-                                                                + last_ver + http_path_last_download2,
-                                                                Environment
-                                                                        .getExternalStorageDirectory()
-                                                                        + "/upd.apk", IRMain.this, "apk"
+                                                        new Download(
+                                                                http_path_last_download1
+                                                                        + last_ver
+                                                                        + http_path_last_download2,
+                                                                Environment.getExternalStorageDirectory()
+                                                                        + "/upd.apk",
+                                                                IRMain.this,
+                                                                "apk"
                                                         );
                                                 try {
                                                     downloadApp1.execute().get();
@@ -1612,7 +1656,7 @@ public class IRMain extends Activity {
                                 adb.show();
                             }
                         });
-                    } else if (!doUpdate) {
+                    } else {
                         if (!silent) {
                             adb.setTitle(getString(R.string.update));
                             adb.setMessage(getString(R.string.already_new));
@@ -1641,7 +1685,7 @@ public class IRMain extends Activity {
         public void handleMessage(Message msg) {
             if (run_threads) {
                 checkState();
-                sendEmptyMessageDelayed(0, 500);
+                sendEmptyMessageDelayed(0, 60000);
             }
         }
     }
@@ -1662,6 +1706,7 @@ public class IRMain extends Activity {
         }
     }
 
-    private class NonZeroStatusException extends Exception { }
+    private class NonZeroStatusException extends Exception {
+    }
 }
 

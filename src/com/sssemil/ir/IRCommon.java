@@ -17,7 +17,7 @@
  * MA  02110-1301, USA.
  */
 
-package com.sssemil.sonyirremote.ir;
+package com.sssemil.ir;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -87,20 +87,24 @@ public class IRCommon {
         return Environment.getExternalStorageDirectory() + "/irremote_keys/";
     }
 
-    public String getPowernode(Resources res) {
+    public static String getPowerNode(Resources res) {
         String[] array = res.getStringArray(R.array.powerNodePathVariants);
         File path_file;
-        for (int i = 0; i <= array.length; i++) {
-            path_file = new File(array[i]);
+        for (String anArray : array) {
+            path_file = new File(anArray);
             if (path_file.exists()) {
                 return path_file.getPath();
             }
         }
-        return null;
+        return "/";
     }
 
     static {
         System.loadLibrary("jni_sonyopenir");
+    }
+
+    public static String getPrefsName(Context context) {
+        return context.getPackageName() + "_preferences";
     }
 
     private native int startIR(String powernode);
@@ -114,11 +118,11 @@ public class IRCommon {
     private native int sendRawKey(String key, int length);
 
     public int start(Resources res) {
-        return startIR(getPowernode(res));
+        return startIR(getPowerNode(res));
     }
 
     public int stop(Resources res) {
-        return stopIR(getPowernode(res));
+        return stopIR(getPowerNode(res));
     }
 
     public int send(String filename) {
@@ -134,16 +138,12 @@ public class IRCommon {
     }
 
     public void restart(Resources res) {
-        stopIR(getPowernode(res));
-        startIR(getPowernode(res));
-    }
-
-    public String PREFS_NAME(Context context) {
-        return context.getPackageName() + "_preferences";
+        stopIR(getPowerNode(res));
+        startIR(getPowerNode(res));
     }
 
     public int getCurrentThemeId(Context context, int default_resid) {
-        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME(context), 0);
+        SharedPreferences settings = context.getSharedPreferences(getPrefsName(context), 0);
         if (settings.contains("theme")) {
             String saved_theme = settings.getString("theme", null);
             if (saved_theme.equals("1")) {
@@ -155,6 +155,10 @@ public class IRCommon {
             }
         }
         return default_resid;
+    }
+
+    public static String getID(){
+        return "UA-XXXXXXXX-X";
     }
 }
 

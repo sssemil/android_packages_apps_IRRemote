@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package com.sssemil.sonyirremote.ir.Utils.net;
+package com.sssemil.ir.Utils.net;
 
 import android.os.AsyncTask;
 import android.util.Log;
