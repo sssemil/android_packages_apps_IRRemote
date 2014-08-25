@@ -72,7 +72,7 @@ public class IRAbout extends Activity {
 
     @Override
     protected void onApplyThemeResource(@NonNull Resources.Theme theme, int resid, boolean first) {
-        theme.applyStyle(IRCommon.getInstance().getCurrentThemeId(this, resid), true);
+        theme.applyStyle(IRCommon.getCurrentThemeId(this, resid), true);
     }
 
     @Override

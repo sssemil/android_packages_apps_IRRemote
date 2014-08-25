@@ -31,17 +31,6 @@ import java.io.IOException;
 public class IRCommon {
 
     private static final String TAG = "IRCommon";
-    private static IRCommon instance = null;
-
-    protected IRCommon() {
-    }
-
-    public static IRCommon getInstance() {
-        if (instance == null) {
-            instance = new IRCommon();
-        }
-        return instance;
-    }
 
     public static void delete(File file)
             throws IOException {
@@ -107,42 +96,47 @@ public class IRCommon {
         return context.getPackageName() + "_preferences";
     }
 
-    private native int startIR(String powernode);
+    private native static int startIR(String powernode);
 
-    private native int stopIR(String powernode);
+    private native static int stopIR(String powernode);
 
-    private native int learnKey(String filename);
+    private native static int learnKey(String filename);
 
-    private native int sendKey(String filename);
+    private native static int sendKey(String filename);
 
-    private native int sendRawKey(String key, int length);
+    private native static int sendRawKey(String key, int length);
 
-    public int start(Resources res) {
+    public static int start(Resources res) {
         return startIR(getPowerNode(res));
     }
 
-    public int stop(Resources res) {
+    public static int stop(Resources res) {
         return stopIR(getPowerNode(res));
     }
 
-    public int send(String filename) {
+    public static int send(String filename) {
         return sendKey(filename);
     }
 
-    public int sendRaw(String key, int length) {
+    public static int sendRaw(String key, int length) {
         return sendRawKey(key, length);
     }
 
-    public int learn(String filename) {
+    public static int learn(String filename) {
         return learnKey(filename);
     }
 
-    public void restart(Resources res) {
+    public static void restart(Resources res) {
         stopIR(getPowerNode(res));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         startIR(getPowerNode(res));
     }
 
-    public int getCurrentThemeId(Context context, int default_resid) {
+    public static int getCurrentThemeId(Context context, int default_resid) {
         SharedPreferences settings = context.getSharedPreferences(getPrefsName(context), 0);
         if (settings.contains("theme")) {
             String saved_theme = settings.getString("theme", null);
@@ -158,7 +152,7 @@ public class IRCommon {
     }
 
     public static String getID(){
-        return "UA-XXXXXXXX-X";
+        return "UA-52301928-1";
     }
 }
 

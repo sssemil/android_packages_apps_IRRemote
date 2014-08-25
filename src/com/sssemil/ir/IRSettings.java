@@ -32,6 +32,7 @@ import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -68,7 +69,6 @@ public class IRSettings extends PreferenceActivity implements
     private String lastWord;
     private boolean cont = false;
     private String item = "null";
-    private EditText brandN, itemN;
     private Spinner spinner;
     private int saved_theme;
 
@@ -116,8 +116,8 @@ public class IRSettings extends PreferenceActivity implements
     }
 
     @Override
-    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-        saved_theme = IRCommon.getInstance().getCurrentThemeId(this, resid);
+    protected void onApplyThemeResource(@NonNull Resources.Theme theme, int resid, boolean first) {
+        saved_theme = IRCommon.getCurrentThemeId(this, resid);
         theme.applyStyle(saved_theme, true);
     }
 
@@ -166,7 +166,6 @@ public class IRSettings extends PreferenceActivity implements
                     cont = false;
                     adb.setTitle(getString(R.string.error));
                     adb.setMessage(getString(R.string.you_need_to_select));
-                    adb.setIcon(android.R.drawable.ic_dialog_alert);
                     adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                         }
@@ -212,7 +211,6 @@ public class IRSettings extends PreferenceActivity implements
                             mProgressDialog.cancel();
                             adb.setTitle(getString(R.string.download));
                             adb.setMessage(getString(R.string.ser3));
-                            adb.setIcon(android.R.drawable.ic_dialog_alert);
                             adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     doOnDown(content);
@@ -239,7 +237,6 @@ public class IRSettings extends PreferenceActivity implements
                             tw.setText(list);
                             adb = new AlertDialog.Builder(IRSettings.this);
                             adb.setTitle(getString(R.string.downloadT));
-                            adb.setIcon(android.R.drawable.ic_dialog_info);
                             adb
                                     .setCancelable(false)
                                     .setPositiveButton(getString(R.string.pos_ans),
@@ -272,9 +269,9 @@ public class IRSettings extends PreferenceActivity implements
     public void onAddDeviceClick(View paramView) {
         AlertDialog.Builder adb;
         try {
-            itemN = (EditText) paramView
+            EditText itemN = (EditText) paramView
                     .findViewById(R.id.editText);
-            brandN = (EditText) paramView
+            EditText brandN = (EditText) paramView
                     .findViewById(R.id.editText2);
             if (itemN.getText() != null && brandN.getText() != null) {
                 String all = brandN.getText().toString() + "-" + itemN.getText().toString();
@@ -300,7 +297,6 @@ public class IRSettings extends PreferenceActivity implements
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                 }
@@ -407,7 +403,6 @@ public class IRSettings extends PreferenceActivity implements
                             adb = new AlertDialog.Builder(IRSettings.this);
                             adb.setTitle(getString(R.string.warning));
                             adb.setMessage(getString(R.string.are_u_s_del));
-                            adb.setIcon(android.R.drawable.ic_dialog_alert);
                             adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     item = ar.get(selected);
@@ -418,7 +413,6 @@ public class IRSettings extends PreferenceActivity implements
                                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         adb.setTitle(getString(R.string.error));
                                         adb.setMessage(getString(R.string.failed_del_fl_io));
-                                        adb.setIcon(android.R.drawable.ic_dialog_alert);
                                         adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                             }
@@ -451,7 +445,6 @@ public class IRSettings extends PreferenceActivity implements
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                     adb.setTitle(getString(R.string.error));
                     adb.setMessage(getString(R.string.you_need_to_select));
-                    adb.setIcon(android.R.drawable.ic_dialog_alert);
                     adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                         }
@@ -475,25 +468,33 @@ public class IRSettings extends PreferenceActivity implements
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         try {
-                                            spinner = (Spinner) promptsView.findViewById(R.id.spinner);
+                                            spinner = (Spinner) promptsView
+                                                    .findViewById(R.id.spinner);
                                             item = spinner.getSelectedItem().toString();
-                                            Compress c = new Compress(IRCommon.getIrPath() + item, Environment.getExternalStorageDirectory() + "/" + item + ".zip");
+                                            Compress c = new Compress(IRCommon.getIrPath() + item,
+                                                    Environment.getExternalStorageDirectory()
+                                                            + "/" + item + ".zip");
                                             c.zip();
                                             Intent emailIntent = new Intent(Intent.ACTION_SEND);
                                             emailIntent.setType("application/zip");
-                                            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"suleymanovemil8@gmail.com"});
-                                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "New IR device");
+                                            emailIntent.putExtra(Intent.EXTRA_EMAIL,
+                                                    new String[]{"suleymanovemil8@gmail.com"});
+                                            emailIntent.putExtra(Intent.EXTRA_SUBJECT,
+                                                    "New IR device");
                                             emailIntent.putExtra(Intent.EXTRA_TEXT, item);
-                                            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/" + item + ".zip"));
-                                            startActivity(Intent.createChooser(emailIntent, "Send by mail..."));
+                                            emailIntent.putExtra(Intent.EXTRA_STREAM,
+                                                    Uri.parse("file:///sdcard/" + item + ".zip"));
+                                            startActivity(Intent.createChooser(emailIntent,
+                                                    "Send by mail..."));
                                         } catch (NullPointerException e) {
                                             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                             adb = new AlertDialog.Builder(IRSettings.this);
                                             adb.setTitle(getString(R.string.error));
                                             adb.setMessage(getString(R.string.you_need_to_select));
-                                            adb.setIcon(android.R.drawable.ic_dialog_alert);
-                                            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
+                                            adb.setPositiveButton(getString(R.string.pos_ans),
+                                                    new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog,
+                                                                    int which) {
 
                                                 }
                                             });
@@ -574,7 +575,6 @@ public class IRSettings extends PreferenceActivity implements
                 if (last_ver.equals("zirt")) {
                     adb.setTitle(getString(R.string.update));
                     adb.setMessage(getString(R.string.ser3));
-                    adb.setIcon(android.R.drawable.ic_dialog_alert);
                     adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             update();
@@ -608,7 +608,6 @@ public class IRSettings extends PreferenceActivity implements
                     if (doUpdate) {
                         adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.new_version_available));
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
                         adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 mProgressDialog = new ProgressDialog(IRSettings.this);
@@ -616,7 +615,8 @@ public class IRSettings extends PreferenceActivity implements
                                     public void run() {
                                         mProgressDialog.setMessage(getString(R.string.downloading_new));
                                         mProgressDialog.setIndeterminate(true);
-                                        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                        mProgressDialog.setProgressStyle(
+                                                ProgressDialog.STYLE_SPINNER);
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -624,14 +624,16 @@ public class IRSettings extends PreferenceActivity implements
                                             }
                                         });
 
-                                        final Download downloadApp1 = new Download(http_path_last_download1
+                                        final Download downloadApp1 = new Download(
+                                                http_path_last_download1
                                                 + last_ver + http_path_last_download2,
                                                 Environment
                                                         .getExternalStorageDirectory()
                                                         + "/upd.apk", IRSettings.this, "apk"
                                         );
                                         try {
-                                            downloadApp1.execute(http_path_last_download1 + last_ver + http_path_last_download2).get();
+                                            downloadApp1.execute(http_path_last_download1
+                                                    + last_ver + http_path_last_download2).get();
                                         } catch (InterruptedException e) {
                                             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         } catch (ExecutionException e) {
@@ -702,8 +704,8 @@ public class IRSettings extends PreferenceActivity implements
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         settings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
         if (settings.contains("theme")) {
-            if (saved_theme != IRCommon.getInstance().getCurrentThemeId(this, saved_theme)) {
-                saved_theme = IRCommon.getInstance().getCurrentThemeId(this, saved_theme);
+            if (saved_theme != IRCommon.getCurrentThemeId(this, saved_theme)) {
+                saved_theme = IRCommon.getCurrentThemeId(this, saved_theme);
                 Intent i = getBaseContext().getPackageManager()
                         .getLaunchIntentForPackage(getBaseContext().getPackageName());
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

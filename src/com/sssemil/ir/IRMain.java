@@ -36,6 +36,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -44,7 +45,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -53,7 +53,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +60,6 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.StandardExceptionParser;
-import com.sssemil.ir.Utils.OnSwipeTouchListener;
 import com.sssemil.ir.Utils.net.Download;
 import com.sssemil.ir.Utils.net.GetText;
 
@@ -112,9 +110,6 @@ public class IRMain extends Activity {
 
     private int item_position;
 
-    private RelativeLayout rl1;
-    private RelativeLayout rl2;
-
     private HandlerThread mCheckThread;
     private Handler mCheckHandler;
 
@@ -144,7 +139,7 @@ public class IRMain extends Activity {
             if (current_mode.equals("send")) {
                 sendKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
             } else if (current_mode.equals("write")) {
-                learnKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
+                startLearning(IRCommon.getIrPath() + item + "/" + usage + ".bin");
             } else if (current_mode.equals("rename")) {
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.rename_menu, null);
@@ -192,7 +187,7 @@ public class IRMain extends Activity {
         if (!IRCommon.getPowerNode(mResources).equals("/")) {
             new Thread(new Runnable() {
                 public void run() {
-                    IRCommon.getInstance().stop(mResources);
+                    IRCommon.stop(mResources);
                 }
             }).start();
             EasyTracker.getInstance(this).activityStart(this);
@@ -213,7 +208,7 @@ public class IRMain extends Activity {
         if (!IRCommon.getPowerNode(mResources).equals("/")) {
             new Thread(new Runnable() {
                 public void run() {
-                    IRCommon.getInstance().start(mResources);
+                    IRCommon.start(mResources);
                 }
             }).start();
 
@@ -289,7 +284,6 @@ public class IRMain extends Activity {
                 adb = new AlertDialog.Builder(IRMain.this);
                 adb.setTitle(getString(R.string.warning));
                 adb.setMessage(getString(R.string.are_u_s_del));
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
                 adb.setPositiveButton(getString(R.string.pos_ans),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -301,7 +295,6 @@ public class IRMain extends Activity {
                                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                     adb.setTitle(getString(R.string.error));
                                     adb.setMessage(getString(R.string.failed_del_fl_io));
-                                    adb.setIcon(android.R.drawable.ic_dialog_alert);
                                     adb.setPositiveButton(getString(R.string.pos_ans),
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
@@ -370,7 +363,6 @@ public class IRMain extends Activity {
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton(getString(R.string.pos_ans),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -397,7 +389,7 @@ public class IRMain extends Activity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (!volkey.equals("1")) {
             String file1 = "/volPl.bin", file2 = "/volMn.bin";
             if (volkey.equals("3")) {
@@ -417,13 +409,13 @@ public class IRMain extends Activity {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
         return true;
     }
 
     @Override
-    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-        theme.applyStyle(IRCommon.getInstance().getCurrentThemeId(this, resid), true);
+    protected void onApplyThemeResource(@NonNull Resources.Theme theme, int resid, boolean first) {
+        theme.applyStyle(IRCommon.getCurrentThemeId(this, resid), true);
     }
 
     @Override
@@ -455,7 +447,7 @@ public class IRMain extends Activity {
             alert = (TextView) findViewById(R.id.alert);
             new Thread(new Runnable() {
                 public void run() {
-                    IRCommon.getInstance().start(mResources);
+                    IRCommon.start(mResources);
                 }
             }).start();
             firstRunChecker();
@@ -505,7 +497,8 @@ public class IRMain extends Activity {
                                 public void run() {
                                     try {
                                         while (btn.isPressed() && run_threads) {
-                                            sendKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
+                                            sendKeyBool(IRCommon.getIrPath() + item
+                                                    + "/" + usage + ".bin");
                                             sleep(400);
                                         }
                                     } catch (InterruptedException e) {
@@ -515,7 +508,7 @@ public class IRMain extends Activity {
                             };
                             t.start();
                         } else if (current_mode.equals("write")) {
-                            learnKeyBool(IRCommon.getIrPath() + item + "/" + usage + ".bin");
+                            startLearning(IRCommon.getIrPath() + item + "/" + usage + ".bin");
                         }
                     }
                     return true;
@@ -534,35 +527,6 @@ public class IRMain extends Activity {
                         }
                     });
                 }
-            }
-
-            if ((getResources().getConfiguration().screenLayout &
-                    Configuration.SCREENLAYOUT_SIZE_MASK) !=
-                    Configuration.SCREENLAYOUT_SIZE_XLARGE) {//TODO improve swiping
-                rl1 = (RelativeLayout) findViewById(R.id.rl1);
-                rl2 = (RelativeLayout) findViewById(R.id.rl2);
-                RelativeLayout container = (RelativeLayout) findViewById(R.id.container);
-                final RadioButton r1 = (RadioButton) findViewById(R.id.radioButton);
-                final RadioButton r2 = (RadioButton) findViewById(R.id.radioButton2);
-                container.setOnTouchListener(new OnSwipeTouchListener(IRMain.this) {
-                    public void onSwipeLeft() {
-                        rl2.setVisibility(View.VISIBLE);
-                        rl1.setVisibility(View.INVISIBLE);
-                        r1.setChecked(false);
-                        r2.setChecked(true);
-                    }
-
-                    public void onSwipeRight() {
-                        rl2.setVisibility(View.INVISIBLE);
-                        rl1.setVisibility(View.VISIBLE);
-                        r1.setChecked(true);
-                        r2.setChecked(false);
-                    }
-
-                    public boolean onTouch(View v, MotionEvent event) {
-                        return gestureDetector.onTouchEvent(event);
-                    }
-                });
             }
         } else {
             adb = new AlertDialog.Builder(this);
@@ -598,6 +562,19 @@ public class IRMain extends Activity {
                                                 "id", "com.sssemil.ir");
                                         Button button = ((Button) findViewById(id));
                                         button.setEnabled(true);
+                                        if (mSettings.contains("theme")) {
+                                            if (mSettings.getString("theme",
+                                                    null).equals("1")) {
+                                                button.setTextColor(
+                                                        Color.WHITE);
+                                            } else {
+                                                button.setTextColor(
+                                                        Color.BLACK);
+                                            }
+                                        } else {
+                                            button.setTextColor(
+                                                    Color.WHITE);
+                                        }
                                     }
                                 });
                             }
@@ -657,7 +634,7 @@ public class IRMain extends Activity {
                                                 "id",
                                                 "com.sssemil.ir");
                                         Button button = ((Button) findViewById(id));
-                                        button.setTextColor(Color.DKGRAY);
+                                        button.setTextColor(Color.GRAY);
                                         if (mSettings.contains("theme")) {
                                             if (mSettings.getString("theme",
                                                     null).equals("1")) {
@@ -669,7 +646,6 @@ public class IRMain extends Activity {
                                             }
                                             button.setEnabled(true);
                                         }
-
                                     }
                                 });
                             }
@@ -688,7 +664,7 @@ public class IRMain extends Activity {
                                     int id = getResources().getIdentifier(finalLine,
                                             "id", "com.sssemil.ir");
                                     Button button = ((Button) findViewById(id));
-                                    button.setTextColor(Color.DKGRAY);
+                                    button.setTextColor(Color.GRAY);
                                     button.setEnabled(true);
                                 }
                             });
@@ -746,7 +722,7 @@ public class IRMain extends Activity {
             }
         }
         if (do_restart) {
-            IRCommon.getInstance().restart(mResources);
+            IRCommon.restart(mResources);
             do_restart = false;
         }
     }
@@ -771,7 +747,6 @@ public class IRMain extends Activity {
                 adb = new AlertDialog.Builder(this);
                 adb.setTitle(getString(R.string.warning));
                 adb.setMessage(getString(R.string.no_root));
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
                 adb.setPositiveButton(getString(R.string.pos_ans),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -792,18 +767,17 @@ public class IRMain extends Activity {
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.warning));
             adb.setMessage(getString(R.string.bad_perm));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton(getString(R.string.pos_ans),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             try {
                                 Runtime.getRuntime().exec(enablePermissions);
                                 Runtime.getRuntime().exec(devicePermissions);
-                                IRCommon.getInstance().start(mResources);
+                                IRCommon.start(mResources);
                             } catch (IOException e) {
                                 Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                             }
-                            IRCommon.getInstance().restart(mResources);
+                            IRCommon.restart(mResources);
                         }
                     }
             );
@@ -830,7 +804,7 @@ public class IRMain extends Activity {
         if (!IRCommon.getPowerNode(mResources).equals("/")) {
             new Thread(new Runnable() {
                 public void run() {
-                    IRCommon.getInstance().stop(mResources);
+                    IRCommon.stop(mResources);
                 }
             }).start();
         }
@@ -842,7 +816,7 @@ public class IRMain extends Activity {
         if (!IRCommon.getPowerNode(mResources).equals("/")) {
             new Thread(new Runnable() {
                 public void run() {
-                    IRCommon.getInstance().start(mResources);
+                    IRCommon.start(mResources);
                 }
             }).start();
         }
@@ -880,7 +854,7 @@ public class IRMain extends Activity {
             builder.show();
             editor = settings.edit();
             editor.putBoolean("isFirstRun", false);
-            editor.commit();
+            editor.apply();
         }
 
         boolean checkUpd;
@@ -899,17 +873,12 @@ public class IRMain extends Activity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void learnKeyBool(final String filename) {
-        startLearning(filename);
-    }
-
     public void startLearning(final String filename) {
         File to = new File(filename);
         if (to.exists()) {
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.warning));
             adb.setMessage(getString(R.string.already_exists));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton(getString(R.string.pos_ans),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -949,9 +918,16 @@ public class IRMain extends Activity {
         });
         new Thread(new Runnable() {
             public void run() {
-                mProgressDialog.show();
-                IRCommon.getInstance().restart(mResources);
-                state = IRCommon.getInstance().learn(filename);
+                /*Log.d(TAG, "Stopping ir...");
+                IRCommon.stop(mResources);
+                Log.d(TAG, "Stopping ir DONE");
+                Log.d(TAG, "Starting ir...");
+                IRCommon.start(mResources);
+                Log.d(TAG, "Starting ir DONE");*/
+                Log.d(TAG, "Learning...");
+                state = 0;
+                state = IRCommon.learn(filename);
+                Log.d(TAG, "Learning DONE state = " + state);
                 if (state < 0) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -960,7 +936,12 @@ public class IRMain extends Activity {
                         }
                     });
                 }
-                mProgressDialog.cancel();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgressDialog.cancel();
+                    }
+                });
             }
         }).start();
     }
@@ -972,7 +953,6 @@ public class IRMain extends Activity {
                 adb = new AlertDialog.Builder(this);
                 adb.setTitle(getString(R.string.warning));
                 adb.setMessage(getString(R.string.not_exists));
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
                 adb.setPositiveButton(getString(R.string.pos_ans),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -1001,7 +981,6 @@ public class IRMain extends Activity {
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton(getString(R.string.pos_ans),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -1040,7 +1019,7 @@ public class IRMain extends Activity {
     public void sendAction(final String filename) {
         new Thread(new Runnable() {
             public void run() {
-                state = IRCommon.getInstance().send(filename);
+                state = IRCommon.send(filename);
                 try {
                     if (state < 0) {
                         do_restart = true;
@@ -1160,7 +1139,7 @@ public class IRMain extends Activity {
                     Intent intent = new Intent(IRMain.this,
                             IRSettings.class);
                     startActivity(intent);
-                    IRCommon.getInstance().stop(mResources);
+                    IRCommon.stop(mResources);
                 }
             }).start();
             run_threads = false;
@@ -1201,7 +1180,7 @@ public class IRMain extends Activity {
                                                                     int id) {
                                                     new Thread(new Runnable() {
                                                         public void run() {
-                                                            IRCommon.getInstance().restart(mResources);
+                                                            IRCommon.restart(mResources);
                                                         }
                                                     }).start();
                                                     alert.setText(
@@ -1250,7 +1229,6 @@ public class IRMain extends Activity {
 
             adb = new AlertDialog.Builder(this);
             adb.setTitle("Select mode");
-            adb.setIcon(android.R.drawable.ic_dialog_info);
             adb
                     .setCancelable(false)
                     .setPositiveButton(getString(R.string.pos_ans),
@@ -1277,7 +1255,6 @@ public class IRMain extends Activity {
             adb = new AlertDialog.Builder(this);
             adb.setTitle(getString(R.string.error));
             adb.setMessage(getString(R.string.you_need_to_select));
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
             adb.setPositiveButton(getString(R.string.pos_ans),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -1557,7 +1534,6 @@ public class IRMain extends Activity {
                     if (!silent) {
                         adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.ser3));
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
                         adb.setPositiveButton(getString(R.string.pos_ans),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -1596,7 +1572,6 @@ public class IRMain extends Activity {
                     if (doUpdate) {
                         adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.new_version_available));
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
                         adb.setPositiveButton(getString(R.string.pos_ans),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -1685,7 +1660,7 @@ public class IRMain extends Activity {
         public void handleMessage(Message msg) {
             if (run_threads) {
                 checkState();
-                sendEmptyMessageDelayed(0, 60000);
+                sendEmptyMessageDelayed(0, 200);
             }
         }
     }
