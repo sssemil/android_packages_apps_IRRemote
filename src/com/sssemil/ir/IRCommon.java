@@ -152,7 +152,7 @@ public class IRCommon {
     }
 
     public static String getID(){
-        return "UA-52301928-1";
+        return "UA-XXXXXXXX-X";
     }
 }
 

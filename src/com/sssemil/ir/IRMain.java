@@ -193,8 +193,10 @@ public class IRMain extends Activity {
             EasyTracker.getInstance(this).activityStart(this);
             run_threads = false;
             //mHandler.removeCallbacksAndMessages(null);
-            mCheckHandler.removeCallbacksAndMessages(null);
-            if (mCheckThread.isAlive()) {
+            if(mCheckHandler!=null) {
+                mCheckHandler.removeCallbacksAndMessages(null);
+            }
+            if (mCheckThread!=null&&mCheckThread.isAlive()) {
                 mCheckThread.quit();
             }
             mCheckHandler = null;
@@ -216,10 +218,10 @@ public class IRMain extends Activity {
             easyTracker.set(Fields.TRACKING_ID, IRCommon.getID());
             easyTracker.activityStart(this);
             run_threads = true;
-            if (!mCheckThread.isAlive()) {
+            if (mCheckThread == null || !mCheckThread.isAlive()) {
                 mCheckThread = new HandlerThread("StateChecker");
                 mCheckThread.start();
-                mCheckHandler = new StateChecker(mCheckHandler.getLooper());
+                mCheckHandler = new StateChecker(mCheckThread.getLooper());
                 mCheckHandler.sendEmptyMessage(0);
             }
 

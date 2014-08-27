@@ -37,6 +37,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Holo">
+
         <activity
             android:name="com.sssemil.ir.IRMain"
             android:label="@string/app_name"
@@ -46,10 +47,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".IRSettings"
             android:label="@string/action_settings"
-            android:theme="@style/Holo" />
+            android:theme="@style/Holo"
+            android:screenOrientation="landscape"/>
 
         <activity
             android:name=".IRAbout"

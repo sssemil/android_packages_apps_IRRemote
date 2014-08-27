@@ -23,6 +23,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -71,6 +72,7 @@ public class IRSettings extends PreferenceActivity implements
     private String item = "null";
     private Spinner spinner;
     private int saved_theme;
+    private ArrayList<String> ar = new ArrayList<String>();
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -113,6 +115,17 @@ public class IRSettings extends PreferenceActivity implements
         }
         assert pInfo != null;
         cur_ver = pInfo.versionName;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override
@@ -309,7 +322,6 @@ public class IRSettings extends PreferenceActivity implements
                                          final Preference preference) {
         String key = preference.getKey();
         adb = new AlertDialog.Builder(this);
-        final ArrayList<String> ar = new ArrayList<String>();
         if (key != null) {
             if (key.equals("aboutPref")) {
                 Intent intent = new Intent(this,
@@ -354,7 +366,7 @@ public class IRSettings extends PreferenceActivity implements
                     public void run() {
                         final GetText getAwItems1 = new GetText();
                         try {
-                            getAwItems1.execute(http_path_root2 + "downloads").get();
+                            ar = getAwItems1.execute(http_path_root2 + "downloads").get();
                         } catch (InterruptedException e) {
                             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                         } catch (ExecutionException e) {
@@ -454,7 +466,8 @@ public class IRSettings extends PreferenceActivity implements
             } else if (key.equals("checkUpd")) {
                 update();
             } else if (key.equals("sbmtBug")) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sssemil/android_packages_apps_SonyIRRemote/issues"));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/sssemil/android_packages_apps_SonyIRRemote/issues"));
                 startActivity(browserIntent);
             } else if (key.equals("sbmtDev")) {
                 LayoutInflater li = LayoutInflater.from(IRSettings.this);
@@ -483,7 +496,10 @@ public class IRSettings extends PreferenceActivity implements
                                                     "New IR device");
                                             emailIntent.putExtra(Intent.EXTRA_TEXT, item);
                                             emailIntent.putExtra(Intent.EXTRA_STREAM,
-                                                    Uri.parse("file:///sdcard/" + item + ".zip"));
+                                                    Uri.parse("file:///"
+                                                            + Environment
+                                                            .getExternalStorageDirectory() + "/"
+                                                            + item + ".zip"));
                                             startActivity(Intent.createChooser(emailIntent,
                                                     "Send by mail..."));
                                         } catch (NullPointerException e) {
@@ -613,7 +629,8 @@ public class IRSettings extends PreferenceActivity implements
                                 mProgressDialog = new ProgressDialog(IRSettings.this);
                                 new Thread(new Runnable() {
                                     public void run() {
-                                        mProgressDialog.setMessage(getString(R.string.downloading_new));
+                                        mProgressDialog.setMessage(
+                                                getString(R.string.downloading_new));
                                         mProgressDialog.setIndeterminate(true);
                                         mProgressDialog.setProgressStyle(
                                                 ProgressDialog.STYLE_SPINNER);
