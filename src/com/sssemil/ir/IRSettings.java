@@ -211,16 +211,16 @@ public class IRSettings extends PreferenceActivity implements
                     } catch (IOException e) {
                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                     }
-                    final Download downloadZip1 = new Download(http_path_last_download1
-                            + last_ver + http_path_last_download2,
-                            Environment
-                                    .getExternalStorageDirectory()
-                                    + "/upd.apk", IRSettings.this, "zip"
+                    Download downloadZip1 = new Download(lastWord,
+                            IRSettings.this,
+                            "zip"
                     );
 
                     try {
-                        String list;
-                        if (!(list = downloadZip1.execute(lastWord).get()).equals("ok")) {
+                        Log.d(TAG, lastWord);
+                        String list = downloadZip1.execute().get();
+                        Log.d(TAG, list);
+                        if (list.equals("ko")) {
                             mProgressDialog.cancel();
                             adb.setTitle(getString(R.string.download));
                             adb.setMessage(getString(R.string.ser3));
@@ -581,8 +581,9 @@ public class IRSettings extends PreferenceActivity implements
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Log.i("Update", "last_ver : " + getLastVer1.execute(http_path_root2
-                            + "last.php").get() + " cur_ver : " + cur_ver);
+                    last_ver=getLastVer1.execute(http_path_root2
+                            + "last.php").get().get(0);
+                    Log.i("Update", "last_ver : " + last_ver + " cur_ver : " + cur_ver);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 } catch (ExecutionException e) {
@@ -644,9 +645,7 @@ public class IRSettings extends PreferenceActivity implements
                                         final Download downloadApp1 = new Download(
                                                 http_path_last_download1
                                                 + last_ver + http_path_last_download2,
-                                                Environment
-                                                        .getExternalStorageDirectory()
-                                                        + "/upd.apk", IRSettings.this, "apk"
+                                                IRSettings.this, "apk"
                                         );
                                         try {
                                             downloadApp1.execute(http_path_last_download1

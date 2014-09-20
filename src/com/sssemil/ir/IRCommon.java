@@ -66,7 +66,7 @@ public class IRCommon {
             }
 
         } else {
-            //if file, then delete it
+            // if file, then delete it
             file.delete();
             Log.d(TAG, "File is deleted : " + file.getAbsolutePath());
         }
@@ -152,7 +152,7 @@ public class IRCommon {
     }
 
     public static String getID(){
-        return "UA-XXXXXXXX-X";
+        return "UA-52301928-1";
     }
 }
 

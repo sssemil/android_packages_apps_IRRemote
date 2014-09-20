@@ -595,8 +595,9 @@ public class IRMain extends Activity {
                                     int id = getResources().getIdentifier(finalLine,
                                             "id", "com.sssemil.ir");
                                     Button button = ((Button) findViewById(id));
-                                    button.setEnabled(false);
-
+                                    try {
+                                        button.setEnabled(false);
+                                    } catch (NullPointerException ignored){}
                                 }
                             });
                         }
@@ -930,7 +931,12 @@ public class IRMain extends Activity {
                 state = 0;
                 state = IRCommon.learn(filename);
                 Log.d(TAG, "Learning DONE state = " + state);
-                if (state < 0) {
+                if (state <= 1) {
+                    try {
+                        IRCommon.delete(new File(filename));
+                    } catch (IOException e) {
+                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -1522,8 +1528,9 @@ public class IRMain extends Activity {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Log.i(TAG, "Update last_ver : " + (last_ver = getLastVer1.execute(http_path_root2
-                            + "last.php").get().get(0))
+                    last_ver = getLastVer1.execute(http_path_root2
+                            + "last.php").get().get(0);
+                    Log.i(TAG, "Update last_ver : " + last_ver
                             + " cur_ver : " + cur_ver);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
@@ -1597,8 +1604,6 @@ public class IRMain extends Activity {
                                                                 http_path_last_download1
                                                                         + last_ver
                                                                         + http_path_last_download2,
-                                                                Environment.getExternalStorageDirectory()
-                                                                        + "/upd.apk",
                                                                 IRMain.this,
                                                                 "apk"
                                                         );

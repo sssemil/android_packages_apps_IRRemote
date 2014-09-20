@@ -46,10 +46,9 @@ public class Download extends AsyncTask<String, Integer, String> {
     private String mApk_oder_zip;
     private Context mContext;
 
-    public Download(String url, String out_path, Context context, String apk_oder_zip) {
+    public Download(String url, Context context, String apk_oder_zip) {
         mUrl = url;
         mContext = context;
-        mOut_path = out_path;
         mApk_oder_zip = apk_oder_zip;
     }
 
@@ -57,9 +56,23 @@ public class Download extends AsyncTask<String, Integer, String> {
         InputStream input = null;
         OutputStream output = null;
         HttpURLConnection connection = null;
+
+        if (mApk_oder_zip.equals("apk")) {
+            mOut_path=Environment.getExternalStorageDirectory()+"/upd.apk";
+        } else if (mApk_oder_zip.equals("zip")) {
+            try {
+                mOut_path=Environment.getExternalStorageDirectory()+"/"
+                        + new URL(mUrl).getFile().substring(
+                        new URL(mUrl).getFile().lastIndexOf("/") + 1);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+
         try {
             Log.v(TAG, "Starting... ");
             URL url = new URL(mUrl);
+            Log.v(TAG, mUrl);
 
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
@@ -98,8 +111,7 @@ public class Download extends AsyncTask<String, Integer, String> {
 
             if (mApk_oder_zip.equals("apk")) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(Environment
-                                .getExternalStorageDirectory() + "/upd.apk")),
+                intent.setDataAndType(Uri.fromFile(new File(mOut_path)),
                         "application/vnd.android.package-archive"
                 );
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -109,19 +121,15 @@ public class Download extends AsyncTask<String, Integer, String> {
                 String unzipLocation = IRCommon.getIrPath();
 
                 Decompress d = new Decompress(zipFile, unzipLocation);
-                String list = d.unzip();
-                return list;
+                return d.unzip();
             }
             Log.v(TAG, "Done!");
         } catch (MalformedURLException e) {
             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-            return e.toString();
         } catch (FileNotFoundException e) {
             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-            return e.toString();
         } catch (IOException e) {
             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-            return e.toString();
         } finally {
             try {
                 if (output != null)
@@ -135,6 +143,6 @@ public class Download extends AsyncTask<String, Integer, String> {
             if (connection != null)
                 connection.disconnect();
         }
-        return null;
+        return "ko";
     }
 }
