@@ -58,10 +58,10 @@ public class Download extends AsyncTask<String, Integer, String> {
         HttpURLConnection connection = null;
 
         if (mApk_oder_zip.equals("apk")) {
-            mOut_path=Environment.getExternalStorageDirectory()+"/upd.apk";
+            mOut_path = Environment.getExternalStorageDirectory() + "/upd.apk";
         } else if (mApk_oder_zip.equals("zip")) {
             try {
-                mOut_path=Environment.getExternalStorageDirectory()+"/"
+                mOut_path = Environment.getExternalStorageDirectory() + "/"
                         + new URL(mUrl).getFile().substring(
                         new URL(mUrl).getFile().lastIndexOf("/") + 1);
             } catch (MalformedURLException e) {

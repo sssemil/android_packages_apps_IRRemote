@@ -33,7 +33,6 @@ import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -129,7 +128,7 @@ public class IRSettings extends PreferenceActivity implements
     }
 
     @Override
-    protected void onApplyThemeResource(@NonNull Resources.Theme theme, int resid, boolean first) {
+    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
         saved_theme = IRCommon.getCurrentThemeId(this, resid);
         theme.applyStyle(saved_theme, true);
     }
@@ -509,11 +508,11 @@ public class IRSettings extends PreferenceActivity implements
                                             adb.setMessage(getString(R.string.you_need_to_select));
                                             adb.setPositiveButton(getString(R.string.pos_ans),
                                                     new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog,
-                                                                    int which) {
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int which) {
 
-                                                }
-                                            });
+                                                        }
+                                                    });
                                             adb.show();
                                         }
 
@@ -581,7 +580,7 @@ public class IRSettings extends PreferenceActivity implements
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    last_ver=getLastVer1.execute(http_path_root2
+                    last_ver = getLastVer1.execute(http_path_root2
                             + "last.php").get().get(0);
                     Log.i("Update", "last_ver : " + last_ver + " cur_ver : " + cur_ver);
                 } catch (InterruptedException e) {
@@ -644,7 +643,7 @@ public class IRSettings extends PreferenceActivity implements
 
                                         final Download downloadApp1 = new Download(
                                                 http_path_last_download1
-                                                + last_ver + http_path_last_download2,
+                                                        + last_ver + http_path_last_download2,
                                                 IRSettings.this, "apk"
                                         );
                                         try {

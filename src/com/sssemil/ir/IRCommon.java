@@ -151,7 +151,7 @@ public class IRCommon {
         return default_resid;
     }
 
-    public static String getID(){
+    public static String getID() {
         return "UA-52301928-1";
     }
 }

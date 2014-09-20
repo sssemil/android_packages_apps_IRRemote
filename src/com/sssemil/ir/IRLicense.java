@@ -22,7 +22,6 @@ package com.sssemil.ir;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
@@ -32,7 +31,7 @@ import com.google.analytics.tracking.android.Fields;
 public class IRLicense extends Activity {
 
     @Override
-    protected void onApplyThemeResource(@NonNull Resources.Theme theme, int resid, boolean first) {
+    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
         theme.applyStyle(IRCommon.getCurrentThemeId(this, resid), true);
     }
 

@@ -31,12 +31,10 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -193,10 +191,10 @@ public class IRMain extends Activity {
             EasyTracker.getInstance(this).activityStart(this);
             run_threads = false;
             //mHandler.removeCallbacksAndMessages(null);
-            if(mCheckHandler!=null) {
+            if (mCheckHandler != null) {
                 mCheckHandler.removeCallbacksAndMessages(null);
             }
-            if (mCheckThread!=null&&mCheckThread.isAlive()) {
+            if (mCheckThread != null && mCheckThread.isAlive()) {
                 mCheckThread.quit();
             }
             mCheckHandler = null;
@@ -391,7 +389,7 @@ public class IRMain extends Activity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (!volkey.equals("1")) {
             String file1 = "/volPl.bin", file2 = "/volMn.bin";
             if (volkey.equals("3")) {
@@ -411,12 +409,12 @@ public class IRMain extends Activity {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         return true;
     }
 
     @Override
-    protected void onApplyThemeResource(@NonNull Resources.Theme theme, int resid, boolean first) {
+    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
         theme.applyStyle(IRCommon.getCurrentThemeId(this, resid), true);
     }
 
@@ -597,7 +595,8 @@ public class IRMain extends Activity {
                                     Button button = ((Button) findViewById(id));
                                     try {
                                         button.setEnabled(false);
-                                    } catch (NullPointerException ignored){}
+                                    } catch (NullPointerException ignored) {
+                                    }
                                 }
                             });
                         }
