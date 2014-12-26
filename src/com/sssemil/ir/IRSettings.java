@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,23 +22,22 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -54,11 +53,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
-public class IRSettings extends PreferenceActivity implements
-        SharedPreferences.OnSharedPreferenceChangeListener {
+public class IRSettings extends PreferenceActivity {
 
     private static final String TAG = "IRSettings";
-    private SharedPreferences settings;
     private String http_path_root2;
     private String http_path_last_download1;
     private String http_path_last_download2;
@@ -70,8 +67,7 @@ public class IRSettings extends PreferenceActivity implements
     private boolean cont = false;
     private String item = "null";
     private Spinner spinner;
-    private int saved_theme;
-    private ArrayList<String> ar = new ArrayList<String>();
+    private ArrayList<String> ar = new ArrayList<>();
 
     public static String normalisedVersion(String version) {
         return normalisedVersion(version, ".", 4);
@@ -98,11 +94,25 @@ public class IRSettings extends PreferenceActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
-        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        LinearLayout root = (LinearLayout) findViewById(android.R.id.list)
+                .getParent().getParent().getParent();
+        Toolbar bar = (Toolbar) LayoutInflater.from(this)
+                .inflate(R.layout.settings_toolbar, root, false);
+        root.addView(bar, 0); // insert at top
+        bar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(IRSettings.this,
+                        IRMain.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
-        settings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
         adb = new AlertDialog.Builder(this);
         PackageInfo pInfo = null;
         try {
@@ -114,23 +124,6 @@ public class IRSettings extends PreferenceActivity implements
         }
         assert pInfo != null;
         cur_ver = pInfo.versionName;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-                    }
-                });
-            }
-        }).start();
-    }
-
-    @Override
-    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-        saved_theme = IRCommon.getCurrentThemeId(this, resid);
-        theme.applyStyle(saved_theme, true);
     }
 
     @Override
@@ -267,9 +260,7 @@ public class IRSettings extends PreferenceActivity implements
                                 }
                             });
                         }
-                    } catch (InterruptedException e) {
-                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                    } catch (ExecutionException e) {
+                    } catch (InterruptedException | ExecutionException e) {
                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                     }
                 }
@@ -322,242 +313,242 @@ public class IRSettings extends PreferenceActivity implements
         String key = preference.getKey();
         adb = new AlertDialog.Builder(this);
         if (key != null) {
-            if (key.equals("aboutPref")) {
-                Intent intent = new Intent(this,
-                        IRAbout.class);
-                startActivity(intent);
-            } else if (key.equals("open_sourcePref")) {
-                Intent intent = new Intent(this,
-                        IRLicense.class);
-                startActivity(intent);
-            } else if (key.equals("addBtn")) {
+            switch (key) {
+                case "aboutPref": {
+                    Intent intent = new Intent(this,
+                            IRAbout.class);
+                    startActivity(intent);
+                    break;
+                }
+                case "open_sourcePref": {
+                    Intent intent = new Intent(this,
+                            IRLicense.class);
+                    startActivity(intent);
+                    break;
+                }
+                case "addBtn": {
 
-                LayoutInflater li = LayoutInflater.from(IRSettings.this);
-                final View promptsView = li.inflate(R.layout.add_device_menu, null);
-                adb = new AlertDialog.Builder(IRSettings.this);
-                adb.setTitle(getString(R.string.add_new_device));
-                adb
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        onAddDeviceClick(promptsView);
+                    LayoutInflater li = LayoutInflater.from(IRSettings.this);
+                    final View promptsView = li.inflate(R.layout.add_device_menu, null);
+                    adb = new AlertDialog.Builder(IRSettings.this);
+                    adb.setTitle(getString(R.string.add_new_device));
+                    adb
+                            .setCancelable(false)
+                            .setPositiveButton(getString(R.string.pos_ans),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            onAddDeviceClick(promptsView);
+                                        }
                                     }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
+                            )
+                            .setNegativeButton(getString(R.string.cancel),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
                                     }
-                                }
-                        );
-                adb.setView(promptsView);
-                adb.show();
-            } else if (key.equals("downBtn")) {
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage(getString(R.string.gtlst));
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                mProgressDialog.show();
+                            );
+                    adb.setView(promptsView);
+                    adb.show();
+                    break;
+                }
+                case "downBtn":
+                    mProgressDialog = new ProgressDialog(this);
+                    mProgressDialog.setMessage(getString(R.string.gtlst));
+                    mProgressDialog.setIndeterminate(true);
+                    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    mProgressDialog.show();
 
-                new Thread(new Runnable() {
-                    public void run() {
-                        final GetText getAwItems1 = new GetText();
-                        try {
-                            ar = getAwItems1.execute(http_path_root2 + "downloads").get();
-                        } catch (InterruptedException e) {
-                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                        } catch (ExecutionException e) {
-                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                    new Thread(new Runnable() {
+                        public void run() {
+                            final GetText getAwItems1 = new GetText();
+                            try {
+                                ar = getAwItems1.execute(http_path_root2 + "downloads").get();
+                            } catch (InterruptedException | ExecutionException e) {
+                                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                            }
+                            adb.setTitle(getString(R.string.downloadT));
+                            String[] types = new String[ar.size()];
+                            types = ar.toArray(types);
+                            adb.setItems(types, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    mProgressDialog.cancel();
+                                    Log.i("pr", ar.get(which));
+                                    doOnDown(ar.get(which));
+                                }
+
+                            });
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressDialog.cancel();
+                                    adb.show();
+                                }
+                            });
                         }
-                        adb.setTitle(getString(R.string.downloadT));
+                    }).start();
+                    break;
+                case "rmBtn":
+                    try {
+                        adb.setTitle(getString(R.string.remove));
+                        ar.clear();
+                        for (File localFile1 : new File(IRCommon.getIrPath()).listFiles()) {
+                            if (localFile1.isDirectory()) {
+                                if (!ar.contains(localFile1.getName())) {
+                                    ar.add(localFile1.getName());
+                                }
+                            }
+                        }
                         String[] types = new String[ar.size()];
                         types = ar.toArray(types);
                         adb.setItems(types, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                final int selected = which;
                                 dialog.dismiss();
-                                mProgressDialog.cancel();
-                                Log.i("pr", ar.get(which));
-                                doOnDown(ar.get(which));
-                            }
+                                adb = new AlertDialog.Builder(IRSettings.this);
+                                adb.setTitle(getString(R.string.warning));
+                                adb.setMessage(getString(R.string.are_u_s_del));
+                                adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        item = ar.get(selected);
+                                        File dir = new File(IRCommon.getIrPath() + item);
+                                        try {
+                                            IRCommon.delete(dir);
+                                        } catch (IOException e) {
+                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                                            adb.setTitle(getString(R.string.error));
+                                            adb.setMessage(getString(R.string.failed_del_fl_io));
+                                            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                }
+                                            });
+                                            adb.show();
+                                        }
+                                        adb = new AlertDialog.Builder(IRSettings.this);
+                                        adb.setTitle(getString(R.string.done));
+                                        adb.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
+                                        adb.setPositiveButton(getString(R.string.pos_ans), null);
+                                        adb.show();
+                                    }
+                                });
 
+                                adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                });
+                                adb.show();
+                            }
                         });
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mProgressDialog.cancel();
                                 adb.show();
                             }
                         });
+                    } catch (NullPointerException e) {
+                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                        adb.setTitle(getString(R.string.error));
+                        adb.setMessage(getString(R.string.you_need_to_select));
+                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        adb.show();
                     }
-                }).start();
-            } else if (key.equals("rmBtn")) {
-                try {
-                    adb.setTitle(getString(R.string.remove));
-                    ar.clear();
+                    break;
+                case "checkUpd":
+                    update();
+                    break;
+                case "sbmtBug":
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://github.com/sssemil/android_packages_apps_SonyIRRemote/issues"));
+                    startActivity(browserIntent);
+                    break;
+                case "sbmtDev": {
+                    LayoutInflater li = LayoutInflater.from(IRSettings.this);
+                    final View promptsView = li.inflate(R.layout.sbmt_device_menu, null);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                            IRSettings.this);
+                    alertDialogBuilder.setTitle(getString(R.string.select_dev));
+                    alertDialogBuilder
+                            .setCancelable(false)
+                            .setPositiveButton("OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            try {
+                                                spinner = (Spinner) promptsView
+                                                        .findViewById(R.id.spinner);
+                                                item = spinner.getSelectedItem().toString();
+                                                Compress c = new Compress(IRCommon.getIrPath() + item,
+                                                        Environment.getExternalStorageDirectory()
+                                                                + "/" + item + ".zip");
+                                                c.zip();
+                                                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                                                emailIntent.setType("application/zip");
+                                                emailIntent.putExtra(Intent.EXTRA_EMAIL,
+                                                        new String[]{"suleymanovemil8@gmail.com"});
+                                                emailIntent.putExtra(Intent.EXTRA_SUBJECT,
+                                                        "New IR device");
+                                                emailIntent.putExtra(Intent.EXTRA_TEXT, item);
+                                                emailIntent.putExtra(Intent.EXTRA_STREAM,
+                                                        Uri.parse("file:///"
+                                                                + Environment
+                                                                .getExternalStorageDirectory() + "/"
+                                                                + item + ".zip"));
+                                                startActivity(Intent.createChooser(emailIntent,
+                                                        "Send by mail..."));
+                                            } catch (NullPointerException e) {
+                                                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
+                                                adb = new AlertDialog.Builder(IRSettings.this);
+                                                adb.setTitle(getString(R.string.error));
+                                                adb.setMessage(getString(R.string.you_need_to_select));
+                                                adb.setPositiveButton(getString(R.string.pos_ans),
+                                                        new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog,
+                                                                                int which) {
+
+                                                            }
+                                                        });
+                                                adb.show();
+                                            }
+
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(getString(R.string.cancel),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    }
+                            );
+                    alertDialogBuilder.setView(promptsView);
+                    alertDialogBuilder.show();
+
+                    spinner = ((Spinner) promptsView.findViewById(R.id.spinner));
+                    ArrayList<String> localArrayList1 = new ArrayList<>();
+                    boolean edited = false;
+
                     for (File localFile1 : new File(IRCommon.getIrPath()).listFiles()) {
                         if (localFile1.isDirectory()) {
-                            if (!ar.contains(localFile1.getName())) {
-                                ar.add(localFile1.getName());
+                            if (!localArrayList1.contains(localFile1.getName())) {
+                                localArrayList1.add(localFile1.getName());
+                                edited = true;
                             }
                         }
-                    }
-                    String[] types = new String[ar.size()];
-                    types = ar.toArray(types);
-                    adb.setItems(types, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            final int selected = which;
-                            dialog.dismiss();
-                            adb = new AlertDialog.Builder(IRSettings.this);
-                            adb.setTitle(getString(R.string.warning));
-                            adb.setMessage(getString(R.string.are_u_s_del));
-                            adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    item = ar.get(selected);
-                                    File dir = new File(IRCommon.getIrPath() + item);
-                                    try {
-                                        IRCommon.delete(dir);
-                                    } catch (IOException e) {
-                                        Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        adb.setTitle(getString(R.string.error));
-                                        adb.setMessage(getString(R.string.failed_del_fl_io));
-                                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                            }
-                                        });
-                                        adb.show();
-                                    }
-                                    adb = new AlertDialog.Builder(IRSettings.this);
-                                    adb.setTitle(getString(R.string.done));
-                                    adb.setMessage(getString(R.string.done_removing) + " " + item + " " + getString(R.string.files));
-                                    adb.setPositiveButton(getString(R.string.pos_ans), null);
-                                    adb.show();
-                                }
-                            });
 
-                            adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            adb.show();
-                        }
-                    });
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adb.show();
-                        }
-                    });
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                    adb.setTitle(getString(R.string.error));
-                    adb.setMessage(getString(R.string.you_need_to_select));
-                    adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    adb.show();
-                }
-            } else if (key.equals("checkUpd")) {
-                update();
-            } else if (key.equals("sbmtBug")) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/sssemil/android_packages_apps_SonyIRRemote/issues"));
-                startActivity(browserIntent);
-            } else if (key.equals("sbmtDev")) {
-                LayoutInflater li = LayoutInflater.from(IRSettings.this);
-                final View promptsView = li.inflate(R.layout.sbmt_device_menu, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                        IRSettings.this);
-                alertDialogBuilder.setTitle(getString(R.string.select_dev));
-                alertDialogBuilder
-                        .setCancelable(false)
-                        .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        try {
-                                            spinner = (Spinner) promptsView
-                                                    .findViewById(R.id.spinner);
-                                            item = spinner.getSelectedItem().toString();
-                                            Compress c = new Compress(IRCommon.getIrPath() + item,
-                                                    Environment.getExternalStorageDirectory()
-                                                            + "/" + item + ".zip");
-                                            c.zip();
-                                            Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                                            emailIntent.setType("application/zip");
-                                            emailIntent.putExtra(Intent.EXTRA_EMAIL,
-                                                    new String[]{"suleymanovemil8@gmail.com"});
-                                            emailIntent.putExtra(Intent.EXTRA_SUBJECT,
-                                                    "New IR device");
-                                            emailIntent.putExtra(Intent.EXTRA_TEXT, item);
-                                            emailIntent.putExtra(Intent.EXTRA_STREAM,
-                                                    Uri.parse("file:///"
-                                                            + Environment
-                                                            .getExternalStorageDirectory() + "/"
-                                                            + item + ".zip"));
-                                            startActivity(Intent.createChooser(emailIntent,
-                                                    "Send by mail..."));
-                                        } catch (NullPointerException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                            adb = new AlertDialog.Builder(IRSettings.this);
-                                            adb.setTitle(getString(R.string.error));
-                                            adb.setMessage(getString(R.string.you_need_to_select));
-                                            adb.setPositiveButton(getString(R.string.pos_ans),
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog,
-                                                                            int which) {
-
-                                                        }
-                                                    });
-                                            adb.show();
-                                        }
-
-                                    }
-                                }
-                        )
-                        .setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                }
-                        );
-                alertDialogBuilder.setView(promptsView);
-                alertDialogBuilder.show();
-
-                spinner = ((Spinner) promptsView.findViewById(R.id.spinner));
-                ArrayList<String> localArrayList1 = new ArrayList<String>();
-                boolean edited = false;
-
-                for (File localFile1 : new File(IRCommon.getIrPath()).listFiles()) {
-                    if (localFile1.isDirectory()) {
-                        if (!localArrayList1.contains(localFile1.getName())) {
-                            localArrayList1.add(localFile1.getName());
-                            edited = true;
+                        if (edited) {
+                            ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
+                                    android.R.layout.simple_spinner_item, localArrayList1);
+                            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            spinner.setAdapter(dataAdapter);
                         }
                     }
-
-                    if (edited) {
-                        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                                android.R.layout.simple_spinner_item, localArrayList1);
-                        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        spinner.setAdapter(dataAdapter);
-                    }
-                }
-            } else if (key.equals(("theme"))) {
-                SharedPreferences settings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
-                if (settings.contains("theme")) {
-                    if (settings.getString("theme", null).equals("1")) {
-                        super.setTheme(R.style.Holo);
-                    } else if (settings.getString("theme", null).equals("2")) {
-                        super.setTheme(R.style.Holo_Light_DarkActionBar);
-                    } else if (settings.getString("theme", null).equals("3")) {
-                        super.setTheme(R.style.Theme_Holo_Light);
-                    }
+                    break;
                 }
             }
         }
@@ -583,13 +574,10 @@ public class IRSettings extends PreferenceActivity implements
                     last_ver = getLastVer1.execute(http_path_root2
                             + "last.php").get().get(0);
                     Log.i("Update", "last_ver : " + last_ver + " cur_ver : " + cur_ver);
-                } catch (InterruptedException e) {
-                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                 }
                 if (last_ver.equals("zirt")) {
-                    adb.setTitle(getString(R.string.update));
                     adb.setMessage(getString(R.string.ser3));
                     adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -612,17 +600,20 @@ public class IRSettings extends PreferenceActivity implements
                 } else {
                     String result = compare(cur_ver, last_ver);
                     boolean doUpdate = false;
-                    if (result.equals(">")) {
-                        doUpdate = false;
-                    } else if (result.equals("<")) {
-                        doUpdate = true;
-                    } else if (result.equals("==")) {
-                        doUpdate = false;
+                    switch (result) {
+                        case ">":
+                            doUpdate = false;
+                            break;
+                        case "<":
+                            doUpdate = true;
+                            break;
+                        case "==":
+                            doUpdate = false;
+                            break;
                     }
 
 
                     if (doUpdate) {
-                        adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.new_version_available));
                         adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -649,9 +640,7 @@ public class IRSettings extends PreferenceActivity implements
                                         try {
                                             downloadApp1.execute(http_path_last_download1
                                                     + last_ver + http_path_last_download2).get();
-                                        } catch (InterruptedException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        } catch (ExecutionException e) {
+                                        } catch (InterruptedException | ExecutionException e) {
                                             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                         }
                                         mProgressDialog.cancel();
@@ -672,7 +661,6 @@ public class IRSettings extends PreferenceActivity implements
                             }
                         });
                     } else {
-                        adb.setTitle(getString(R.string.update));
                         adb.setMessage(getString(R.string.already_new));
                         adb.setPositiveButton(getString(R.string.pos_ans), null);
                         runOnUiThread(new Runnable() {
@@ -692,7 +680,6 @@ public class IRSettings extends PreferenceActivity implements
     public void onStop() {
         super.onStop();
         EasyTracker.getInstance(this).activityStart(this);
-        settings.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -706,27 +693,10 @@ public class IRSettings extends PreferenceActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        settings.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        settings.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        settings = getSharedPreferences(IRCommon.getPrefsName(this), 0);
-        if (settings.contains("theme")) {
-            if (saved_theme != IRCommon.getCurrentThemeId(this, saved_theme)) {
-                saved_theme = IRCommon.getCurrentThemeId(this, saved_theme);
-                Intent i = getBaseContext().getPackageManager()
-                        .getLaunchIntentForPackage(getBaseContext().getPackageName());
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
-                finish();
-            }
-        }
     }
 }

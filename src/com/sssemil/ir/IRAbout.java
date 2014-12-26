@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -19,15 +19,12 @@
 
 package com.sssemil.ir;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.text.Html;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.util.Linkify;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
@@ -35,26 +32,27 @@ import com.google.analytics.tracking.android.Fields;
 
 import java.util.regex.Pattern;
 
-public class IRAbout extends Activity {
+public class IRAbout extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
 
-        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         TextView tw = (TextView) findViewById(R.id.textView);
-        TextView tw2 = (TextView) findViewById(R.id.textView2);
+        TextView tw3 = (TextView) findViewById(R.id.textView3);
         TextView tw4 = (TextView) findViewById(R.id.textView4);
-        TextView tw5 = (TextView) findViewById(R.id.textView5);
-        TextView tw6 = (TextView) findViewById(R.id.textView6);
 
         Pattern pattern = Pattern.compile("https://github.com/sssemil/android_packages_apps_IRRemote");
-        Linkify.addLinks(tw4, pattern, "");
+        Linkify.addLinks(tw3, pattern, "");
         pattern = Pattern.compile("https://github.com/BuzzBumbleBee/lib_sony_ir");
-        Linkify.addLinks(tw5, pattern, "");
-        tw6.setText(Html.fromHtml("<a href=\"\">" + getString(R.string.open_source_license) + "</a>"));
+        Linkify.addLinks(tw4, pattern, "");
 
         String version = "-.-.-";
         try {
@@ -64,13 +62,6 @@ public class IRAbout extends Activity {
         }
 
         tw.setText(getString(R.string.ver) + " " + version);
-
-        tw2.setText(getString(R.string.license1));
-    }
-
-    @Override
-    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-        theme.applyStyle(IRCommon.getCurrentThemeId(this, resid), true);
     }
 
     @Override
@@ -82,12 +73,6 @@ public class IRAbout extends Activity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void onLicenseClick(View view) {
-        Intent intent = new Intent(this,
-                IRLicense.class);
-        startActivity(intent);
     }
 
     @Override

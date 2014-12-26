@@ -3,7 +3,7 @@
 
      This program is free software; you can redistribute it and/or
      modify it under the terms of the GNU General Public License
-     as published by the Free Software Foundation; either version 2
+     as published by the Free Software Foundation; either version 3
      of the License, or (at your option) any later version.
 
      This program is distributed in the hope that it will be useful,
@@ -60,15 +60,6 @@
             android:key="sbmtBug"
             android:summary="@string/submit_bugD"
             android:title="@string/submit_bug" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/theme">
-        <ListPreference
-            android:defaultValue="Holo"
-            android:entries="@array/listThemes"
-            android:entryValues="@array/listValues"
-            android:key="theme"
-            android:summary="@string/ch_thD"
-            android:title="@string/ch_th" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/other">
         <Preference

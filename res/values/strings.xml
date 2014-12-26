@@ -3,7 +3,7 @@
 
      This program is free software; you can redistribute it and/or
      modify it under the terms of the GNU General Public License
-     as published by the Free Software Foundation; either version 2
+     as published by the Free Software Foundation; either version 3
      of the License, or (at your option) any later version.
 
      This program is distributed in the hope that it will be useful,
@@ -17,6 +17,7 @@
      MA  02110-1301, USA.
 -->
 <resources>
+
     <string name="btn3" translatable="false">chanelPl</string>
     <string name="btn4" translatable="false">chanelMn</string>
     <string name="btn5" translatable="false">volPl</string>
@@ -54,7 +55,6 @@
     <string name="btn36" translatable="false">exit</string>
     <string name="btn37" translatable="false">tvr</string>
     <string name="btn38" translatable="false">audio</string>
-
     <string name="one" translatable="false">1</string>
     <string name="two" translatable="false">2</string>
     <string name="tree" translatable="false">3</string>
@@ -86,7 +86,6 @@
     <string name="stop" translatable="false">■</string>
     <string name="sr" translatable="false">●</string>
     <string name="que" translatable="false">\?</string>
-
     <string name="Send_signal">Leave Write mode</string>
     <string name="Write_signal">Switch to Write mode</string>
     <string name="action_settings">Settings</string>
@@ -106,17 +105,13 @@
     <string name="license2">Distributed under the GNU GPL v3.</string>
     <string name="license3">Source code is available at https://github.com/sssemil/android_packages_apps_IRRemote .</string>
     <string name="license4">Using lib_sony_ir from BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
-
     <string name="mute">Mute</string>
     <string name="input">Input</string>
     <string name="home">Home</string>
-
     <string name="download_brnd">Download or remove device files</string>
     <string name="download">Download</string>
     <string name="refresh">Refresh</string>
-
     <string name="remove">Remove</string>
-
     <string name="exit">Exit</string>
     <string name="update">Update</string>
     <string name="ser3">The Server is unreachable, please try again later!
@@ -134,7 +129,6 @@ To start using it go to settings and download device files for your TV or anythi
 We are using Google Analytics API to collect anonymous data and improve our app.
         Thanks!
     NOTE: This app is under development and it was tested only on Sony Xperia ZL(odin) and Sony Tab Z(pollux) running CyanogenMod 11!</string>
-
     <string name="welcome">Welcome!</string>
     <string name="done">Done!</string>
     <string name="downloadT">Download</string>
@@ -178,9 +172,6 @@ Do you want to continue?</string>
     <string name="submit_new_devD">Submit new device files</string>
     <string name="submit_bug">Submit bug</string>
     <string name="submit_bugD">Tell me if you see some bug</string>
-    <string name="theme">Theme</string>
-    <string name="ch_th">Change theme</string>
-    <string name="ch_thD">Select another theme</string>
     <string name="options">Options</string>
     <string name="guide">Guide</string>
     <string name="returnbtn">Return</string>
@@ -205,9 +196,10 @@ Select Start and press the button you want the app to learn."</string>
     <string name="rename_mode_btn">Rename mode</string>
     <string name="endis_mode_btn">En/Disable mode</string>
     <string name="reset">Reset</string>
-
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="pref_title_build_version">Build version</string>
-    <string name="not_supported">Sizin cihazıvız dəstəklənmir!</string>
+    <string name="not_supported">Your device is not supported!</string>
+    <string name="small_info">Infrared Remote Control for Sony Xperia ZL and Sony Xperia Tab Z</string>
+
 </resources>

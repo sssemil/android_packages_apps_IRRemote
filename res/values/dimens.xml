@@ -3,7 +3,7 @@
 
      This program is free software; you can redistribute it and/or
      modify it under the terms of the GNU General Public License
-     as published by the Free Software Foundation; either version 2
+     as published by the Free Software Foundation; either version 3
      of the License, or (at your option) any later version.
 
      This program is distributed in the hope that it will be useful,
@@ -20,4 +20,13 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="margin_small">4dp</dimen>
+    <dimen name="margin_medium">8dp</dimen>
+    <dimen name="margin_large">16dp</dimen>
+    <dimen name="text_tiny">10sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+    <dimen name="text_smallish">16sp</dimen>
+    <dimen name="text_medium">18sp</dimen>
+    <dimen name="text_large">22sp</dimen>
 </resources>

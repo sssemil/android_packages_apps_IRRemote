@@ -3,7 +3,7 @@
 
      This program is free software; you can redistribute it and/or
      modify it under the terms of the GNU General Public License
-     as published by the Free Software Foundation; either version 2
+     as published by the Free Software Foundation; either version 3
      of the License, or (at your option) any later version.
 
      This program is distributed in the hope that it will be useful,
@@ -106,8 +106,6 @@
     <string name="submit_new_devD">Выложить файлы нового устройства</string>
     <string name="submit_bug">Сообщить об ошибке</string>
     <string name="submit_bugD">Сказать мне о замеченной ошибке</string>
-    <string name="theme">Тема</string>
-    <string name="ch_thD">Выбрать другую тему</string>
     <string name="options">Опции</string>
     <string name="guide">Гид</string>
     <string name="returnbtn">Назад</string>
@@ -135,4 +133,5 @@
     <string name="reset">Сбросить</string>
     <string name="pref_title_build_version">Версия сборки</string>
     <string name="not_supported">Ваше устройство не поддерживается!</string>
+    <string name="small_info">Инфракрасный пульт дистанционного управления для Sony Xperia ZL и Sony Xperia Tab Z</string>
 </resources>

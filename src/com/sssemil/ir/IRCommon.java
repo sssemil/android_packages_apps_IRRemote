@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,7 +20,6 @@
 package com.sssemil.ir;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Environment;
 import android.util.Log;
@@ -126,33 +125,18 @@ public class IRCommon {
         return learnKey(filename);
     }
 
-    public static void restart(Resources res) {
+    public static int restart(Resources res) {
         stopIR(getPowerNode(res));
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        startIR(getPowerNode(res));
-    }
-
-    public static int getCurrentThemeId(Context context, int default_resid) {
-        SharedPreferences settings = context.getSharedPreferences(getPrefsName(context), 0);
-        if (settings.contains("theme")) {
-            String saved_theme = settings.getString("theme", null);
-            if (saved_theme.equals("1")) {
-                return R.style.Holo;
-            } else if (saved_theme.equals("2")) {
-                return R.style.Holo_Light_DarkActionBar;
-            } else if (saved_theme.equals("3")) {
-                return R.style.Theme_Holo_Light;
-            }
-        }
-        return default_resid;
+        return startIR(getPowerNode(res));
     }
 
     public static String getID() {
-        return "UA-52301928-1";
+        return "UA-********-*";
     }
 }
 

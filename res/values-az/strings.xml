@@ -3,7 +3,7 @@
 
      This program is free software; you can redistribute it and/or
      modify it under the terms of the GNU General Public License
-     as published by the Free Software Foundation; either version 2
+     as published by the Free Software Foundation; either version 3
      of the License, or (at your option) any later version.
 
      This program is distributed in the hope that it will be useful,
@@ -31,8 +31,6 @@
     <string name="brand">Marka (məsələn, Sony)</string>
     <string name="brand_prompt">Televizoruvuzun markasını seçin</string>
     <string name="cancel">Ləğv et</string>
-    <string name="ch_th">Mövzu dəyişdirmək</string>
-    <string name="ch_thD">Başqa mövzu seçin</string>
     <string name="checking">Yoxlanılması …</string>
     <string name="chfupd">Yeniləmə yoxlayın</string>
     <string name="chfupdD">Yeni bir versiyası yoxlayın</string>
@@ -76,6 +74,10 @@ Başla seçin və proqramlar öyrənmək istədiyiniz düyməsini basın.</strin
     <string name="reset">Reset</string>
     <string name="open_source_license">Açıq kodlu lisenziya</string>
     <string name="pref_title_build_version">Buildın versiyası</string>
-    <string name="not_supported">Sizin cihazıvız !</string>
+    <string name="not_supported">Sizin cihazıvız dəstəklənmir!</string>
+    <string name="drawer_close">Draveri bağla</string>
+    <string name="drawer_open">Draveri aç</string>
+    <string name="update">Yeniləndir</string>
+    <string name="updateT">Yeniləndirmələr</string>
 
 </resources>

@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -19,21 +19,16 @@
 
 package com.sssemil.ir;
 
-import android.app.Activity;
-import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 
-public class IRLicense extends Activity {
-
-    @Override
-    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-        theme.applyStyle(IRCommon.getCurrentThemeId(this, resid), true);
-    }
+public class IRLicense extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -49,7 +44,12 @@ public class IRLicense extends Activity {
     public void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         setContentView(R.layout.license_menu);
-        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         WebView localWebView = (WebView) findViewById(R.id.webView);
         localWebView.loadUrl("file:///android_res/raw/license.html");
     }

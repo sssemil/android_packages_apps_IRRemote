@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -43,24 +43,24 @@ public class Compress {
 
         Log.i("Compress", "Adding directory: " + srcFile.getName());
 
-        for (int i = 0; i < files.length; i++) {
+        for (File file : files) {
 
             // if the file is directory, use recursion
-            if (files[i].isDirectory()) {
-                addDirToArchive(zos, files[i]);
+            if (file.isDirectory()) {
+                addDirToArchive(zos, file);
                 continue;
             }
 
             try {
 
-                Log.i("Compress", "tAdding file: " + files[i].getName());
+                Log.i("Compress", "tAdding file: " + file.getName());
 
                 // create byte buffer
                 byte[] buffer = new byte[1024];
 
-                FileInputStream fis = new FileInputStream(files[i]);
+                FileInputStream fis = new FileInputStream(file);
 
-                zos.putNextEntry(new ZipEntry(files[i].getName()));
+                zos.putNextEntry(new ZipEntry(file.getName()));
 
                 int length;
 
