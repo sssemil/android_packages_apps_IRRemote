@@ -37,7 +37,7 @@
     <string name="license3">Исходный код доступен на https://github.com/sssemil/android_packages_apps_IRRemote .</string>
     <string name="license4">Используется lib_sony_ir от BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
 
-    <string name="mute">Зв.0</string>
+    <string name="mute">Mute</string>
     <string name="input">ТВ</string>
     <string name="home">Дом</string>
 
@@ -87,7 +87,7 @@
     <string name="crt_slf"> успешно создана!</string>
     <string name="pr_bck_ag">Нажмите снова для выхода</string>
     <string name="add_new_device">Добавить новое устройство</string>
-    <string name="creates_folder_for_new_device_files">Зоздает папку для нового устройства</string>
+    <string name="creates_folder_for_new_device_files">Создает папку для нового устройства</string>
     <string name="ddfl">Скачать файлы устройства</string>
     <string name="ddflD">Выбрать устройство для загруски его файлов</string>
     <string name="rmdfl">Удалить файлы устройства</string>
@@ -102,8 +102,9 @@
     <string name="gtlst">Получение списка…</string>
     <string name="are_u_s_del">Вы уверены, что хотите удалить эту папку?</string>
     <string name="select_dev">Выберите устройство</string>
-    <string name="submit">Выложить</string>
-    <string name="submit_new_devD">Выложить файлы нового устройства</string>
+    <string name="submit">Отослать</string>
+    <string name="submit_new_dev">Отослать новое устройство</string>
+    <string name="submit_new_devD">Отослать файлы нового устройства</string>
     <string name="submit_bug">Сообщить об ошибке</string>
     <string name="submit_bugD">Сказать мне о замеченной ошибке</string>
     <string name="options">Опции</string>
@@ -121,7 +122,7 @@
     <string name="bad_perm">Похоже, что права у ваших файлов выставлены не верно! Исправить?</string>
     <string name="done_setting">Новое устройство утановлено!</string>
     <string name="vol_key_usage">Выберите применение кнопок звука</string>
-    <string name="vol_key_usageD">Использовать их как</string>
+    <string name="vol_key_usageD">Использовать кнопки звука</string>
     <string name="alert_write_mode">● РЕЖИМ ЗАПИСИ!</string>
     <string name="alert_rename_mode">● RENAME MODE!</string>
     <string name="alert_endis_mode">● EN/DISABLE MODE!</string>
@@ -134,4 +135,5 @@
     <string name="pref_title_build_version">Версия сборки</string>
     <string name="not_supported">Ваше устройство не поддерживается!</string>
     <string name="small_info">Инфракрасный пульт дистанционного управления для Sony Xperia ZL и Sony Xperia Tab Z</string>
+    <string name="control">Управление</string>
 </resources>

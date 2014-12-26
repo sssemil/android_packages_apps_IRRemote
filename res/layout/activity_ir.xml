@@ -475,7 +475,7 @@
                 android:contentDescription="@string/btn36"
                 android:onClick="onClick"
                 android:text="@string/exit"
-                android:textSize="15sp" />
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/button33"

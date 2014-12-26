@@ -31,7 +31,7 @@
             android:summary="@string/rmdflD"
             android:title="@string/rmdfl" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Control">
+    <PreferenceCategory android:title="@string/control">
         <ListPreference
             android:defaultValue="None"
             android:entries="@array/listUsages"
