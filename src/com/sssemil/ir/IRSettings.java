@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Emil Suleymanov
+ * Copyright (c) 2014-2015 Emil Suleymanov <suleymanovemil8@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,14 +30,12 @@ import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -95,21 +93,6 @@ public class IRSettings extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
 
-        LinearLayout root = (LinearLayout) findViewById(android.R.id.list)
-                .getParent().getParent().getParent();
-        Toolbar bar = (Toolbar) LayoutInflater.from(this)
-                .inflate(R.layout.settings_toolbar, root, false);
-        root.addView(bar, 0); // insert at top
-        bar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(IRSettings.this,
-                        IRMain.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
         http_path_root2 = getString(R.string.http_path_root2);
         http_path_last_download1 = getString(R.string.http_path_last_download1);
         http_path_last_download2 = getString(R.string.http_path_last_download2);
@@ -124,21 +107,6 @@ public class IRSettings extends PreferenceActivity {
         }
         assert pInfo != null;
         cur_ver = pInfo.versionName;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                Intent intent = new Intent(IRSettings.this,
-                        IRMain.class);
-                intent.putExtra("restart", "1");
-                startActivity(intent);
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public String compare(String v1, String v2) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Emil Suleymanov
+ * Copyright (c) 2014-2015 Emil Suleymanov <suleymanovemil8@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@ package com.sssemil.ir;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.util.Linkify;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -39,10 +38,6 @@ public class IRAbout extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         TextView tw = (TextView) findViewById(R.id.textView);

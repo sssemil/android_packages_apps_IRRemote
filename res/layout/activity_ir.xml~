@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-     Copyright (c) 2014-2015 Emil Suleymanov <suleymanovemil8@gmail.com>
+     Copyright (c) 2014 Emil Suleymanov <suleymanovemil8@gmail.com>
 
      This program is free software; you can redistribute it and/or
      modify it under the terms of the GNU General Public License
@@ -29,17 +29,25 @@
         android:orientation="vertical"
         android:visibility="visible">
 
+        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@android:dimen/app_icon_size"
+            android:background="@color/action_bar_background"
+            android:minHeight="?attr/actionBarSize" />
+
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
+            android:layout_below="@+id/toolbar"
             android:orientation="vertical"
             android:visibility="visible">
 
             <Button
                 android:id="@+id/button3"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button6"
                 android:layout_toLeftOf="@+id/button5"
@@ -51,7 +59,7 @@
 
             <Button
                 android:id="@+id/button4"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/button3"
                 android:layout_alignStart="@+id/button3"
@@ -63,7 +71,7 @@
 
             <Button
                 android:id="@+id/button5"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button6"
                 android:layout_alignParentEnd="true"
@@ -76,7 +84,7 @@
 
             <Button
                 android:id="@+id/button6"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/textView2"
                 android:layout_alignParentEnd="true"
@@ -87,7 +95,7 @@
 
             <Button
                 android:id="@+id/button7"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
 
@@ -100,7 +108,7 @@
 
             <Button
                 android:id="@+id/button8"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toLeftOf="@+id/button9"
@@ -113,7 +121,7 @@
 
             <Button
                 android:id="@+id/button9"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/button11"
@@ -125,7 +133,7 @@
 
             <Button
                 android:id="@+id/button10"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -137,7 +145,7 @@
 
             <Button
                 android:id="@+id/button11"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button14"
                 android:layout_toLeftOf="@+id/button36"
@@ -149,7 +157,7 @@
 
             <Button
                 android:id="@+id/button12"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/button11"
                 android:layout_alignLeft="@+id/button15"
@@ -162,7 +170,7 @@
 
             <Button
                 android:id="@+id/button13"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -174,7 +182,7 @@
 
             <Button
                 android:id="@+id/button14"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button16"
                 android:layout_toEndOf="@+id/button13"
@@ -186,7 +194,7 @@
 
             <Button
                 android:id="@+id/button15"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/button36"
                 android:layout_alignStart="@+id/button36"
@@ -198,7 +206,7 @@
 
             <Button
                 android:id="@+id/button16"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/button13"
                 android:layout_toEndOf="@+id/button13"
@@ -210,7 +218,7 @@
 
             <Button
                 android:id="@+id/button17"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/button21"
@@ -222,7 +230,7 @@
 
             <Button
                 android:id="@+id/button18"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button36"
                 android:layout_alignLeft="@+id/button31"
@@ -234,7 +242,7 @@
 
             <Button
                 android:id="@+id/button19"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/button17"
                 android:layout_toLeftOf="@+id/button20"
@@ -246,7 +254,7 @@
 
             <Button
                 android:id="@+id/button20"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/button19"
                 android:layout_below="@+id/button17"
@@ -259,7 +267,7 @@
 
             <Button
                 android:id="@+id/button21"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/button19"
                 android:layout_below="@+id/button17"
@@ -273,7 +281,7 @@
 
             <Button
                 android:id="@+id/button22"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/button9"
@@ -285,7 +293,7 @@
 
             <Button
                 android:id="@+id/button23"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button20"
                 android:layout_alignEnd="@+id/button20"
@@ -300,7 +308,7 @@
 
             <Button
                 android:id="@+id/button24"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button31"
                 android:layout_alignEnd="@+id/button20"
@@ -403,7 +411,7 @@
 
             <Button
                 android:id="@+id/button32"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/button31"
                 android:layout_alignEnd="@+id/button20"
@@ -419,7 +427,7 @@
 
             <Button
                 android:id="@+id/button31"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/button18"
                 android:layout_toLeftOf="@+id/button32"
@@ -430,7 +438,7 @@
 
             <Button
                 android:id="@+id/button29"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/button31"
                 android:layout_toLeftOf="@+id/button31"
@@ -444,7 +452,7 @@
             <Button
                 android:id="@+id/button35"
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/button15"
                 android:layout_below="@+id/button12"
@@ -459,7 +467,7 @@
 
             <Button
                 android:id="@+id/button36"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/button15"
                 android:layout_toEndOf="@+id/button16"
@@ -471,7 +479,7 @@
 
             <Button
                 android:id="@+id/button33"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/button37"
                 android:layout_toLeftOf="@+id/button30"
@@ -496,7 +504,7 @@
 
             <Button
                 android:id="@+id/button38"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/button37"
                 android:layout_alignTop="@+id/button33"
@@ -511,7 +519,7 @@
 
             <Button
                 android:id="@+id/button30"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/button33"
                 android:layout_toEndOf="@+id/button29"
@@ -522,7 +530,7 @@
 
             <Button
                 android:id="@+id/button34"
-                android:layout_width="@dimen/button_1"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/button30"
                 android:layout_alignLeft="@+id/button32"
@@ -532,21 +540,21 @@
                 android:contentDescription="@string/btn34"
                 android:onClick="onClick"
                 android:text="@string/sr"
+                android:textSize="26sp"
                 tools:ignore="RtlCompat" />
 
             <Button
                 android:id="@+id/button2"
-                android:layout_width="@dimen/button_1"
-                android:layout_height="wrap_content"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:layout_alignBottom="@+id/button23"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
                 android:contentDescription="@string/btnP"
-                android:gravity="center"
                 android:onClick="onClick"
                 android:text="@string/power_btn"
-                android:textSize="20sp"
+                android:textSize="25sp"
                 tools:ignore="RelativeOverlap" />
 
         </RelativeLayout>

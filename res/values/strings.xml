@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-     Copyright (c) 2014 Emil Suleymanov
+     Copyright (c) 2014-2015 Emil Suleymanov <suleymanovemil8@gmail.com>
 
      This program is free software; you can redistribute it and/or
      modify it under the terms of the GNU General Public License
@@ -80,7 +80,7 @@
     <string name="left" translatable="false">←</string>
     <string name="power_btn" translatable="false">I/O</string>
     <string name="wb" translatable="false">↞</string>
-    <string name="p" translatable="false">ll</string>
+    <string name="p" translatable="false">II</string>
     <string name="pl" translatable="false">►</string>
     <string name="wf" translatable="false">↠</string>
     <string name="stop" translatable="false">■</string>
@@ -90,7 +90,6 @@
     <string name="Write_signal">Switch to Write mode</string>
     <string name="action_settings">Settings</string>
     <string name="add">Add</string>
-    <string name="add_brnd">Add new device</string>
     <string name="app_name">IR Remote</string>
     <string name="brand">Brand(ex. Sony)</string>
     <string name="brand_prompt">Choose your TV`s brand</string>
@@ -101,8 +100,8 @@
     <string name="save">Save</string>
     <string name="about">About</string>
     <string name="open_source_license">Open source license</string>
-    <string name="license1">Copyright © 2014 Emil Suleymanov</string>
-    <string name="license2">Distributed under the GNU GPL v3.</string>
+    <string name="license1">Copyright © 2014–2015 Emil Suleymanov</string>
+    <string name="license2">Distributed under the GNU GPL v3</string>
     <string name="license3">Source code is available at https://github.com/sssemil/android_packages_apps_IRRemote .</string>
     <string name="license4">Using lib_sony_ir from BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
     <string name="mute">Mute</string>

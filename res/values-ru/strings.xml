@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-     Copyright (c) 2014 Emil Suleymanov
+     Copyright (c) 2014-2015 Emil Suleymanov <suleymanovemil8@gmail.com>
 
      This program is free software; you can redistribute it and/or
      modify it under the terms of the GNU General Public License
@@ -21,7 +21,6 @@
     <string name="Write_signal">Перейти в режим записи</string>
     <string name="action_settings">Настройки</string>
     <string name="add">Добавить</string>
-    <string name="add_brnd">Добавить новое устройство</string>
     <string name="app_name">IR Remote</string>
     <string name="brand">Бренд(пр. Sony)</string>
     <string name="brand_prompt">Выберите бренд устройства</string>
@@ -32,8 +31,8 @@
     <string name="save">Сохранить</string>
     <string name="about">О программе</string>
     <string name="open_source_license">Лицензии открытого ПО</string>
-    <string name="license1">Copyright © 2014 Emil Suleymanov</string>
-    <string name="license2">Распространяется под GNU GPL v3.</string>
+    <string name="license1">Copyright © 2014–2015 Emil Suleymanov</string>
+    <string name="license2">Распространяется под GNU GPL v3</string>
     <string name="license3">Исходный код доступен на https://github.com/sssemil/android_packages_apps_IRRemote .</string>
     <string name="license4">Используется lib_sony_ir от BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
 

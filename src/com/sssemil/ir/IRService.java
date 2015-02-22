@@ -6,18 +6,16 @@ import android.content.Intent;
 
 public class IRService extends IntentService {
 
+    public static final String EXTRA_STATE = "com.sssemil.ir.extra.STATE";
     private static final String ACTION_START = "com.sssemil.ir.action.START";
     private static final String ACTION_STOP = "com.sssemil.ir.action.STOP";
     private static final String ACTION_RESTART = "com.sssemil.ir.action.RESTART";
     private static final String ACTION_SEND = "com.sssemil.ir.action.SEND";
     private static final String ACTION_SEND_RAW = "com.sssemil.ir.action.SEND_RAW";
     private static final String ACTION_LEARN = "com.sssemil.ir.action.LEARN";
-
     private static final String EXTRA_FILENAME = "com.sssemil.ir.extra.FILENAME";
     private static final String EXTRA_KEY = "com.sssemil.ir.extra.KEY";
     private static final String EXTRA_LENGTH = "com.sssemil.ir.extra.LENGTH";
-
-    public static final String EXTRA_STATE = "com.sssemil.ir.extra.STATE";
 
     public IRService() {
         super("IRService");

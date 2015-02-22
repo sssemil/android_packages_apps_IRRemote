@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Emil Suleymanov
+ * Copyright (c) 2014-2015 Emil Suleymanov <suleymanovemil8@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,8 +21,6 @@ package com.sssemil.ir;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,7 +40,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -117,8 +114,6 @@ public class IRMain extends ActionBarActivity {
     private Resources mResources;
 
     private android.support.v7.app.ActionBar mActionBar;
-
-    private Toolbar mToolbar;
 
     private Intent mServiceIntent;
 
@@ -231,14 +226,15 @@ public class IRMain extends ActionBarActivity {
     }
 
     private void selectItem(final int position, boolean long_click) {
+        adb = new AlertDialog.Builder(this);
         if (mDrawerList.getCount() - 1 == position) {
             if (!long_click) {
+                mDrawerLayout.closeDrawer(mDrawerList);
                 item = mDrawerList.getItemAtPosition(0).toString();
                 mDrawerList.setItemChecked(0, true);
 
                 LayoutInflater li = LayoutInflater.from(this);
                 final View promptsView = li.inflate(R.layout.add_device_menu, null);
-                adb = new AlertDialog.Builder(this);
                 adb.setTitle(getString(R.string.add_new_device));
                 adb
                         .setCancelable(false)
@@ -274,7 +270,6 @@ public class IRMain extends ActionBarActivity {
                 mActionBar.setTitle(getString(R.string.app_name) + " - " + item);
             } else {
                 item_position = position;
-                adb = new AlertDialog.Builder(IRMain.this);
                 adb.setNegativeButton(getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -308,7 +303,6 @@ public class IRMain extends ActionBarActivity {
                                             "Send by mail..."));
                                 } catch (NullPointerException e) {
                                     Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                    adb = new AlertDialog.Builder(IRMain.this);
                                     adb.setTitle(getString(R.string.error));
                                     adb.setMessage(getString(R.string.you_need_to_select));
                                     adb.setPositiveButton(getString(R.string.pos_ans),
@@ -327,7 +321,6 @@ public class IRMain extends ActionBarActivity {
                 adb.setPositiveButton(getString(R.string.remove),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                adb = new AlertDialog.Builder(IRMain.this);
                                 adb.setTitle(getString(R.string.warning));
                                 adb.setMessage(getString(R.string.are_u_s_del));
                                 adb.setPositiveButton(getString(R.string.pos_ans),
@@ -362,6 +355,7 @@ public class IRMain extends ActionBarActivity {
                                             }
                                         }
                                 );
+                                adb.setNeutralButton(null, null);
                                 adb.show();
                             }
                         }
@@ -472,12 +466,7 @@ public class IRMain extends ActionBarActivity {
 
         setContentView(R.layout.activity_ir);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (mToolbar != null) {
-            setSupportActionBar(mToolbar);
-        }
         mActionBar = getSupportActionBar();
-
 
         if (!IRCommon.getPowerNode(mResources).equals("/")) {
             Thread ft = new Thread() {
@@ -537,7 +526,7 @@ public class IRMain extends ActionBarActivity {
                                         while (btn.isPressed() && run_threads) {
                                             sendKeyBool(IRCommon.getIrPath() + item
                                                     + "/" + usage + ".bin");
-                                            sleep(400);
+                                            sleep(250);
                                         }
                                     } catch (InterruptedException e) {
                                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
@@ -868,11 +857,7 @@ public class IRMain extends ActionBarActivity {
         }
 
         boolean checkUpd;
-        if (!settings.contains("autoUpd")) {
-            checkUpd = false;
-        } else {
-            checkUpd = settings.getBoolean("autoUpd", true);
-        }
+        checkUpd = settings.contains("autoUpd") && settings.getBoolean("autoUpd", true);
         Log.i(TAG, "Update " + String.valueOf(checkUpd));
         if (checkUpd) {
             update(true);
@@ -932,7 +917,7 @@ public class IRMain extends ActionBarActivity {
                 state = 0;
                 state = IRCommon.learn(filename);
                 Log.d(TAG, "Learning DONE state = " + state);
-                if (state <= 1) {
+                if (state <= 4) {
                     try {
                         IRCommon.delete(new File(filename));
                     } catch (IOException e) {
@@ -1106,7 +1091,6 @@ public class IRMain extends ActionBarActivity {
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
-                mToolbar,  /* nav drawer image to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description for accessibility */
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
