@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+     Copyright (c) 2014-2015 Emil Suleymanov <suleymanovemil8@gmail.com>
+
+     This program is free software; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License
+     as published by the Free Software Foundation; either version 3
+     of the License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+     MA  02110-1301, USA.
+-->
+<resources>
+
+    <string name="btn3" translatable="false">chanelPl</string>
+    <string name="btn4" translatable="false">chanelMn</string>
+    <string name="btn5" translatable="false">volPl</string>
+    <string name="btn6" translatable="false">volMn</string>
+    <string name="btn7" translatable="false">1</string>
+    <string name="btn8" translatable="false">2</string>
+    <string name="btn9" translatable="false">3</string>
+    <string name="btn10" translatable="false">4</string>
+    <string name="btn11" translatable="false">5</string>
+    <string name="btn12" translatable="false">6</string>
+    <string name="btn13" translatable="false">7</string>
+    <string name="btn14" translatable="false">8</string>
+    <string name="btn15" translatable="false">9</string>
+    <string name="btn16" translatable="false">0</string>
+    <string name="btn17" translatable="false">up</string>
+    <string name="btn18" translatable="false">down</string>
+    <string name="btn19" translatable="false">enter</string>
+    <string name="btn20" translatable="false">right</string>
+    <string name="btn21" translatable="false">left</string>
+    <string name="btn22" translatable="false">mute</string>
+    <string name="btn23" translatable="false">input</string>
+    <string name="btn24" translatable="false">home</string>
+    <string name="btn25" translatable="false">tstt</string>
+    <string name="btn26" translatable="false">return</string>
+    <string name="btn27" translatable="false">options</string>
+    <string name="btn28" translatable="false">guide</string>
+    <string name="btnP" translatable="false">power</string>
+    <string name="btn29" translatable="false">wBack</string>
+    <string name="btn30" translatable="false">pause</string>
+    <string name="btn31" translatable="false">play</string>
+    <string name="btn32" translatable="false">wFwrd</string>
+    <string name="btn33" translatable="false">stop</string>
+    <string name="btn34" translatable="false">sr</string>
+    <string name="btn35" translatable="false">q</string>
+    <string name="btn36" translatable="false">exit</string>
+    <string name="btn37" translatable="false">tvr</string>
+    <string name="btn38" translatable="false">audio</string>
+    <string name="one" translatable="false">1</string>
+    <string name="two" translatable="false">2</string>
+    <string name="tree" translatable="false">3</string>
+    <string name="four" translatable="false">4</string>
+    <string name="five" translatable="false">5</string>
+    <string name="six" translatable="false">6</string>
+    <string name="seven" translatable="false">7</string>
+    <string name="eight" translatable="false">8</string>
+    <string name="nine" translatable="false">9</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="http_path_root2" translatable="false">https://raw.githubusercontent.com/sssemil/android_packages_apps_IRRemote/gh-pages/sonyirremote/</string>
+    <string name="http_path_last_download1" translatable="false">https://github.com/sssemil/android_packages_apps_IRRemote/blob/gh-pages/sonyirremote/apk/IRRemote-v</string>
+    <string name="http_path_last_download2" translatable="false">.apk?raw=true</string>
+    <string name="vol" translatable="false">VOL</string>
+    <string name="prog" translatable="false">PROG</string>
+    <string name="tstt" translatable="false">-/--</string>
+    <string name="plus" translatable="false">+</string>
+    <string name="minus" translatable="false">—</string>
+    <string name="up" translatable="false">↑</string>
+    <string name="down" translatable="false">↓</string>
+    <string name="ok_btn" translatable="false">✥</string>
+    <string name="right" translatable="false">→</string>
+    <string name="left" translatable="false">←</string>
+    <string name="power_btn" translatable="false">I/O</string>
+    <string name="wb" translatable="false">↞</string>
+    <string name="p" translatable="false">II</string>
+    <string name="pl" translatable="false">►</string>
+    <string name="wf" translatable="false">↠</string>
+    <string name="stop" translatable="false">■</string>
+    <string name="sr" translatable="false">●</string>
+    <string name="que" translatable="false">\?</string>
+    <string name="Send_signal">Leave Write mode</string>
+    <string name="Write_signal">Switch to Write mode</string>
+    <string name="action_settings">Settings</string>
+    <string name="add">Add</string>
+    <string name="app_name">IR Remote</string>
+    <string name="brand">Brand(ex. Sony)</string>
+    <string name="brand_prompt">Choose your TV`s brand</string>
+    <string name="go_back">Back to main menu</string>
+    <string name="item">Type(ex. TV)</string>
+    <string name="path">Path to keys</string>
+    <string name="pwr_btn">Power ON/OFF</string>
+    <string name="save">Save</string>
+    <string name="about">About</string>
+    <string name="open_source_license">Open source license</string>
+    <string name="license1">Copyright © 2014–2015 Emil Suleymanov</string>
+    <string name="license2">Distributed under the GNU GPL v3</string>
+    <string name="license3">Source code is available at https://github.com/sssemil/android_packages_apps_IRRemote .</string>
+    <string name="license4">Using lib_sony_ir from BuzzBumbleBee (https://github.com/BuzzBumbleBee/lib_sony_ir).</string>
+    <string name="mute">Mute</string>
+    <string name="input">Input</string>
+    <string name="home">Home</string>
+    <string name="download_brnd">Download or remove device files</string>
+    <string name="download">Download</string>
+    <string name="refresh">Refresh</string>
+    <string name="remove">Remove</string>
+    <string name="exit">Exit</string>
+    <string name="update">Update</string>
+    <string name="ser3">The Server is unreachable, please try again later!
+Try now?</string>
+    <string name="new_version_available">New version available!
+
+Do you want to update to a newer version?</string>
+    <string name="downloading_new">Downloading new version…</string>
+    <string name="already_new">You already have the latest version installed!</string>
+    <string name="down_keys">Downloading buttons` files…</string>
+    <string name="failed_lk">Failed! - learnKey </string>
+    <string name="failed_sk">Failed! - sendKey </string>
+    <string name="fr">Thanks for installing my app!
+To start using it go to settings and download device files for your TV or anything else. If you can`t find your device, you can write commands by yourself.
+We are using Google Analytics API to collect anonymous data and improve our app.
+        Thanks!
+    NOTE: This app is under development and it was tested only on Sony Xperia ZL(odin) and Sony Tab Z(pollux) running CyanogenMod 11!</string>
+    <string name="welcome">Welcome!</string>
+    <string name="done">Done!</string>
+    <string name="downloadT">Download</string>
+    <string name="error">Error</string>
+    <string name="done_removing">Done removing </string>
+    <string name="files"> files!</string>
+    <string name="you_need_to_select">You need to select an option first!</string>
+    <string name="waiting_for_signal">Waiting for signal to learn…</string>
+    <string name="warning">Warning!</string>
+    <string name="already_exists">The command you are trying to write already exists! By doing this you will overwrite existing command!
+
+Do you want to continue?</string>
+    <string name="not_exists">The command for this button does not exists! Do you want to write it now?</string>
+    <string name="non_zero">Failed! Non-zero exit status returned!</string>
+    <string name="failed_del_fl_io">Failed to delete files!</string>
+    <string name="downloading">Downloading…</string>
+    <string name="pos_ans">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="checking">Checking…</string>
+    <string name="new_item">New item </string>
+    <string name="crt_slf"> created successfully!</string>
+    <string name="pr_bck_ag">Press back again to exit</string>
+    <string name="add_new_device">Add new device</string>
+    <string name="creates_folder_for_new_device_files">Creates folder for new device files</string>
+    <string name="ddfl">Download device files</string>
+    <string name="ddflD">Choose device to download it`s files</string>
+    <string name="rmdfl">Remove device files</string>
+    <string name="rmdflD">Choose device to remove it`s files</string>
+    <string name="edit_devs">Edit devices</string>
+    <string name="updateT">Update</string>
+    <string name="updch">Update Check</string>
+    <string name="updchD">Check for new version on startup</string>
+    <string name="chfupd">Check for update</string>
+    <string name="chfupdD">Check for a newer version</string>
+    <string name="other">Other</string>
+    <string name="gtlst">Getting list…</string>
+    <string name="are_u_s_del">Are you sure you want to permanently delete this folder?</string>
+    <string name="select_dev">Select device</string>
+    <string name="submit">Submit</string>
+    <string name="submit_new_dev">Submit new device</string>
+    <string name="submit_new_devD">Submit new device files</string>
+    <string name="submit_bug">Submit bug</string>
+    <string name="submit_bugD">Tell me if you see some bug</string>
+    <string name="options">Options</string>
+    <string name="guide">Guide</string>
+    <string name="returnbtn">Return</string>
+    <string name="irremote_dialog_learning_sig_desc_closer_txt">"Aim the IR transmitter at the receiver as close as possible, as shown in the figure.
+
+Select Start and press the button you want the app to learn."</string>
+    <string name="start">Start</string>
+    <string name="ver">Version</string>
+    <string name="tvradio">TV/RADIO</string>
+    <string name="audio">Audio</string>
+    <string name="no_root">Looks like you don`t have root permissions! This app will not work!</string>
+    <string name="bad_perm">Looks like you have wrong file permissions. Fix them?</string>
+    <string name="done_setting">Done setting up new device!</string>
+    <string name="vol_key_usage">Choose volume keys usage</string>
+    <string name="vol_key_usageD">Use volume keys as</string>
+    <string name="alert_write_mode">● WRITE MODE!</string>
+    <string name="alert_rename_mode">● RENAME MODE!</string>
+    <string name="alert_endis_mode">● EN/DISABLE MODE!</string>
+    <string name="change_mode">Change mode</string>
+    <string name="send_mode_btn">Send mode</string>
+    <string name="write_mode_btn">Write mode</string>
+    <string name="rename_mode_btn">Rename mode</string>
+    <string name="endis_mode_btn">En/Disable mode</string>
+    <string name="reset">Reset</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="pref_title_build_version">Build version</string>
+    <string name="not_supported">Your device is not supported!</string>
+    <string name="small_info">Infrared Remote Control for Sony Xperia ZL and Sony Xperia Tab Z</string>
+    <string name="control">Control</string>
+    <string name="disable_selinux">Hmmm… Sorry but I need to disable SELinux in order to fix permissons. Can I disable it till next reboot?</string>
+
+</resources>
