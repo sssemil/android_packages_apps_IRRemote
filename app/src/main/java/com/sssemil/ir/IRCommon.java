@@ -31,6 +31,10 @@ public class IRCommon {
 
     private static final String TAG = "IRCommon";
 
+    static {
+        System.loadLibrary("jni_sonyopenir");
+    }
+
     public static void delete(File file)
             throws IOException {
 
@@ -85,10 +89,6 @@ public class IRCommon {
             }
         }
         return "/";
-    }
-
-    static {
-        System.loadLibrary("jni_sonyopenir");
     }
 
     public static String getPrefsName(Context context) {

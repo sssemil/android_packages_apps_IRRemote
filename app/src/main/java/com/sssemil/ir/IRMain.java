@@ -93,11 +93,10 @@ public class IRMain extends ActionBarActivity {
     public ArrayList<String> first = new ArrayList<>();
     public ArrayList<String> total = new ArrayList<>();
     public ArrayList<String> disable = new ArrayList<>();
-
+    public boolean mFixerFixing = false;
     boolean main = true;
     boolean result = false;
     boolean do_restart = false;
-
     private String last_mode;
     private ProgressDialog mProgressDialog;
     private SharedPreferences mSettings;
@@ -106,20 +105,13 @@ public class IRMain extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-
     private boolean run_threads = true;
-
     private int item_position;
-
     private HandlerThread mCheckThread;
     private Handler mCheckHandler;
-
     private Resources mResources;
-
     private android.support.v7.app.ActionBar mActionBar;
-
     private Intent mServiceIntent;
-
     private boolean mTriedToFix = false;
     private Context mContext;
 
@@ -748,8 +740,6 @@ public class IRMain extends ActionBarActivity {
         }
     }
 
-    public boolean mFixerFixing = false;
-
     public void fixPermissionsForIr() {
         mFixerFixing = true;
         File enable = new File(IRCommon.getPowerNode(mResources));
@@ -790,20 +780,21 @@ public class IRMain extends ActionBarActivity {
         }
 
         if (do_fix) {
-            adb = new AlertDialog.Builder(this);
-            adb.setTitle(getString(R.string.warning));
-            if(!mTriedToFix) {
-                adb.setMessage(getString(R.string.bad_perm));
+            Log.i(TAG, "Fixing permissions");
+            final AlertDialog.Builder adbF = new AlertDialog.Builder(this);
+            adbF.setTitle(getString(R.string.warning));
+            if (!mTriedToFix) {
+                adbF.setMessage(getString(R.string.bad_perm));
             } else {
-                adb.setMessage(getString(R.string.disable_selinux));
+                adbF.setMessage(getString(R.string.disable_selinux));
             }
-            adb.setPositiveButton(getString(R.string.pos_ans),
+            adbF.setPositiveButton(getString(R.string.pos_ans),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             try {
                                 Runtime.getRuntime().exec(enablePermissions);
                                 Runtime.getRuntime().exec(devicePermissions);
-                                if (mTriedToFix){
+                                if (mTriedToFix) {
                                     Runtime.getRuntime().exec(disableSELinux);
                                 }
                                 IRService.setActionStart(IRMain.this);
@@ -812,7 +803,7 @@ public class IRMain extends ActionBarActivity {
                             }
                             IRService.setActionRestart(IRMain.this);
                             mFixerFixing = false;
-                            if(mTriedToFix) {
+                            if (mTriedToFix) {
                                 PendingIntent mPendingIntent = PendingIntent.getActivity(mContext, 567376,
                                         new Intent(mContext, IRMain.class), PendingIntent.FLAG_CANCEL_CURRENT);
                                 AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
@@ -825,7 +816,7 @@ public class IRMain extends ActionBarActivity {
                     }
             );
 
-            adb.setNegativeButton(getString(R.string.cancel),
+            adbF.setNegativeButton(getString(R.string.cancel),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
@@ -836,7 +827,7 @@ public class IRMain extends ActionBarActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adb.show();
+                    adbF.show();
                 }
             });
         } else {
@@ -887,19 +878,28 @@ public class IRMain extends ActionBarActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.welcome));
             builder.setMessage(getString(R.string.fr));
-            builder.setPositiveButton(getString(R.string.pos_ans), null);
+            builder.setPositiveButton(getString(R.string.pos_ans),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            PendingIntent mPendingIntent = PendingIntent.getActivity(mContext, 567376,
+                                    new Intent(mContext, IRMain.class), PendingIntent.FLAG_CANCEL_CURRENT);
+                            AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+                            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                            System.exit(0);
+                        }
+                    });
             builder.show();
             editor = settings.edit();
             editor.putBoolean("isFirstRun", false);
             editor.apply();
         }
 
-        boolean checkUpd;
+        /*boolean checkUpd;
         checkUpd = settings.contains("autoUpd") && settings.getBoolean("autoUpd", true);
         Log.i(TAG, "Update " + String.valueOf(checkUpd));
         if (checkUpd) {
-            //update(true);
-        }
+            update(true);
+        }*/
     }
 
     public void errorT(String msg) {
@@ -1725,7 +1725,7 @@ public class IRMain extends ActionBarActivity {
         public void handleMessage(Message msg) {
             if (run_threads) {
                 checkState();
-                if(!mFixerFixing) {
+                if (!mFixerFixing) {
                     fixPermissionsForIr();
                 }
                 sendEmptyMessageDelayed(0, 200);
