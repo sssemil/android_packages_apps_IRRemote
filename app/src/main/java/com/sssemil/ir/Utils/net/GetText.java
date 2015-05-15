@@ -37,7 +37,7 @@ public class GetText extends AsyncTask<String, Integer, ArrayList<String>> {
 
     private static final String TAG = "GetText";
     private DefaultHttpClient httpclient = new DefaultHttpClient();
-    private ArrayList<String> ar = new ArrayList<String>();
+    private ArrayList<String> ar = new ArrayList<>();
 
     protected ArrayList<String> doInBackground(String... sUrl) {
         try {

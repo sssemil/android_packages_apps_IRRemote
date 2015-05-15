@@ -17,5 +17,5 @@
      MA  02110-1301, USA.
 -->
 <resources>
-    <style name="AppTheme" parent="@android:style/Theme.DeviceDefault"/>
+    <style name="AppTheme" parent="@android:style/Theme.Material"/>
 </resources>

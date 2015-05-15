@@ -54,7 +54,6 @@
 
 Хотите обновиться до последней версии?</string>
     <string name="downloading_new">Обновление скачивается…</string>
-    <string name="already_new">У вас уже установлена последняя версия!</string>
     <string name="down_keys">Загрузка базы кнопок…</string>
     <string name="failed_lk">Не удалось выучить команду! </string>
     <string name="failed_sk">Не удалось отправить команду! </string>
@@ -95,8 +94,6 @@
     <string name="updateT">Обновления</string>
     <string name="updch">Проверка обновлений</string>
     <string name="updchD">Проверять на наличие обновлений при каждой загрузке</string>
-    <string name="chfupd">Обновить</string>
-    <string name="chfupdD">Проверять на наличие обновлений</string>
     <string name="other">Другое</string>
     <string name="gtlst">Получение списка…</string>
     <string name="are_u_s_del">Вы уверены, что хотите удалить эту папку?</string>
@@ -137,5 +134,5 @@
     <string name="control">Управление</string>
     <string name="drawer_close">Закрыть</string>
     <string name="drawer_open">Открыть</string>
-    <string name="disable_selinux">Хммм... Прошу прощения, но для правки прав ваших файлов необходимо отключить SELinux. Отключить SELinux до следующей перезагрузки?</string>
+    <string name="disable_selinux">Хммм… Прошу прощения, но для правки прав ваших файлов необходимо отключить SELinux. Вы можете отключить SELinux написав в терминале su -c \"setenforce 0\"</string>
 </resources>

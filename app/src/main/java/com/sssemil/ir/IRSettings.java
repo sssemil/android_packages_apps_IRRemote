@@ -22,7 +22,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,16 +47,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
 public class IRSettings extends PreferenceActivity {
 
     private static final String TAG = "IRSettings";
     private String http_path_root2;
-    private String http_path_last_download1;
-    private String http_path_last_download2;
-    private String last_ver = "zirt";
-    private String cur_ver;
     private ProgressDialog mProgressDialog;
     private AlertDialog.Builder adb;
     private String lastWord;
@@ -65,19 +59,6 @@ public class IRSettings extends PreferenceActivity {
     private String item = "null";
     private Spinner spinner;
     private ArrayList<String> ar = new ArrayList<>();
-
-    public static String normalisedVersion(String version) {
-        return normalisedVersion(version, ".", 4);
-    }
-
-    public static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
-        }
-        return sb.toString();
-    }
 
     @Override
     public void onBackPressed() {
@@ -93,26 +74,13 @@ public class IRSettings extends PreferenceActivity {
         addPreferencesFromResource(R.xml.settings);
 
         http_path_root2 = getString(R.string.http_path_root2);
-        http_path_last_download1 = getString(R.string.http_path_last_download1);
-        http_path_last_download2 = getString(R.string.http_path_last_download2);
         adb = new AlertDialog.Builder(this);
-        PackageInfo pInfo = null;
         try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            cur_ver = pInfo.versionName;
-            findPreference("buildPref").setSummary(cur_ver);
+            findPreference("buildPref").setSummary(
+                    getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
         } catch (PackageManager.NameNotFoundException e) {
             Log.d(TAG, "catch " + e.toString() + " hit in run", e);
         }
-        assert pInfo != null;
-        cur_ver = pInfo.versionName;
-    }
-
-    public String compare(String v1, String v2) {
-        String s1 = normalisedVersion(v1);
-        String s2 = normalisedVersion(v2);
-        int cmp = s1.compareTo(s2);
-        return cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
     }
 
     public void doOnDown(final String content) {
@@ -170,10 +138,7 @@ public class IRSettings extends PreferenceActivity {
                     } catch (IOException e) {
                         Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                     }
-                    Download downloadZip1 = new Download(lastWord,
-                            IRSettings.this,
-                            "zip"
-                    );
+                    Download downloadZip1 = new Download(lastWord);
 
                     try {
                         Log.d(TAG, lastWord);
@@ -427,9 +392,6 @@ public class IRSettings extends PreferenceActivity {
                         adb.show();
                     }
                     break;
-                case "checkUpd":
-                    update();
-                    break;
                 case "sbmtBug":
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                             Uri.parse("https://github.com/sssemil/android_packages_apps_SonyIRRemote/issues"));
@@ -520,127 +482,6 @@ public class IRSettings extends PreferenceActivity {
             }
         }
         return true;
-    }
-
-    public void update() {
-        final GetText getLastVer1 = new GetText();
-        final AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(getString(R.string.checking));
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.show();
-            }
-        });
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    last_ver = getLastVer1.execute(http_path_root2
-                            + "last.php").get().get(0);
-                    Log.i("Update", "last_ver : " + last_ver + " cur_ver : " + cur_ver);
-                } catch (InterruptedException | ExecutionException e) {
-                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                }
-                if (last_ver.equals("zirt")) {
-                    adb.setMessage(getString(R.string.ser3));
-                    adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            update();
-                        }
-                    });
-
-                    adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //finish();
-                        }
-                    });
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressDialog.cancel();
-                            adb.show();
-                        }
-                    });
-                } else {
-                    String result = compare(cur_ver, last_ver);
-                    boolean doUpdate = false;
-                    switch (result) {
-                        case ">":
-                            doUpdate = false;
-                            break;
-                        case "<":
-                            doUpdate = true;
-                            break;
-                        case "==":
-                            doUpdate = false;
-                            break;
-                    }
-
-
-                    if (doUpdate) {
-                        adb.setMessage(getString(R.string.new_version_available));
-                        adb.setPositiveButton(getString(R.string.pos_ans), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                mProgressDialog = new ProgressDialog(IRSettings.this);
-                                new Thread(new Runnable() {
-                                    public void run() {
-                                        mProgressDialog.setMessage(
-                                                getString(R.string.downloading_new));
-                                        mProgressDialog.setIndeterminate(true);
-                                        mProgressDialog.setProgressStyle(
-                                                ProgressDialog.STYLE_SPINNER);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mProgressDialog.show();
-                                            }
-                                        });
-
-                                        final Download downloadApp1 = new Download(
-                                                http_path_last_download1
-                                                        + last_ver + http_path_last_download2,
-                                                IRSettings.this, "apk"
-                                        );
-                                        try {
-                                            downloadApp1.execute(http_path_last_download1
-                                                    + last_ver + http_path_last_download2).get();
-                                        } catch (InterruptedException | ExecutionException e) {
-                                            Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                                        }
-                                        mProgressDialog.cancel();
-                                    }
-                                }).start();
-                            }
-                        });
-
-                        adb.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.cancel();
-                                adb.show();
-                            }
-                        });
-                    } else {
-                        adb.setMessage(getString(R.string.already_new));
-                        adb.setPositiveButton(getString(R.string.pos_ans), null);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.cancel();
-                                adb.show();
-                            }
-                        });
-                    }
-                }
-            }
-        }).start();
     }
 
     @Override

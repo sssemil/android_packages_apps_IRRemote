@@ -19,6 +19,8 @@
 
 package com.sssemil.ir;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -27,8 +29,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -62,8 +62,6 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.StandardExceptionParser;
-import com.sssemil.ir.Utils.net.Download;
-import com.sssemil.ir.Utils.net.GetText;
 import com.sssemil.ir.Utils.zip.Compress;
 
 import java.io.BufferedReader;
@@ -74,21 +72,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
-public class IRMain extends ActionBarActivity {
+public class IRMain extends Activity {
 
     private static final String TAG = "IRMain";
-    public String http_path_root2;
-    public String http_path_last_download1;
-    public String http_path_last_download2;
     public int state = 0;
     public String brand;
     public String item = "Example-TV";
     public String current_mode = "send";
-    public String last_ver = "zirt";
-    public String cur_ver;
 
     public ArrayList<String> first = new ArrayList<>();
     public ArrayList<String> total = new ArrayList<>();
@@ -110,23 +101,10 @@ public class IRMain extends ActionBarActivity {
     private HandlerThread mCheckThread;
     private Handler mCheckHandler;
     private Resources mResources;
-    private android.support.v7.app.ActionBar mActionBar;
+    private ActionBar mActionBar;
     private Intent mServiceIntent;
     private boolean mTriedToFix = false;
     private Context mContext;
-
-    public static String normalisedVersion(String version) {
-        return normalisedVersion(version, ".", 4);
-    }
-
-    public static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
-        }
-        return sb.toString();
-    }
 
     public void onClick(final View view) {
         Button btn = (Button) view;
@@ -421,7 +399,6 @@ public class IRMain extends ActionBarActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
@@ -464,7 +441,7 @@ public class IRMain extends ActionBarActivity {
 
         setContentView(R.layout.activity_ir);
 
-        mActionBar = getSupportActionBar();
+        mActionBar = getActionBar();
 
         mContext = getApplicationContext();
 
@@ -480,23 +457,10 @@ public class IRMain extends ActionBarActivity {
                 }
             };
             ft.start();
-            http_path_root2 = getString(R.string.http_path_root2);
-            http_path_last_download1 = getString(R.string.http_path_last_download1);
-            http_path_last_download2 = getString(R.string.http_path_last_download2);
             IRService.setActionStart(this);
             firstRunChecker();
             prepIRKeys();
             prepItemBrandArray();
-            PackageInfo pInfo = null;
-            try {
-                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                cur_ver = pInfo.versionName;
-            } catch (PackageManager.NameNotFoundException | NullPointerException e) {
-                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-            }
-            if (pInfo != null) {
-                cur_ver = pInfo.versionName;
-            }
 
             if (savedInstanceState == null) {
                 selectItem(0, false);
@@ -746,7 +710,7 @@ public class IRMain extends ActionBarActivity {
         File device = new File("/dev/ttyHSL2");
         final String[] enablePermissions = {"su", "-c", "chmod 222 ", enable.getPath()};
         final String[] devicePermissions = {"su", "-c", "chmod 666 ", device.getPath()};
-        final String[] disableSELinux = {"su", "-c", "setenforce 0"};
+        //final String[] disableSELinux = {"su", "-c", "setenforce 0"};
         boolean do_fix = false;
         boolean found = true;
 
@@ -788,33 +752,44 @@ public class IRMain extends ActionBarActivity {
             } else {
                 adbF.setMessage(getString(R.string.disable_selinux));
             }
-            adbF.setPositiveButton(getString(R.string.pos_ans),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                Runtime.getRuntime().exec(enablePermissions);
-                                Runtime.getRuntime().exec(devicePermissions);
-                                if (mTriedToFix) {
+            if (!mTriedToFix) {
+                adbF.setPositiveButton(getString(R.string.pos_ans),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    Runtime.getRuntime().exec(enablePermissions);
+                                    Runtime.getRuntime().exec(devicePermissions);
+                                /*if (mTriedToFix) {
                                     Runtime.getRuntime().exec(disableSELinux);
+                                }*/
+                                    IRService.setActionStart(IRMain.this);
+                                } catch (IOException e) {
+                                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
                                 }
-                                IRService.setActionStart(IRMain.this);
-                            } catch (IOException e) {
-                                Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                            }
-                            IRService.setActionRestart(IRMain.this);
-                            mFixerFixing = false;
-                            if (mTriedToFix) {
-                                PendingIntent mPendingIntent = PendingIntent.getActivity(mContext, 567376,
-                                        new Intent(mContext, IRMain.class), PendingIntent.FLAG_CANCEL_CURRENT);
-                                AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-                                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-                                System.exit(0);
-                            } else {
-                                mTriedToFix = true;
+                                IRService.setActionRestart(IRMain.this);
+                                mFixerFixing = false;
+                                if (mTriedToFix) {
+                                    PendingIntent mPendingIntent = PendingIntent.getActivity(mContext, 567376,
+                                            new Intent(mContext, IRMain.class), PendingIntent.FLAG_CANCEL_CURRENT);
+                                    AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+                                    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                                    System.exit(0);
+                                } else {
+                                    mTriedToFix = true;
+                                }
                             }
                         }
-                    }
-            );
+                );
+            } else {
+                adbF.setPositiveButton(getString(R.string.pos_ans),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                                mFixerFixing = false;
+                            }
+                        }
+                );
+            }
 
             adbF.setNegativeButton(getString(R.string.cancel),
                     new DialogInterface.OnClickListener() {
@@ -893,13 +868,6 @@ public class IRMain extends ActionBarActivity {
             editor.putBoolean("isFirstRun", false);
             editor.apply();
         }
-
-        /*boolean checkUpd;
-        checkUpd = settings.contains("autoUpd") && settings.getBoolean("autoUpd", true);
-        Log.i(TAG, "Update " + String.valueOf(checkUpd));
-        if (checkUpd) {
-            update(true);
-        }*/
     }
 
     public void errorT(String msg) {
@@ -1084,7 +1052,7 @@ public class IRMain extends ActionBarActivity {
     }
 
     public void prepItemBrandArray() {
-        ArrayList<String> localArrayList1 = new ArrayList<String>();
+        ArrayList<String> localArrayList1 = new ArrayList<>();
         boolean edited = false;
         File f = new File(IRCommon.getIrPath());
         File f2 = new File(IRCommon.getIrPath() + "Example-TV");
@@ -1146,7 +1114,9 @@ public class IRMain extends ActionBarActivity {
         } catch (NullPointerException e) {
             item = "Example-TV";
         }
-        mActionBar.setTitle(getString(R.string.app_name) + " - " + item);
+        if (mActionBar != null) {
+            mActionBar.setTitle(getString(R.string.app_name) + " - " + item);
+        }
         mDrawerList.setItemChecked(0, true);
     }
 
@@ -1564,156 +1534,6 @@ public class IRMain extends ActionBarActivity {
         }
     }
 
-    public String compare(String v1, String v2) {
-        String s1 = normalisedVersion(v1);
-        String s2 = normalisedVersion(v2);
-        int cmp = s1.compareTo(s2);
-        return cmp < 0 ? "<" : cmp > 0 ? ">" : "==";
-    }
-
-    public void update(final boolean silent) {
-        final GetText getLastVer1 = new GetText();
-        adb = new AlertDialog.Builder(this);
-        if (!silent) {
-            mProgressDialog = new ProgressDialog(IRMain.this);
-            mProgressDialog.setMessage(getString(R.string.checking));
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mProgressDialog.show();
-                }
-            });
-        }
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    last_ver = getLastVer1.execute(http_path_root2
-                            + "last.php").get().get(0);
-                    Log.i(TAG, "Update last_ver : " + last_ver
-                            + " cur_ver : " + cur_ver);
-                } catch (InterruptedException | ExecutionException | NullPointerException e) {
-                    Log.d(TAG, "catch " + e.toString() + " hit in run", e);
-                }
-                if (last_ver.equals("zirt")) {
-                    if (!silent) {
-                        adb.setTitle(getString(R.string.update));
-                        adb.setMessage(getString(R.string.ser3));
-                        adb.setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        update(false);
-                                    }
-                                }
-                        );
-
-                        adb.setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //finish();
-                                    }
-                                }
-                        );
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.cancel();
-                                adb.show();
-                            }
-                        });
-                    }
-                } else {
-                    String result = compare(cur_ver, last_ver);
-                    boolean doUpdate = false;
-                    switch (result) {
-                        case ">":
-                            doUpdate = false;
-                            break;
-                        case "<":
-                            doUpdate = true;
-                            break;
-                        case "==":
-                            doUpdate = false;
-                            break;
-                    }
-                    Log.i(TAG, "Update " + String.valueOf(doUpdate));
-
-                    if (doUpdate) {
-                        adb.setTitle(getString(R.string.update));
-                        adb.setMessage(getString(R.string.new_version_available));
-                        adb.setPositiveButton(getString(R.string.pos_ans),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        mProgressDialog = new ProgressDialog(IRMain.this);
-                                        new Thread(new Runnable() {
-                                            public void run() {
-                                                mProgressDialog.setMessage(
-                                                        getString(R.string.downloading_new));
-                                                mProgressDialog.setIndeterminate(true);
-                                                mProgressDialog.setProgressStyle(
-                                                        ProgressDialog.STYLE_SPINNER);
-                                                runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        mProgressDialog.show();
-                                                    }
-                                                });
-
-                                                Download downloadApp1 =
-                                                        new Download(
-                                                                http_path_last_download1
-                                                                        + last_ver
-                                                                        + http_path_last_download2,
-                                                                IRMain.this,
-                                                                "apk"
-                                                        );
-                                                try {
-                                                    downloadApp1.execute().get();
-                                                } catch (InterruptedException | ExecutionException e) {
-                                                    Log.d(TAG, "catch " + e.toString()
-                                                            + " hit in run", e);
-                                                }
-                                                mProgressDialog.cancel();
-                                            }
-                                        }).start();
-                                    }
-                                }
-                        );
-
-                        adb.setNegativeButton(getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                }
-                        );
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (!silent) {
-                                    mProgressDialog.cancel();
-                                }
-                                adb.show();
-                            }
-                        });
-                    } else {
-                        if (!silent) {
-                            adb.setTitle(getString(R.string.update));
-                            adb.setMessage(getString(R.string.already_new));
-                            adb.setPositiveButton(getString(R.string.pos_ans), null);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mProgressDialog.cancel();
-                                    adb.show();
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }).start();
-    }
 
     private class StateChecker extends Handler {
 

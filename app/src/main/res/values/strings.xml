@@ -66,8 +66,6 @@
     <string name="nine" translatable="false">9</string>
     <string name="zero" translatable="false">0</string>
     <string name="http_path_root2" translatable="false">https://raw.githubusercontent.com/sssemil/android_packages_apps_IRRemote/gh-pages/sonyirremote/</string>
-    <string name="http_path_last_download1" translatable="false">https://github.com/sssemil/android_packages_apps_IRRemote/blob/gh-pages/sonyirremote/apk/IRRemote-v</string>
-    <string name="http_path_last_download2" translatable="false">.apk?raw=true</string>
     <string name="vol" translatable="false">VOL</string>
     <string name="prog" translatable="false">PROG</string>
     <string name="tstt" translatable="false">-/--</string>
@@ -112,14 +110,6 @@
     <string name="refresh">Refresh</string>
     <string name="remove">Remove</string>
     <string name="exit">Exit</string>
-    <string name="update">Update</string>
-    <string name="ser3">The Server is unreachable, please try again later!
-Try now?</string>
-    <string name="new_version_available">New version available!
-
-Do you want to update to a newer version?</string>
-    <string name="downloading_new">Downloading new version…</string>
-    <string name="already_new">You already have the latest version installed!</string>
     <string name="down_keys">Downloading buttons` files…</string>
     <string name="failed_lk">Failed! - learnKey </string>
     <string name="failed_sk">Failed! - sendKey </string>
@@ -157,11 +147,6 @@ Do you want to continue?</string>
     <string name="rmdfl">Remove device files</string>
     <string name="rmdflD">Choose device to remove it`s files</string>
     <string name="edit_devs">Edit devices</string>
-    <string name="updateT">Update</string>
-    <string name="updch">Update Check</string>
-    <string name="updchD">Check for new version on startup</string>
-    <string name="chfupd">Check for update</string>
-    <string name="chfupdD">Check for a newer version</string>
     <string name="other">Other</string>
     <string name="gtlst">Getting list…</string>
     <string name="are_u_s_del">Are you sure you want to permanently delete this folder?</string>
@@ -201,6 +186,6 @@ Select Start and press the button you want the app to learn."</string>
     <string name="not_supported">Your device is not supported!</string>
     <string name="small_info">Infrared Remote Control for Sony Xperia ZL and Sony Xperia Tab Z</string>
     <string name="control">Control</string>
-    <string name="disable_selinux">Hmmm… Sorry but I need to disable SELinux in order to fix permissons. Can I disable it till next reboot?</string>
+    <string name="disable_selinux">Hmmm… Sorry but you need to disable SELinux in order to fix permissions. You can disable it by typing su -c \"setenforce 0\" in terminal emulator.</string>
 
 </resources>
